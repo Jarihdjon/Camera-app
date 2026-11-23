@@ -1,0 +1,447 @@
+{
+  "id": "wildlands-jungle-jumble",
+  "realm": "wildlands",
+  "level": "jungle-jumble",
+  "title": "Jungle Jumble",
+  "emoji": "🐨",
+  "palette": {
+    "top": "#5cc85a",
+    "side": "#8a5a32",
+    "accent": "#ffd23f",
+    "prop": "#2f8f3a",
+    "prop2": "#6b4226",
+    "sky": [
+      "#8fd3ff",
+      "#e8fbff"
+    ],
+    "fog": "#bfe8ff",
+    "props": "jungle"
+  },
+  "passage": {
+    "title": "Kip the Koala",
+    "text": "Kip lived in a eucalyptus tree beside a river, in one of the last patches of bushland not cleared for farmland nearby. Eucalyptus leaves are mildly toxic to most animals, which meant Kip had very little competition for food.\n\nA storm tore through the bushland overnight, snapping branches and flooding the ground below. Kip gripped his tree with sharp, curved claws built exactly for holding on.\n\nWhen the storm passed, Kip's friend Wren flew down to check on him. She explained that storms like this were becoming more frequent as more bushland disappeared, leaving fewer safe trees nearby.\n\nKip realised how much he depended on that one patch of forest — for food, shelter and safety. “If people plant more of these trees,” Wren said, “there will be more koalas like you.”"
+  },
+  "glossary": [
+    {
+      "word": "toxic",
+      "meaning": "Poisonous or harmful if eaten."
+    },
+    {
+      "word": "bushland",
+      "meaning": "Natural land with native trees and plants."
+    },
+    {
+      "word": "depended on",
+      "meaning": "Needed."
+    },
+    {
+      "word": "storm",
+      "meaning": "Very strong wind and rain."
+    }
+  ],
+  "things": [
+    {
+      "one": "gum leaf",
+      "many": "gum leaves"
+    },
+    {
+      "one": "koala",
+      "many": "koalas"
+    },
+    {
+      "one": "banana",
+      "many": "bananas"
+    },
+    {
+      "one": "parrot",
+      "many": "parrots"
+    },
+    {
+      "one": "tree",
+      "many": "trees"
+    }
+  ],
+  "spelling": [
+    "tree",
+    "leaf",
+    "nest",
+    "frog",
+    "koala",
+    "river",
+    "branch",
+    "forest",
+    "jungle",
+    "claws"
+  ],
+  "sentences": [
+    {
+      "band": 1,
+      "text": "The koala sat in a tree."
+    },
+    {
+      "band": 1,
+      "text": "A frog jumped in the river."
+    },
+    {
+      "band": 2,
+      "text": "Kip held on with his sharp claws."
+    },
+    {
+      "band": 2,
+      "text": "The parrots flew over the green forest."
+    },
+    {
+      "band": 3,
+      "text": "After the storm, Wren flew down to check on Kip."
+    },
+    {
+      "band": 3,
+      "text": "People can help koalas by planting more trees."
+    }
+  ],
+  "questions": {
+    "listen": [
+      {
+        "id": "jl1",
+        "band": 1,
+        "prompt": "How many parrots were in the nest?",
+        "options": [
+          "Two",
+          "Three",
+          "Five"
+        ],
+        "correct": 1,
+        "hint": "Listen again: count the parrots.",
+        "say": "The tallest tree had a nest with three parrots in it."
+      },
+      {
+        "id": "jl2",
+        "band": 1,
+        "prompt": "What colour was the frog?",
+        "options": [
+          "Red",
+          "Green",
+          "Blue"
+        ],
+        "correct": 1,
+        "hint": "Listen again for the colour.",
+        "say": "A little green frog hopped onto a lily pad."
+      },
+      {
+        "id": "jl3",
+        "band": 1,
+        "prompt": "Where did the monkey sleep?",
+        "options": [
+          "In a cave",
+          "On a high branch",
+          "Under a log"
+        ],
+        "correct": 1,
+        "hint": "Listen for where the monkey went to sleep.",
+        "say": "At night, the monkey climbed up to sleep on a high branch."
+      },
+      {
+        "id": "jl4",
+        "band": 2,
+        "prompt": "What did the koala eat first?",
+        "options": [
+          "Gum leaves",
+          "Flowers",
+          "Berries"
+        ],
+        "correct": 0,
+        "hint": "Listen for the word 'first'.",
+        "say": "First the koala munched gum leaves, then it had a long nap."
+      },
+      {
+        "id": "jl5",
+        "band": 2,
+        "prompt": "Why did the birds fly away?",
+        "options": [
+          "They were hungry",
+          "A storm was coming",
+          "It was night"
+        ],
+        "correct": 1,
+        "hint": "Listen for the reason.",
+        "say": "The birds flew away because a storm was coming."
+      },
+      {
+        "id": "jl6",
+        "band": 3,
+        "prompt": "Which animal was the last to cross the river?",
+        "options": [
+          "The wombat",
+          "The kangaroo",
+          "The emu"
+        ],
+        "correct": 2,
+        "hint": "Listen for the order: first, next, last.",
+        "say": "First the kangaroo crossed the river, next the wombat, and last of all the emu."
+      },
+      {
+        "id": "jl7",
+        "band": 3,
+        "prompt": "How many animals drank at the waterhole altogether?",
+        "options": [
+          "Four",
+          "Six",
+          "Seven"
+        ],
+        "correct": 2,
+        "hint": "Add them up: three and four.",
+        "say": "Three wallabies and four cockatoos came to drink at the waterhole."
+      }
+    ],
+    "read": [
+      {
+        "id": "jr1",
+        "band": 1,
+        "prompt": "What kind of tree did Kip live in?",
+        "options": [
+          "A eucalyptus tree",
+          "A palm tree",
+          "An apple tree"
+        ],
+        "correct": 0,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "jr2",
+        "band": 1,
+        "prompt": "Who checked on Kip after the storm?",
+        "options": [
+          "Mum",
+          "Wren",
+          "Owl"
+        ],
+        "correct": 1,
+        "hint": "Look at the third paragraph."
+      },
+      {
+        "id": "jr3",
+        "band": 1,
+        "prompt": "What did Kip use to hold onto his tree?",
+        "options": [
+          "His tail",
+          "His claws",
+          "His teeth"
+        ],
+        "correct": 1,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "jr4",
+        "band": 2,
+        "prompt": "Why did Kip have little competition for food?",
+        "options": [
+          "He ate at night",
+          "Eucalyptus leaves are toxic to most animals",
+          "He hid his food"
+        ],
+        "correct": 1,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "jr5",
+        "band": 2,
+        "prompt": "What does Wren say people should do to help koalas?",
+        "options": [
+          "Build fences",
+          "Plant more trees",
+          "Feed them apples"
+        ],
+        "correct": 1,
+        "hint": "Look at the last paragraph."
+      },
+      {
+        "id": "jr6",
+        "band": 3,
+        "prompt": "Why are storms like this a bigger problem for koalas now?",
+        "options": [
+          "Koalas have got lazy",
+          "There are fewer safe trees nearby",
+          "Storms are colder"
+        ],
+        "correct": 1,
+        "hint": "Read what Wren explained in paragraph 3."
+      },
+      {
+        "id": "jr7",
+        "band": 3,
+        "prompt": "Kip depends on his forest for three things. Which one is NOT one of them?",
+        "options": [
+          "Food",
+          "Shelter",
+          "Toys"
+        ],
+        "correct": 2,
+        "hint": "Read the last paragraph carefully."
+      }
+    ],
+    "word": [
+      {
+        "id": "jw1",
+        "band": 1,
+        "prompt": "What does 'toxic' mean?",
+        "options": [
+          "Poisonous or harmful if eaten",
+          "Very tasty",
+          "Bright green"
+        ],
+        "correct": 0,
+        "hint": "Find 'toxic' in the story and read the sentence around it."
+      },
+      {
+        "id": "jw2",
+        "band": 1,
+        "prompt": "What is 'bushland'?",
+        "options": [
+          "A busy road",
+          "Natural land with native trees and plants",
+          "A shopping centre"
+        ],
+        "correct": 1,
+        "hint": "Find 'bushland' in the story."
+      },
+      {
+        "id": "jw3",
+        "band": 2,
+        "prompt": "Kip 'depended on' his forest. What does that mean?",
+        "options": [
+          "He needed it",
+          "He ignored it",
+          "He was scared of it"
+        ],
+        "correct": 0,
+        "hint": "Think about what Kip got from the forest."
+      },
+      {
+        "id": "jw4",
+        "band": 2,
+        "prompt": "What does 'gripped' mean?",
+        "options": [
+          "Let go",
+          "Held on tightly",
+          "Fell asleep"
+        ],
+        "correct": 1,
+        "hint": "Kip gripped his tree in the storm."
+      },
+      {
+        "id": "jw5",
+        "band": 3,
+        "prompt": "Storms are becoming more 'frequent'. What does 'frequent' mean?",
+        "options": [
+          "Happening more often",
+          "Getting quieter",
+          "Very small"
+        ],
+        "correct": 0,
+        "hint": "Read the sentence with 'frequent' in paragraph 3."
+      },
+      {
+        "id": "jw6",
+        "band": 3,
+        "prompt": "The bushland was 'cleared for farmland'. What does 'cleared' mean here?",
+        "options": [
+          "Cleaned with soap",
+          "The trees were cut down and taken away",
+          "Made sunny"
+        ],
+        "correct": 1,
+        "hint": "Think about what happens to trees when farms are made."
+      }
+    ],
+    "science": [
+      {
+        "id": "js1",
+        "band": 1,
+        "prompt": "What do plants need to grow?",
+        "options": [
+          "Sunlight, water and air",
+          "Only sand",
+          "Only darkness"
+        ],
+        "correct": 0,
+        "hint": "Think about what Ava's seed needed."
+      },
+      {
+        "id": "js2",
+        "band": 1,
+        "prompt": "Which of these is a living thing?",
+        "options": [
+          "A rock",
+          "A koala",
+          "A cloud"
+        ],
+        "correct": 1,
+        "hint": "Living things eat, grow and move."
+      },
+      {
+        "id": "js3",
+        "band": 1,
+        "prompt": "What is a habitat?",
+        "options": [
+          "The home where an animal lives",
+          "A type of food",
+          "A kind of storm"
+        ],
+        "correct": 0,
+        "hint": "Kip's habitat is his patch of forest."
+      },
+      {
+        "id": "js4",
+        "band": 2,
+        "prompt": "Why do koalas have sharp, curved claws?",
+        "options": [
+          "To dig holes",
+          "To hold onto trees",
+          "To catch fish"
+        ],
+        "correct": 1,
+        "hint": "Think about where koalas live."
+      },
+      {
+        "id": "js5",
+        "band": 2,
+        "prompt": "What happens to animals if their trees are cut down?",
+        "options": [
+          "They lose food and shelter",
+          "They get bigger",
+          "Nothing changes"
+        ],
+        "correct": 0,
+        "hint": "Kip depends on his forest for food and shelter."
+      },
+      {
+        "id": "js6",
+        "band": 3,
+        "prompt": "A food chain goes: gum leaves, then koala. What does the koala get from the leaves?",
+        "options": [
+          "Energy to live and grow",
+          "Its colour",
+          "Its sleep"
+        ],
+        "correct": 0,
+        "hint": "Animals eat to get energy."
+      },
+      {
+        "id": "js7",
+        "band": 3,
+        "prompt": "Which change would help a forest habitat the most?",
+        "options": [
+          "Planting native trees",
+          "Building a car park",
+          "Taking away the water"
+        ],
+        "correct": 0,
+        "hint": "Think about what Wren said at the end."
+      }
+    ]
+  },
+  "eggs": [
+    "jet",
+    "shield"
+  ]
+}

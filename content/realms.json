@@ -1,0 +1,38 @@
+[
+  {
+    "id": "wildlands", "name": "Wildlands", "emoji": "🌿", "color": "#3fbf5a", "sky": ["#8fd3ff", "#e6f7ff"],
+    "levels": [
+      { "id": "jungle-jumble", "name": "Jungle Jumble", "emoji": "🐨", "pack": "wildlands-jungle-jumble" },
+      { "id": "busy-town", "name": "Busy Town", "emoji": "🏙️", "pack": "wildlands-busy-town" },
+      { "id": "peak-pass", "name": "Peak Pass", "emoji": "⛰️", "pack": null },
+      { "id": "sandstorm-dunes", "name": "Sandstorm Dunes", "emoji": "🏜️", "pack": null }
+    ]
+  },
+  {
+    "id": "splash-bay", "name": "Splash Bay", "emoji": "🌊", "color": "#25a7e8", "sky": ["#5cc8ff", "#d9f5ff"],
+    "levels": [
+      { "id": "coconut-isles", "name": "Coconut Isles", "emoji": "🐧", "pack": null },
+      { "id": "coral-kingdom", "name": "Coral Kingdom", "emoji": "🐠", "pack": null },
+      { "id": "harbour-hop", "name": "Harbour Hop", "emoji": "⛴️", "pack": null },
+      { "id": "glowing-deep", "name": "Glowing Deep", "emoji": "🐙", "pack": null }
+    ]
+  },
+  {
+    "id": "cosmo-heights", "name": "Cosmo Heights", "emoji": "🚀", "color": "#8a6bff", "sky": ["#1b1450", "#5a3fb0"],
+    "levels": [
+      { "id": "moonbase-bounce", "name": "Moonbase Bounce", "emoji": "🌙", "pack": null },
+      { "id": "planet-parade", "name": "Planet Parade", "emoji": "🪐", "pack": null },
+      { "id": "stormy-skies", "name": "Stormy Skies", "emoji": "⛈️", "pack": null },
+      { "id": "starlight-trail", "name": "Starlight Trail", "emoji": "✨", "pack": null }
+    ]
+  },
+  {
+    "id": "dreamforge", "name": "Dreamforge", "emoji": "🐉", "color": "#ff7aa8", "sky": ["#ffb3d1", "#fff0d6"],
+    "levels": [
+      { "id": "cloud-castle", "name": "Cloud Castle", "emoji": "🏰", "pack": null },
+      { "id": "dragon-hollow", "name": "Dragon Hollow", "emoji": "🐲", "pack": null },
+      { "id": "gearworks-factory", "name": "Gearworks Factory", "emoji": "⚙️", "pack": null },
+      { "id": "giants-garden", "name": "Giant's Garden", "emoji": "🌻", "pack": null }
+    ]
+  }
+]

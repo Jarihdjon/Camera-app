@@ -174,6 +174,58 @@ CREATE TABLE IF NOT EXISTS chapter (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- The 3D game. A run is one go at a level; checkpoints, gems and eggs persist.
+CREATE TABLE IF NOT EXISTS game_run (
+  id TEXT PRIMARY KEY,
+  level_id TEXT NOT NULL,
+  checkpoint INTEGER NOT NULL DEFAULT 0,  -- gates cleared in this run
+  completed INTEGER NOT NULL DEFAULT 0,
+  started_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Every question shown at a gate, with its answer kept here on the PC.
+CREATE TABLE IF NOT EXISTS game_question (
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL,
+  level_id TEXT NOT NULL,
+  gate INTEGER NOT NULL,
+  gate_type TEXT NOT NULL,
+  band INTEGER NOT NULL,
+  source_key TEXT NOT NULL,           -- so a run never repeats a question
+  skill TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  answer_text TEXT NOT NULL,
+  payload TEXT NOT NULL,              -- the question exactly as shown on the iPad
+  status TEXT NOT NULL DEFAULT 'issued' CHECK (status IN ('issued','right','wrong')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS game_gem (
+  level_id TEXT NOT NULL,
+  gem_id TEXT NOT NULL,
+  PRIMARY KEY (level_id, gem_id)
+);
+
+CREATE TABLE IF NOT EXISTS game_egg (
+  level_id TEXT NOT NULL,
+  egg_id TEXT NOT NULL,
+  perk TEXT NOT NULL,
+  found_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (level_id, egg_id)
+);
+
+CREATE TABLE IF NOT EXISTS game_perk (
+  perk TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS game_level_done (
+  level_id TEXT PRIMARY KEY,
+  times INTEGER NOT NULL DEFAULT 1,
+  first_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL

@@ -1,0 +1,447 @@
+{
+  "id": "wildlands-busy-town",
+  "realm": "wildlands",
+  "level": "busy-town",
+  "title": "Busy Town",
+  "emoji": "🏙️",
+  "palette": {
+    "top": "#c9d1dc",
+    "side": "#7b8494",
+    "accent": "#ff8a3d",
+    "prop": "#e85d5d",
+    "prop2": "#4f7cff",
+    "sky": [
+      "#9fd7ff",
+      "#fff4e0"
+    ],
+    "fog": "#dbeeff",
+    "props": "town"
+  },
+  "passage": {
+    "title": "The Lost Lunchbox",
+    "text": "Maya packed her own lunch every morning. Today it held a cheese sandwich, a mandarin, and four crackers. She placed the lunchbox on the classroom shelf next to eleven identical red boxes — the same brand as everyone else in her class.\n\nAt lunchtime, Maya's box was missing from its usual spot. She checked under the table and inside her bag before asking her teacher, Mrs Lee, for help.\n\nSam handed her a lunchbox that looked identical to hers. Maya opened it and found a banana and a cheese stick instead of her mandarin and crackers. “This isn’t my lunch,” she said, comparing the two boxes side by side.\n\nMrs Lee discovered Maya’s real lunchbox behind the door, where it had been knocked off the shelf. Maya and Sam agreed to write their names on their boxes from then on, so this would never happen again."
+  },
+  "glossary": [
+    {
+      "word": "identical",
+      "meaning": "Exactly the same."
+    },
+    {
+      "word": "compared",
+      "meaning": "Looked at differences and similarities."
+    },
+    {
+      "word": "discovered",
+      "meaning": "Found something."
+    },
+    {
+      "word": "shelf",
+      "meaning": "A flat board on a wall where you put things."
+    }
+  ],
+  "things": [
+    {
+      "one": "bus",
+      "many": "buses"
+    },
+    {
+      "one": "lunchbox",
+      "many": "lunchboxes"
+    },
+    {
+      "one": "cracker",
+      "many": "crackers"
+    },
+    {
+      "one": "window",
+      "many": "windows"
+    },
+    {
+      "one": "bike",
+      "many": "bikes"
+    }
+  ],
+  "spelling": [
+    "bus",
+    "shop",
+    "road",
+    "park",
+    "school",
+    "lunch",
+    "label",
+    "street",
+    "teacher",
+    "library"
+  ],
+  "sentences": [
+    {
+      "band": 1,
+      "text": "Maya packed her own lunch."
+    },
+    {
+      "band": 1,
+      "text": "The bus stopped at the shop."
+    },
+    {
+      "band": 2,
+      "text": "Sam handed her a red lunchbox."
+    },
+    {
+      "band": 2,
+      "text": "They wrote their names on their boxes."
+    },
+    {
+      "band": 3,
+      "text": "Mrs Lee found the lunchbox behind the door."
+    },
+    {
+      "band": 3,
+      "text": "Labelling your things helps you tell them apart."
+    }
+  ],
+  "questions": {
+    "listen": [
+      {
+        "id": "tl1",
+        "band": 1,
+        "prompt": "What colour was the bus?",
+        "options": [
+          "Yellow",
+          "Red",
+          "Green"
+        ],
+        "correct": 1,
+        "hint": "Listen again for the colour.",
+        "say": "The big red bus stopped outside the library."
+      },
+      {
+        "id": "tl2",
+        "band": 1,
+        "prompt": "How many bikes were at the park?",
+        "options": [
+          "Four",
+          "Six",
+          "Two"
+        ],
+        "correct": 0,
+        "hint": "Count the bikes as you listen.",
+        "say": "Four bikes were parked next to the swings at the park."
+      },
+      {
+        "id": "tl3",
+        "band": 1,
+        "prompt": "Where did Sam put his hat?",
+        "options": [
+          "On the hook",
+          "In his bag",
+          "On the desk"
+        ],
+        "correct": 0,
+        "hint": "Listen for where the hat went.",
+        "say": "Sam hung his hat on the hook by the classroom door."
+      },
+      {
+        "id": "tl4",
+        "band": 2,
+        "prompt": "What did Maya buy at the shop?",
+        "options": [
+          "Apples and bread",
+          "Milk and eggs",
+          "Pencils and paper"
+        ],
+        "correct": 1,
+        "hint": "Listen for the two things she bought.",
+        "say": "At the corner shop, Maya bought milk and eggs for breakfast."
+      },
+      {
+        "id": "tl5",
+        "band": 2,
+        "prompt": "Why did everyone stop at the crossing?",
+        "options": [
+          "The light was red",
+          "It was raining",
+          "The bus was late"
+        ],
+        "correct": 0,
+        "hint": "Listen for the reason.",
+        "say": "Everyone stopped at the crossing because the light was red."
+      },
+      {
+        "id": "tl6",
+        "band": 3,
+        "prompt": "Where did the class go after the library?",
+        "options": [
+          "To the park",
+          "To the museum",
+          "Back to school"
+        ],
+        "correct": 1,
+        "hint": "Listen for the order of places.",
+        "say": "First the class visited the library, then the museum, and last they had lunch in the park."
+      },
+      {
+        "id": "tl7",
+        "band": 3,
+        "prompt": "How many children were on the bus at the end?",
+        "options": [
+          "Nine",
+          "Seven",
+          "Twelve"
+        ],
+        "correct": 0,
+        "hint": "Start with six, then add three.",
+        "say": "Six children were on the bus. At the next stop, three more children got on."
+      }
+    ],
+    "read": [
+      {
+        "id": "tr1",
+        "band": 1,
+        "prompt": "What fruit did Maya pack?",
+        "options": [
+          "A banana",
+          "A mandarin",
+          "An apple"
+        ],
+        "correct": 1,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "tr2",
+        "band": 1,
+        "prompt": "Who helped Maya look for her lunchbox?",
+        "options": [
+          "Mrs Lee",
+          "Her mum",
+          "The bus driver"
+        ],
+        "correct": 0,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "tr3",
+        "band": 1,
+        "prompt": "Where was Maya's real lunchbox found?",
+        "options": [
+          "In the bin",
+          "Behind the door",
+          "On the bus"
+        ],
+        "correct": 1,
+        "hint": "Look at the last paragraph."
+      },
+      {
+        "id": "tr4",
+        "band": 2,
+        "prompt": "What was inside the lunchbox Sam gave Maya?",
+        "options": [
+          "A banana and a cheese stick",
+          "A sandwich and crackers",
+          "Nothing at all"
+        ],
+        "correct": 0,
+        "hint": "Look at the third paragraph."
+      },
+      {
+        "id": "tr5",
+        "band": 2,
+        "prompt": "How many lunchboxes looked exactly like Maya's?",
+        "options": [
+          "Two",
+          "Eleven",
+          "Twenty"
+        ],
+        "correct": 1,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "tr6",
+        "band": 3,
+        "prompt": "Why did Maya compare the two boxes side by side?",
+        "options": [
+          "To see which was bigger",
+          "To check which one was really hers",
+          "To swap her lunch"
+        ],
+        "correct": 1,
+        "hint": "Think about why she said 'This isn't my lunch'."
+      },
+      {
+        "id": "tr7",
+        "band": 3,
+        "prompt": "How will Maya and Sam stop this happening again?",
+        "options": [
+          "Buy new lunchboxes",
+          "Write their names on their boxes",
+          "Eat lunch early"
+        ],
+        "correct": 1,
+        "hint": "Look at the last paragraph."
+      }
+    ],
+    "word": [
+      {
+        "id": "tw1",
+        "band": 1,
+        "prompt": "What does 'identical' mean?",
+        "options": [
+          "Exactly the same",
+          "Very different",
+          "Broken"
+        ],
+        "correct": 0,
+        "hint": "Find 'identical' in the story."
+      },
+      {
+        "id": "tw2",
+        "band": 1,
+        "prompt": "Mrs Lee 'discovered' the lunchbox. What does 'discovered' mean?",
+        "options": [
+          "Found",
+          "Hid",
+          "Lost"
+        ],
+        "correct": 0,
+        "hint": "Read the sentence about Mrs Lee."
+      },
+      {
+        "id": "tw3",
+        "band": 2,
+        "prompt": "Maya 'compared' the two boxes. What does that mean?",
+        "options": [
+          "She threw them away",
+          "She looked at how they were the same and different",
+          "She ate them"
+        ],
+        "correct": 1,
+        "hint": "Think about what she did side by side."
+      },
+      {
+        "id": "tw4",
+        "band": 2,
+        "prompt": "What is a 'brand'?",
+        "options": [
+          "A name a company puts on the things it makes",
+          "A type of lunch",
+          "A school bag"
+        ],
+        "correct": 0,
+        "hint": "The boxes were all the same brand."
+      },
+      {
+        "id": "tw5",
+        "band": 3,
+        "prompt": "The box had been 'knocked off' the shelf. What does that mean?",
+        "options": [
+          "Someone pushed it and it fell",
+          "Someone knocked on it",
+          "It was put away carefully"
+        ],
+        "correct": 0,
+        "hint": "Think about how it ended up behind the door."
+      },
+      {
+        "id": "tw6",
+        "band": 3,
+        "prompt": "Which word means the opposite of 'identical'?",
+        "options": [
+          "Same",
+          "Different",
+          "Matching"
+        ],
+        "correct": 1,
+        "hint": "Identical means exactly the same."
+      }
+    ],
+    "science": [
+      {
+        "id": "ts1",
+        "band": 1,
+        "prompt": "Which material is a lunchbox usually made from?",
+        "options": [
+          "Plastic",
+          "Glass",
+          "Paper"
+        ],
+        "correct": 0,
+        "hint": "Think about what is strong, light and easy to clean."
+      },
+      {
+        "id": "ts2",
+        "band": 1,
+        "prompt": "Why do we keep milk in the fridge?",
+        "options": [
+          "To keep it cold so it stays fresh",
+          "To make it warm",
+          "To change its colour"
+        ],
+        "correct": 0,
+        "hint": "Cold slows down germs."
+      },
+      {
+        "id": "ts3",
+        "band": 1,
+        "prompt": "Which of these needs electricity to work?",
+        "options": [
+          "A traffic light",
+          "A bicycle",
+          "A skipping rope"
+        ],
+        "correct": 0,
+        "hint": "Which one has lights that switch on?"
+      },
+      {
+        "id": "ts4",
+        "band": 2,
+        "prompt": "Why are bridges often made of steel or concrete?",
+        "options": [
+          "They are strong materials",
+          "They are soft",
+          "They are see-through"
+        ],
+        "correct": 0,
+        "hint": "Bridges must hold heavy cars."
+      },
+      {
+        "id": "ts5",
+        "band": 2,
+        "prompt": "What helps a bike stop?",
+        "options": [
+          "The brakes",
+          "The bell",
+          "The seat"
+        ],
+        "correct": 0,
+        "hint": "Which part do you squeeze to slow down?"
+      },
+      {
+        "id": "ts6",
+        "band": 3,
+        "prompt": "A puddle on the footpath is gone by the afternoon. Where did the water go?",
+        "options": [
+          "It evaporated into the air",
+          "It turned into sand",
+          "A bird drank all of it"
+        ],
+        "correct": 0,
+        "hint": "Sunshine warms water and turns it into water vapour."
+      },
+      {
+        "id": "ts7",
+        "band": 3,
+        "prompt": "Why do towns have rubbish and recycling bins?",
+        "options": [
+          "To sort waste so some can be made into new things",
+          "To keep birds away",
+          "To make the street louder"
+        ],
+        "correct": 0,
+        "hint": "Recycling turns old things into new materials."
+      }
+    ]
+  },
+  "eggs": [
+    "jet",
+    "shield"
+  ]
+}

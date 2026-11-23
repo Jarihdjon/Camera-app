@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { api, type ChildUnit, type Levels, type Wallet } from "@/lib/api";
 import { RobotProvider } from "@/components/robot/RobotProvider";
@@ -12,9 +12,13 @@ import { Parent } from "./screens/Parent";
 import { Build } from "./screens/Build";
 import { Workshop } from "./screens/Workshop";
 import { Hub } from "./screens/Hub";
+
+// The 3D game is loaded only when it opens, so the first load stays small.
+const Game = lazy(() => import("./game/Game").then((m) => ({ default: m.Game })));
 import { ChapterMap } from "./screens/ChapterMap";
 
 type Screen =
+  | { name: "game" }
   | { name: "hub"; unlocked?: string | null }
   | { name: "chapter"; id: string; justUnlocked?: string | null }
   | { name: "unit"; unit: ChildUnit; stage?: StageInfo; initial?: { step: number; state: Record<string, unknown> } | null; levels?: Levels }
@@ -37,7 +41,7 @@ export function App() {
 function Shell() {
   const [child, setChild] = useState<Child | null>(null);
   const [error, setError] = useState(false);
-  const [screen, setScreen] = useState<Screen>({ name: "hub" });
+  const [screen, setScreen] = useState<Screen>({ name: "game" });
 
   const refresh = useCallback(() => api.child().then(setChild).catch(() => setError(true)), []);
   useEffect(() => void refresh(), [refresh]);
@@ -59,13 +63,18 @@ function Shell() {
     const r = await api.stage(chapterId, stageId);
     setScreen({ name: "unit", unit: r.unit, stage: { chapterId, stageId, kind: r.kind, part: r.part, tier: r.tier, progressId: r.progressId }, initial: r.progress, levels: r.levels });
   };
-  const home = () => setScreen({ name: "hub" });
+  const home = () => setScreen({ name: "game" });
 
   const key = screen.name === "unit" ? `unit-${screen.unit.id}` : screen.name === "chapter" ? `chapter-${screen.id}` : screen.name;
   return (
     <AnimatePresence mode="wait">
       <motion.div key={key} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.25 }}>
-        {screen.name === "unit" ? (
+        {screen.name === "game" ? (
+          <Suspense fallback={<Centre><Robot mood="thinking" size={160} /><p className="font-display text-2xl">Loading Sky Dock…</p></Centre>}>
+            <Game firstName={child.firstName} robotName={child.robot.name} wallet={child.wallet} onWallet={setWallet}
+              onWorkshop={() => setScreen({ name: "workshop" })} onParent={() => setScreen({ name: "parent" })} />
+          </Suspense>
+        ) : screen.name === "unit" ? (
           <UnitPlayer unit={screen.unit} firstName={child.firstName} robotName={child.robot.name} parts={child.robot.parts} wallet={child.wallet}
             stage={screen.stage} initial={screen.initial} levels={screen.levels} onWallet={setWallet}
             onDone={(result) => {

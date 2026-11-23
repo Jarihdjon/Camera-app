@@ -17,6 +17,8 @@ export const DEFAULT_SETTINGS = {
   askModel: "claude-haiku-5-5",
   pinnedSkills: [] as string[],
   pinnedTopics: [] as string[],
+  /** Game difficulty per realm: easy, normal (default) or hard. */
+  gameDifficulty: {} as Record<string, "easy" | "normal" | "hard">,
 };
 
 export type Settings = typeof DEFAULT_SETTINGS;

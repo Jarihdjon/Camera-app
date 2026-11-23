@@ -1,5 +1,6 @@
 import type { ChildActivity, ChildUnit } from "@yav/shared";
 import type { ChapterView, HubView, Levels, StageCompleteResult } from "@yav/shared/chapterView";
+import type { GameState, GateQuestion, GateResult, PackView, Perk } from "@yav/shared/game";
 
 export type { ChildActivity, ChildUnit, ChapterView, HubView, Levels, StageCompleteResult };
 export type StagePart = "read" | "think" | "create";
@@ -24,6 +25,15 @@ export const api = {
   child: () => call<{ firstName: string | null; robot: RobotState; wallet: Wallet }>("GET", "/api/child"),
   setChild: (b: { firstName?: string; robotName?: string }) => call("POST", "/api/child", b),
   equip: (partId: string) => call<{ robot: RobotState }>("POST", "/api/robot/equip", { partId }),
+  game: {
+    state: () => call<GameState>("GET", "/api/game/state"),
+    start: (levelId: string) => call<{ runId: string; checkpoint: number; gems: string[]; eggs: string[]; realm: string; pack: PackView }>("POST", `/api/game/level/${encodeURIComponent(levelId)}/start`, {}),
+    gate: (runId: string, gate: number) => call<GateQuestion>("POST", "/api/game/gate", { runId, gate }),
+    answer: (questionId: string, answer: string | number) => call<GateResult & { wallet: Wallet }>("POST", "/api/game/answer", { questionId, answer }),
+    collect: (levelId: string, kind: "gem" | "egg", id: string) =>
+      call<{ perk: Perk | null; state: GameState["perks"]; wallet: Wallet }>("POST", "/api/game/collect", { levelId, kind, id }),
+    finish: (runId: string) => call<{ minutesEarned: number; bonusGems: number; wallet: Wallet }>("POST", "/api/game/finish", { runId }),
+  },
   hub: () => call<HubView>("GET", "/api/hub"),
   stage: (chapterId: string, stageId: string) => call<StageOpen>("GET", `/api/stage/${encodeURIComponent(chapterId)}/${encodeURIComponent(stageId)}`),
   saveProgress: (unitId: string, b: { chapterId?: string; stageId?: string; step: number; state: Record<string, unknown>; label?: string }) =>
