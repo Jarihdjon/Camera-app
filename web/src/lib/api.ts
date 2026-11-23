@@ -1,5 +1,6 @@
 import type { Unit } from "@yav/shared";
 
+export type RobotState = { name: string | null; parts: string[]; unlocked: string[]; gemsEarned: number };
 export type Wallet = { minutes: number; blocks: number; gems: number };
 
 /** Units as the iPad sees them: answer keys stripped by the server. */
@@ -25,8 +26,9 @@ async function call<T>(method: string, url: string, body?: unknown): Promise<T> 
 }
 
 export const api = {
-  child: () => call<{ firstName: string | null; robot: { name: string | null; parts: string[] }; wallet: Wallet }>("GET", "/api/child"),
+  child: () => call<{ firstName: string | null; robot: RobotState; wallet: Wallet }>("GET", "/api/child"),
   setChild: (b: { firstName?: string; robotName?: string }) => call("POST", "/api/child", b),
+  equip: (partId: string) => call<{ robot: RobotState }>("POST", "/api/robot/equip", { partId }),
   today: () => call<{ units: ChildUnit[]; wallet: Wallet }>("GET", "/api/session/today"),
   attempt: (b: { unitId: string; activityId: string; answer: string | number; usedHint: boolean; msTaken: number }) =>
     call<{ correct: boolean; hint: string | null; wallet: Wallet }>("POST", "/api/attempt", b),

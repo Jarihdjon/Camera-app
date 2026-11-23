@@ -11,8 +11,9 @@ import { Home } from "./screens/Home";
 import { UnitPlayer } from "./screens/UnitPlayer";
 import { Parent } from "./screens/Parent";
 import { Build } from "./screens/Build";
+import { Workshop } from "./screens/Workshop";
 
-type Screen = { name: "home" } | { name: "unit"; unit: ChildUnit } | { name: "build" } | { name: "parent" };
+type Screen = { name: "home" } | { name: "unit"; unit: ChildUnit } | { name: "build" } | { name: "parent" } | { name: "workshop" };
 type Child = Awaited<ReturnType<typeof api.child>>;
 
 export function App() {
@@ -56,11 +57,13 @@ function Shell() {
             onDone={() => { setScreen({ name: "home" }); void refresh(); }} />
         ) : screen.name === "build" ? (
           <Build wallet={child.wallet} onBack={() => setScreen({ name: "home" })} />
+        ) : screen.name === "workshop" ? (
+          <Workshop robotState={child.robot} onChange={(robot) => setChild((c) => (c ? { ...c, robot } : c))} onBack={() => setScreen({ name: "home" })} />
         ) : screen.name === "parent" ? (
           <Parent onBack={() => setScreen({ name: "home" })} />
         ) : (
           <Home firstName={child.firstName} robotName={child.robot.name} parts={child.robot.parts} wallet={child.wallet}
-            onStartUnit={(unit) => setScreen({ name: "unit", unit })} onBuild={() => setScreen({ name: "build" })} onParent={() => setScreen({ name: "parent" })} />
+            onStartUnit={(unit) => setScreen({ name: "unit", unit })} onBuild={() => setScreen({ name: "build" })} onWorkshop={() => setScreen({ name: "workshop" })} onParent={() => setScreen({ name: "parent" })} />
         )}
       </motion.div>
     </AnimatePresence>

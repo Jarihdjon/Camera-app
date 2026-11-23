@@ -37,6 +37,18 @@ describe("api", () => {
     expect(res.json().wallet.gems).toBe(1);
   });
 
+  it("unlocks robot parts from gems ever earned, and only equips unlocked ones", async () => {
+    const locked = await app.inject({ method: "POST", url: "/api/robot/equip", payload: { partId: "boots-wheels" } });
+    expect(locked.statusCode).toBe(403);
+    db.prepare("INSERT INTO wallet_entry (currency, amount, reason) VALUES ('gems', 12, 'test')").run();
+    const ok = await app.inject({ method: "POST", url: "/api/robot/equip", payload: { partId: "cape-stars" } });
+    expect(ok.json().robot.parts).toEqual(["cape-stars"]);
+    // Spending gems later never re-locks a part.
+    db.prepare("INSERT INTO wallet_entry (currency, amount, reason) VALUES ('gems', -12, 'spent')").run();
+    const child = await app.inject({ method: "GET", url: "/api/child" });
+    expect(child.json().robot.unlocked).toContain("cape-stars");
+  });
+
   it("caps earned minutes per day", async () => {
     setSetting(db, "dailyUnitCap", 1);
     const a = await app.inject({ method: "POST", url: "/api/unit/u1/complete" });

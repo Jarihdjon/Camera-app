@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { pivot } from "./pivot";
 import { motion, useReducedMotion } from "motion/react";
 import type { Mood } from "./RobotProvider";
+import type { SvgIds } from "./look";
 
 const EYE_X = [80, 120];
 const EYE_Y = 78;
-const GLOW = "#ffc94d";
 
 function star(cx: number, cy: number, r: number) {
   const pts: string[] = [];
@@ -17,8 +17,11 @@ function star(cx: number, cy: number, r: number) {
   return pts.join(" ");
 }
 
-/** Two glowing eyes on the face screen: blink, follow taps, and change shape with mood. */
-export function Eyes({ mood, look }: { mood: Mood; look: { x: number; y: number } }) {
+/**
+ * LED eyes on the face screen, drawn with a fine dot pattern like a pixel display.
+ * They blink, follow taps and change shape with mood.
+ */
+export function Eyes({ mood, look, ids, halo }: { mood: Mood; look: { x: number; y: number }; ids: SvgIds; halo: string }) {
   const [blink, setBlink] = useState(false);
   const reduce = useReducedMotion();
 
@@ -37,29 +40,38 @@ export function Eyes({ mood, look }: { mood: Mood; look: { x: number; y: number 
   }, [reduce]);
 
   const offset = mood === "thinking" ? { x: 5, y: -5 } : look;
+  const led = `url(#${ids.led})`;
+
+  const shape = (cx: number, i: number, paint: string, haloLayer: boolean) => {
+    const width = haloLayer ? 9 : 6;
+    switch (mood) {
+      case "cheer":
+        return <polygon points={star(cx, EYE_Y, 13)} fill={paint} />;
+      case "happy":
+      case "wave":
+        return <path d={`M${cx - 11} ${EYE_Y + 5} Q${cx} ${EYE_Y - 11} ${cx + 11} ${EYE_Y + 5}`} stroke={paint} strokeWidth={width + 1} strokeLinecap="round" fill="none" />;
+      case "sleepy":
+        return <path d={`M${cx - 10} ${EYE_Y + 2} Q${cx} ${EYE_Y + 8} ${cx + 10} ${EYE_Y + 2}`} stroke={paint} strokeWidth={width} strokeLinecap="round" fill="none" />;
+      case "encourage":
+        return <ellipse cx={cx} cy={EYE_Y + 1} rx={9} ry={11} fill={paint} />;
+      default: {
+        const small = mood === "thinking" && i === 0;
+        return <rect x={cx - 9} y={EYE_Y - (small ? 8 : 12)} width={18} height={small ? 16 : 24} rx={8} fill={paint} />;
+      }
+    }
+  };
 
   return (
-    <motion.g animate={{ x: offset.x, y: offset.y }} transition={{ type: "spring", stiffness: 180, damping: 16 }} filter="url(#eyeGlow)">
+    <motion.g animate={{ x: offset.x, y: offset.y }} transition={{ type: "spring", stiffness: 180, damping: 16 }}>
       {EYE_X.map((cx, i) => (
-        <motion.g
-          key={cx}
-          style={pivot(cx, EYE_Y)}
-          animate={{ scaleY: blink && mood !== "sleepy" ? 0.1 : 1 }}
-          transition={{ duration: 0.07 }}
-        >
+        <motion.g key={cx} style={pivot(cx, EYE_Y)} animate={{ scaleY: blink && mood !== "sleepy" ? 0.1 : 1 }} transition={{ duration: 0.07 }}>
+          {/* Soft halo underneath, then the dotted LED layer on top. */}
+          <g filter={`url(#${ids.glow})`} opacity={0.55}>{shape(cx, i, halo, true)}</g>
           {mood === "cheer" ? (
-            <motion.polygon points={star(cx, EYE_Y, 12)} fill={GLOW} animate={{ rotate: [0, 18, 0] }} style={pivot(cx, EYE_Y)} transition={{ duration: 0.6, repeat: Infinity }} />
-          ) : mood === "happy" || mood === "wave" ? (
-            <path d={`M${cx - 10} ${EYE_Y + 4} Q${cx} ${EYE_Y - 10} ${cx + 10} ${EYE_Y + 4}`} stroke={GLOW} strokeWidth={6} strokeLinecap="round" fill="none" />
-          ) : mood === "sleepy" ? (
-            <path d={`M${cx - 9} ${EYE_Y + 2} Q${cx} ${EYE_Y + 7} ${cx + 9} ${EYE_Y + 2}`} stroke={GLOW} strokeWidth={5} strokeLinecap="round" fill="none" />
-          ) : mood === "encourage" ? (
-            <ellipse cx={cx} cy={EYE_Y + 1} rx={8} ry={10} fill={GLOW} />
+            <motion.g style={pivot(cx, EYE_Y)} animate={{ rotate: [0, 18, 0] }} transition={{ duration: 0.6, repeat: Infinity }}>{shape(cx, i, led, false)}</motion.g>
           ) : (
-            <rect x={cx - 7} y={EYE_Y - (mood === "thinking" && i === 0 ? 8 : 11)} width={14} height={mood === "thinking" && i === 0 ? 16 : 22} rx={7} fill={GLOW} />
+            shape(cx, i, led, false)
           )}
-          {/* Little highlight makes the eyes feel alive. */}
-          {(mood === "idle" || mood === "thinking" || mood === "encourage") && <circle cx={cx + 3} cy={EYE_Y - 5} r={2.5} fill="#fff8e1" />}
         </motion.g>
       ))}
     </motion.g>

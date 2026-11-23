@@ -29,6 +29,13 @@
 - Animated starfield, screen transitions, floating mission cards, rocket progress track, flying gems and blocks,
   counting wallet, confetti, scanner animation on photo upload, calm shadcn parent area.
 
+## Done: robot upgrade
+
+- Orange cape that flutters at rest and streams out on a cheer; LED dot-matrix eyes and mouth with a soft halo;
+  glossier shell with highlights and a rim glow; floating hands and feet with booster flames.
+- Unlockable parts (capes, visors, boots) from gems ever earned, so spending never re-locks anything.
+  Robot workshop screen to wear them (`POST /api/robot/equip`). Catalogue in `shared/src/robotParts.ts`.
+
 ## Phase 0: iPad checks (week one, on his iPad)
 
 - [ ] Add to Home Screen opens full screen.
@@ -47,7 +54,7 @@
 - [ ] Word Vault review quizzes on the spaced schedule; mystery word.
 - [ ] "Say it in your own words" paraphrase step.
 - [ ] Block world (three.js or isometric) with daily briefs and snapshots.
-- [ ] Robot parts unlocking; free daily build minutes; mystery crates; two-mission choice.
+- [ ] More robot parts and a celebration when a new part unlocks; free daily build minutes; mystery crates; two-mission choice.
 - [ ] Journal timeline, Word Vault and growth charts for Yav.
 - [ ] Parent area: weekly digest, allowance editor, steering pins, AI log viewer, PIN change, reset.
 - [ ] Remaining content-bank units (the six Inquirer's Journal units).

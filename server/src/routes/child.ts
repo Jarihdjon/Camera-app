@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
-import type { Unit } from "@yav/shared";
+import { equip, unlockedParts, type Unit } from "@yav/shared";
 import type { DB } from "../db/db.js";
 import { getSetting } from "../db/settings.js";
 import { checkMaths, checkShortAnswer } from "../engine/answers.js";
@@ -18,6 +18,17 @@ export function walletBalance(db: DB) {
   return out;
 }
 
+/** Gems ever earned. Spending never lowers this, so unlocks are never taken away. */
+export function gemsEarned(db: DB): number {
+  return (db.prepare("SELECT COALESCE(SUM(amount),0) AS n FROM wallet_entry WHERE currency='gems' AND amount > 0").get() as { n: number }).n;
+}
+
+function robotState(db: DB) {
+  const robot = db.prepare("SELECT name, parts FROM robot WHERE id = 1").get() as { name: string | null; parts: string };
+  const earned = gemsEarned(db);
+  return { name: robot.name, parts: JSON.parse(robot.parts) as string[], unlocked: unlockedParts(earned), gemsEarned: earned };
+}
+
 function earn(db: DB, currency: "minutes" | "blocks" | "gems", amount: number, reason: string) {
   db.prepare("INSERT INTO wallet_entry (currency, amount, reason) VALUES (?, ?, ?)").run(currency, amount, reason);
 }
@@ -25,12 +36,7 @@ function earn(db: DB, currency: "minutes" | "blocks" | "gems", amount: number, r
 export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) => {
   app.get("/child", async () => {
     const child = db.prepare("SELECT first_name FROM child WHERE id = 1").get() as { first_name: string } | undefined;
-    const robot = db.prepare("SELECT name, parts FROM robot WHERE id = 1").get() as { name: string | null; parts: string };
-    return {
-      firstName: child?.first_name ?? null,
-      robot: { name: robot.name, parts: JSON.parse(robot.parts) as string[] },
-      wallet: walletBalance(db),
-    };
+    return { firstName: child?.first_name ?? null, robot: robotState(db), wallet: walletBalance(db) };
   });
 
   app.post("/child", async (req) => {
@@ -38,6 +44,15 @@ export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) =
     if (body.firstName) db.prepare("INSERT INTO child (id, first_name) VALUES (1, ?) ON CONFLICT(id) DO UPDATE SET first_name = excluded.first_name").run(body.firstName);
     if (body.robotName) db.prepare("UPDATE robot SET name = ? WHERE id = 1").run(body.robotName);
     return { ok: true };
+  });
+
+  /** Robot workshop: wear any unlocked part. */
+  app.post("/robot/equip", async (req, reply) => {
+    const { partId } = z.object({ partId: z.string() }).parse(req.body);
+    const state = robotState(db);
+    if (!state.unlocked.includes(partId)) return reply.code(403).send({ error: "not unlocked yet" });
+    db.prepare("UPDATE robot SET parts = ? WHERE id = 1").run(JSON.stringify(equip(state.parts, partId)));
+    return { robot: robotState(db) };
   });
 
   app.get("/session/today", async () => ({ units: pickTodaysUnits(db, bank).map(forChild), wallet: walletBalance(db) }));
