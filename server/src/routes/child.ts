@@ -1,9 +1,9 @@
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
-import { equip, unlockedParts, type Unit } from "@yav/shared";
+import { equip, unlockedParts, type Activity, type Unit } from "@yav/shared";
 import type { DB } from "../db/db.js";
 import { getSetting } from "../db/settings.js";
-import { checkMaths, checkShortAnswer } from "../engine/answers.js";
+import { checkKeywords, checkMaths, checkShortAnswer, evaluateArithmetic, normalise } from "../engine/answers.js";
 import { applyAttempt, type SkillState } from "../engine/mastery.js";
 import { firstReview } from "../engine/spaced.js";
 import { forChild } from "../content.js";
@@ -33,6 +33,17 @@ function earn(db: DB, currency: "minutes" | "blocks" | "gems", amount: number, r
   db.prepare("INSERT INTO wallet_entry (currency, amount, reason) VALUES (?, ?, ?)").run(currency, amount, reason);
 }
 
+/** What to show once he has it, or after two tries: never before. */
+export function revealFor(a: Activity): { text?: string; correctIndex?: number } | null {
+  switch (a.kind) {
+    case "short-answer": return { text: a.model ?? a.accept[0] };
+    case "multiple-choice":
+    case "word-meaning": return { correctIndex: a.correctIndex, text: a.options[a.correctIndex] };
+    case "maths": return { text: a.working ?? `${a.expression} = ${evaluateArithmetic(a.expression)}` };
+    default: return null;
+  }
+}
+
 export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) => {
   app.get("/child", async () => {
     const child = db.prepare("SELECT first_name FROM child WHERE id = 1").get() as { first_name: string } | undefined;
@@ -55,6 +66,18 @@ export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) =
     return { robot: robotState(db) };
   });
 
+  /** The journal shelf: every unit, with whether he has finished it. */
+  app.get("/units", async () => {
+    const done = new Set((db.prepare("SELECT DISTINCT substr(reason, 6) AS id FROM wallet_entry WHERE reason LIKE 'unit:%'").all() as { id: string }[]).map((r) => r.id));
+    return bank.map((u) => ({ id: u.id, title: u.title, theme: u.theme, color: u.color ?? null, pypTheme: u.inquiry?.pypTheme ?? null, done: done.has(u.id) }));
+  });
+
+  app.get("/unit/:id", async (req, reply) => {
+    const { id } = z.object({ id: z.string() }).parse(req.params);
+    const unit = findUnit(db, bank, id);
+    return unit ? forChild(unit) : reply.code(404).send({ error: "unknown unit" });
+  });
+
   app.get("/session/today", async () => ({ units: pickTodaysUnits(db, bank).map(forChild), wallet: walletBalance(db) }));
 
   app.post("/attempt", async (req, reply) => {
@@ -63,6 +86,10 @@ export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) =
       activityId: z.string(),
       answer: z.union([z.string(), z.number()]),
       usedHint: z.boolean().default(false),
+      /** 1 for the first try. After two tries the server shows the answer, so nobody gets stuck. */
+      tryNumber: z.number().int().min(1).default(1),
+      /** For gap fill: which blank the word was placed in. */
+      blank: z.number().int().min(0).optional(),
       msTaken: z.number().int().nonnegative().optional(),
     }).parse(req.body);
 
@@ -72,12 +99,25 @@ export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) =
 
     let correct: boolean;
     switch (activity.kind) {
-      case "short-answer": correct = checkShortAnswer(String(body.answer), activity.accept); break;
-      case "multiple-choice": correct = Number(body.answer) === activity.correctIndex; break;
-      case "maths": correct = checkMaths(String(body.answer), activity.expression); break;
+      case "short-answer":
+        correct = activity.match === "keyword"
+          ? checkKeywords(String(body.answer), activity.accept, activity.groups)
+          : checkShortAnswer(String(body.answer), activity.accept);
+        break;
+      case "multiple-choice":
+      case "word-meaning":
+        correct = Number(body.answer) === activity.correctIndex;
+        break;
+      case "maths": correct = checkMaths(String(body.answer), activity.expression, activity.tolerance); break;
+      case "gap-fill": {
+        const s = activity.sentences[body.blank ?? -1];
+        if (!s) return reply.code(400).send({ error: "which blank?" });
+        correct = normalise(String(body.answer)) === normalise(s.answer);
+        break;
+      }
+      case "open": return reply.code(400).send({ error: "open questions are saved with /respond" });
       case "writing": return reply.code(400).send({ error: "writing is completed by upload" });
     }
-
     const row = db.prepare("SELECT mastery, difficulty, streak_correct, streak_missed, last_practised FROM skill WHERE id = ?").get(activity.skill) as
       { mastery: number; difficulty: number; streak_correct: number; streak_missed: number; last_practised: string | null };
     const before: SkillState = {
@@ -95,7 +135,30 @@ export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) =
     const tooFast = body.msTaken !== undefined && body.msTaken < 1500;
     if (correct && !tooFast) earn(db, "blocks", body.usedHint ? 1 : 2, `correct:${activity.id}`);
 
-    return { correct, hint: correct ? null : activity.hint, wallet: walletBalance(db) };
+    const reveal = correct || body.tryNumber >= 2 ? revealFor(activity) : null;
+    const hint = "hint" in activity ? activity.hint : "Try the word in the sentence. Does it make sense?";
+    return { correct, hint: correct ? null : hint, reveal, wallet: walletBalance(db) };
+  });
+
+  /**
+   * Open answers, tune-in ideas, reflections and the self-check. Never marked;
+   * saved so a grown-up can talk about them. Open questions get a model idea back.
+   */
+  app.post("/respond", async (req, reply) => {
+    const body = z.object({
+      unitId: z.string(),
+      activityId: z.string().optional(),
+      kind: z.enum(["open", "tune-in", "reflect", "self-check"]),
+      text: z.string().max(2000),
+      talkLater: z.boolean().default(false),
+    }).parse(req.body);
+    const unit = findUnit(db, bank, body.unitId);
+    if (!unit) return reply.code(404).send({ error: "unknown unit" });
+    const activity = body.activityId ? findActivity(unit, body.activityId) : undefined;
+    db.prepare("INSERT INTO response (unit_id, activity_id, kind, text, talk_later) VALUES (?, ?, ?, ?, ?)")
+      .run(unit.id, body.activityId ?? null, body.kind, body.text, body.talkLater ? 1 : 0);
+    if (body.text.trim().length > 2) earn(db, "blocks", 1, `respond:${body.activityId ?? body.kind}`);
+    return { model: activity?.kind === "open" ? activity.model : null, wallet: walletBalance(db) };
   });
 
   /** Word Hunter: tapping a word always earns a gem and never costs anything. */

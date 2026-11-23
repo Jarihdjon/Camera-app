@@ -80,7 +80,31 @@ export function evaluateArithmetic(expr: string): number {
   return result;
 }
 
-export function checkMaths(given: string, expression: string): boolean {
+export function checkMaths(given: string, expression: string, tolerance = 0): boolean {
   const n = Number(given.replace(/[,\s]/g, ""));
-  return Number.isFinite(n) && n === evaluateArithmetic(expression);
+  return Number.isFinite(n) && Math.abs(n - evaluateArithmetic(expression)) <= tolerance;
+}
+
+export function tokens(s: string): string[] {
+  return normalise(s.replace(/[’']/g, "")).match(/[a-z]+|\d+/g) ?? [];
+}
+
+/** Word-level match from the workbook: numbers and short words exact, longer words allow a slip or two. */
+function tokenMatches(t: string, w: string): boolean {
+  if (t === w) return true;
+  if (w.length < 4 || /\d/.test(w)) return false;
+  const tol = w.length >= 8 ? 2 : 1;
+  return Math.abs(t.length - w.length) <= tol && levenshtein(t, w) <= tol;
+}
+
+/**
+ * Keyword marking: the answer is right if any of its words matches an accepted word,
+ * so "it was behind the door" counts for "door". With groups, he needs a word from every group
+ * ("sunlight, water and air").
+ */
+export function checkKeywords(given: string, accept: readonly string[], groups?: readonly (readonly string[])[]): boolean {
+  const T = tokens(given);
+  const has = (w: string) => T.some((t) => tokenMatches(t, normalise(w)));
+  if (groups?.length) return groups.every((g) => g.some(has));
+  return accept.some(has);
 }

@@ -8,15 +8,19 @@ import type { Unit } from "@yav/shared";
 import { childRoutes } from "./routes/child.js";
 import { parentRoutes } from "./routes/parent.js";
 import { uploadRoutes } from "./routes/uploads.js";
+import { askRoutes } from "./routes/ask.js";
+import { claudeAskModel, type AskModel } from "./ai/ask.js";
 import { config } from "./config.js";
 
 export interface AppDeps {
   db: DB;
   bank: Unit[];
   serveWeb?: boolean;
+  /** Override the Claude call (tests). Defaults to the real model when a key is set. */
+  askModel?: AskModel | null;
 }
 
-export async function buildApp({ db, bank, serveWeb = true }: AppDeps) {
+export async function buildApp({ db, bank, serveWeb = true, askModel }: AppDeps) {
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? (process.env.VITEST ? "silent" : "info") } });
   await app.register(fastifyCookie);
   await app.register(fastifyMultipart, { limits: { fileSize: 15 * 1024 * 1024, files: 1 } });
@@ -24,6 +28,7 @@ export async function buildApp({ db, bank, serveWeb = true }: AppDeps) {
   app.get("/api/health", async () => ({ ok: true, time: new Date().toISOString() }));
   await app.register(childRoutes, { prefix: "/api", db, bank });
   await app.register(uploadRoutes, { prefix: "/api", db });
+  await app.register(askRoutes, { prefix: "/api", db, bank, model: askModel === undefined ? claudeAskModel(db) : askModel });
   await app.register(parentRoutes, { prefix: "/api/parent", db });
 
   if (serveWeb && existsSync(config.webDist)) {

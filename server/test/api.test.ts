@@ -12,7 +12,7 @@ describe("api", () => {
 
   beforeAll(async () => {
     setSetting(db, "parentPinHash", hashPin("2468"));
-    app = await buildApp({ db, bank, serveWeb: false });
+    app = await buildApp({ db, bank, serveWeb: false, askModel: null });
   });
 
   it("content bank validates", () => {
@@ -25,11 +25,29 @@ describe("api", () => {
     expect(text).not.toContain("correctIndex");
     expect(text).not.toContain("\"accept\"");
     expect(text).not.toContain("expression");
+    expect(text).not.toContain("\"model\"");
+    expect(text).not.toContain("\"working\"");
+    expect(text).not.toContain("\"answer\"");
   });
 
   it("checks a maths answer on the server and rewards blocks", async () => {
     const res = await app.inject({ method: "POST", url: "/api/attempt", payload: { unitId: bank[0]!.id, activityId: "b001-warmup", answer: "24", msTaken: 5000 } });
     expect(res.json()).toMatchObject({ correct: true, wallet: { blocks: 2 } });
+  });
+
+  it("marks gap fill per blank and reveals answers only after two tries", async () => {
+    const gaps = { unitId: "bank-002-the-lost-lunchbox", activityId: "b002-gaps" };
+    expect((await app.inject({ method: "POST", url: "/api/attempt", payload: { ...gaps, blank: 1, answer: "shelf" } })).json().correct).toBe(true);
+    const q = { unitId: "bank-002-the-lost-lunchbox", activityId: "b002-q3" };
+    const first = (await app.inject({ method: "POST", url: "/api/attempt", payload: { ...q, answer: "the bin", tryNumber: 1 } })).json();
+    expect(first).toMatchObject({ correct: false, reveal: null });
+    const second = (await app.inject({ method: "POST", url: "/api/attempt", payload: { ...q, answer: "the bin", tryNumber: 2 } })).json();
+    expect(second.reveal.text).toBe("behind the door");
+  });
+
+  it("saves open answers and returns a model idea", async () => {
+    const r = await app.inject({ method: "POST", url: "/api/respond", payload: { unitId: "bank-002-the-lost-lunchbox", activityId: "b002-q7", kind: "open", text: "they bought them at the same shop" } });
+    expect(r.json().model).toContain("same shop");
   });
 
   it("word taps always earn a gem", async () => {

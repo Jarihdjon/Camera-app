@@ -9,7 +9,11 @@ export function findUnit(db: DB, bank: Unit[], id: string): Unit | undefined {
 }
 
 export function findActivity(unit: Unit, activityId: string): Activity | undefined {
-  return [unit.warmup, ...unit.questions, unit.writing].find((a) => a.id === activityId);
+  return allActivities(unit).find((a) => a.id === activityId);
+}
+
+export function allActivities(unit: Unit): Activity[] {
+  return [unit.warmup, ...unit.vocab, ...unit.questions, unit.gapFill, ...unit.corner, unit.writing].filter((a): a is Activity => Boolean(a));
 }
 
 /** Today's two units: ready generated units first, then bank units he has not completed. */

@@ -110,6 +110,29 @@ CREATE TABLE IF NOT EXISTS generation_log (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Open answers, tune-in ideas, reflections and self-checks. Never marked.
+CREATE TABLE IF NOT EXISTS response (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  unit_id TEXT NOT NULL,
+  activity_id TEXT,
+  kind TEXT NOT NULL,                 -- open, tune-in, reflect, self-check
+  text TEXT NOT NULL,
+  talk_later INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Everything he asked the robot, and what it said. Shown in the parent area.
+CREATE TABLE IF NOT EXISTS ask_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  unit_id TEXT,
+  activity_id TEXT,
+  question TEXT NOT NULL,
+  reply TEXT NOT NULL,
+  kind TEXT NOT NULL,                 -- answer, word, off-topic, grown-up, offline, limit
+  flagged INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL

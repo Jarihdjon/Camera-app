@@ -1,0 +1,287 @@
+{
+  "id": "bank-003-rocket-to-the-moon",
+  "title": "Rocket to the Moon",
+  "theme": "space",
+  "source": "bank",
+  "color": "#3949AB",
+  "inquiry": {
+    "pypTheme": "Where We Are in Place and Time",
+    "centralIdea": "Explorers use preparation and tools to survive in places very different from home.",
+    "keyConcepts": [
+      "Form",
+      "Causation"
+    ],
+    "learnerProfile": "Risk-taker",
+    "tuneIn": "What do you think an astronaut needs to survive in space? Name one thing.",
+    "reflect": "Risk-takers try new things even when they feel a little scared. What is something new YOU would like to try?"
+  },
+  "passage": {
+    "title": "Rocket to the Moon",
+    "text": "Leo transformed a cardboard box into a rocket by covering it with foil — the same material used on real spacecraft to reflect the Sun's heat. He cut three round windows and checked that his control panel of buttons still worked.\n\n“Ten, nine, eight…” Leo counted down to one and imagined lift-off. In his mind, gravity pulled less and less as the rocket climbed higher, until his body felt almost weightless.\n\nSpace has no air, so Leo's astronaut helmet carried its own oxygen supply. Looking back, he saw Earth as a single blue and green sphere — smaller than he expected, with no borders between countries visible at all.\n\nThe Moon's surface was covered in craters — bowl-shaped hollows formed by rocks crashing into it millions of years ago. “Leo, dinner!” called Mum, and just like that, the mission was complete.",
+    "glossary": [
+      {
+        "word": "reflect",
+        "meaning": "Bounce back."
+      },
+      {
+        "word": "weightless",
+        "meaning": "Having little or no felt weight."
+      },
+      {
+        "word": "craters",
+        "meaning": "Bowl-shaped hollows."
+      }
+    ]
+  },
+  "vocab": [
+    {
+      "id": "b003-vocab1",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "reflect",
+      "options": [
+        "absorb",
+        "bounce back",
+        "melt"
+      ],
+      "correctIndex": 1,
+      "hint": "Find \"reflect\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b003-vocab2",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "weightless",
+      "options": [
+        "very heavy",
+        "having little or no felt weight",
+        "invisible"
+      ],
+      "correctIndex": 1,
+      "hint": "Find \"weightless\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b003-vocab3",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "craters",
+      "options": [
+        "bowl-shaped hollows",
+        "tall mountains",
+        "rivers"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"craters\" in the story and read the sentence around it."
+    }
+  ],
+  "questions": [
+    {
+      "id": "b003-q1",
+      "kind": "short-answer",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why was Leo's rocket covered in foil?",
+      "match": "keyword",
+      "accept": [
+        "reflect",
+        "heat",
+        "sun",
+        "hot",
+        "sunlight"
+      ],
+      "model": "to reflect the Sun's heat",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b003-q2",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What did Leo's body feel like as the rocket climbed?",
+      "match": "keyword",
+      "accept": [
+        "weightless",
+        "floating",
+        "float",
+        "light"
+      ],
+      "model": "weightless",
+      "hint": "Look again at paragraph 2.",
+      "para": 1
+    },
+    {
+      "id": "b003-q3",
+      "kind": "short-answer",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why did Leo need his own oxygen supply in space?",
+      "match": "keyword",
+      "accept": [
+        "air",
+        "breathe",
+        "breath"
+      ],
+      "model": "there is no air in space",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b003-q4",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What could Leo NOT see when he looked at Earth from space?",
+      "match": "keyword",
+      "accept": [
+        "border",
+        "borders",
+        "countries",
+        "country",
+        "lines"
+      ],
+      "model": "borders between countries",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b003-q5",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "How were the Moon's craters formed?",
+      "match": "keyword",
+      "accept": [
+        "rock",
+        "rocks",
+        "crash",
+        "crashing",
+        "crashed",
+        "hit",
+        "hitting",
+        "asteroid",
+        "asteroids",
+        "meteor",
+        "meteors",
+        "impact"
+      ],
+      "model": "rocks crashing into it",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b003-q6",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What ended Leo's imaginary mission?",
+      "match": "keyword",
+      "accept": [
+        "dinner",
+        "mum",
+        "mom",
+        "mother",
+        "called"
+      ],
+      "model": "Mum called him for dinner",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b003-q7",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Was Earth bigger or smaller than Leo expected?",
+      "match": "keyword",
+      "accept": [
+        "smaller",
+        "small"
+      ],
+      "model": "smaller",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    }
+  ],
+  "gapFill": {
+    "id": "b003-gaps",
+    "kind": "gap-fill",
+    "skill": "writing.fill-blank",
+    "difficulty": 2,
+    "prompt": "Which word fits each sentence?",
+    "sentences": [
+      {
+        "text": "The rocket was covered in ___ to reflect heat.",
+        "answer": "foil"
+      },
+      {
+        "text": "As the rocket climbed, Leo felt almost ___.",
+        "answer": "weightless"
+      },
+      {
+        "text": "Leo's helmet carried its own supply of ___.",
+        "answer": "oxygen"
+      },
+      {
+        "text": "The Moon's surface is covered in ___.",
+        "answer": "craters"
+      },
+      {
+        "text": "From space, Leo could not see any ___ between countries.",
+        "answer": "borders"
+      }
+    ],
+    "decoys": [
+      "umbrella",
+      "muddy"
+    ]
+  },
+  "corner": [
+    {
+      "id": "b003-c1",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "Leo counted down from 10 to 1. How many numbers did he say in total?",
+      "expression": "10",
+      "tolerance": 0,
+      "unit": "numbers",
+      "working": "10, 9, 8, 7, 6, 5, 4, 3, 2, 1 → 10 numbers",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b003-c2",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "The rocket had 3 windows. If Leo added 2 more, how many windows would it have?",
+      "expression": "3 + 2",
+      "tolerance": 0,
+      "unit": "windows",
+      "working": "3 + 2 = 5",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b003-c3",
+      "kind": "open",
+      "skill": "inquiry.why-questions",
+      "difficulty": 2,
+      "prompt": "Why do you think astronauts train for a long time before going to space?",
+      "model": "Space is dangerous and very different from Earth, so they need to practise first."
+    }
+  ],
+  "writing": {
+    "id": "b003-writing",
+    "kind": "writing",
+    "skill": "writing.story-mountain",
+    "difficulty": 2,
+    "prompt": "Plan a story about an explorer who travels somewhere new and faces an unexpected problem.",
+    "format": "story-mountain",
+    "starters": [],
+    "sentences": 3,
+    "mode": "print"
+  }
+}

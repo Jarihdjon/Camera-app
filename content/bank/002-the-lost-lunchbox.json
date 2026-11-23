@@ -1,0 +1,268 @@
+{
+  "id": "bank-002-the-lost-lunchbox",
+  "title": "The Lost Lunchbox",
+  "theme": "everyday",
+  "source": "bank",
+  "color": "#8E24AA",
+  "inquiry": {
+    "pypTheme": "Who We Are",
+    "centralIdea": "Honesty and clear communication help people solve mix-ups fairly.",
+    "keyConcepts": [
+      "Connection",
+      "Perspective"
+    ],
+    "learnerProfile": "Principled",
+    "tuneIn": "Have you ever mixed up your belongings with someone else's? What happened?",
+    "reflect": "Think of a time you found something that wasn't yours. What did you do? Was that the Principled thing to do?"
+  },
+  "passage": {
+    "title": "The Lost Lunchbox",
+    "text": "Maya packed her own lunch every morning. Today it held a cheese sandwich, a mandarin, and four crackers. She placed the lunchbox on the classroom shelf next to eleven identical red boxes — the same brand as everyone else in her class.\n\nAt lunchtime, Maya's box was missing from its usual spot. She checked under the table and inside her bag before asking her teacher, Mrs Lee, for help.\n\nSam handed her a lunchbox that looked identical to hers. Maya opened it and found a banana and a cheese stick instead of her mandarin and crackers. “This isn’t my lunch,” she said, comparing the two boxes side by side.\n\nMrs Lee discovered Maya’s real lunchbox behind the door, where it had been knocked off the shelf. Maya and Sam agreed to write their names on their boxes from then on, so this would never happen again.",
+    "glossary": [
+      {
+        "word": "identical",
+        "meaning": "Exactly the same."
+      },
+      {
+        "word": "compared",
+        "meaning": "Looked at differences and similarities."
+      },
+      {
+        "word": "discovered",
+        "meaning": "Found something."
+      }
+    ]
+  },
+  "vocab": [
+    {
+      "id": "b002-vocab1",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "identical",
+      "options": [
+        "different",
+        "exactly the same",
+        "broken"
+      ],
+      "correctIndex": 1,
+      "hint": "Find \"identical\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b002-vocab2",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "compared",
+      "options": [
+        "threw away",
+        "looked at differences and similarities",
+        "ate quickly"
+      ],
+      "correctIndex": 1,
+      "hint": "Find \"compared\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b002-vocab3",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "discovered",
+      "options": [
+        "hid something",
+        "found something",
+        "lost something"
+      ],
+      "correctIndex": 1,
+      "hint": "Find \"discovered\" in the story and read the sentence around it."
+    }
+  ],
+  "questions": [
+    {
+      "id": "b002-q1",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "How many lunchboxes looked exactly like Maya's?",
+      "match": "keyword",
+      "accept": [
+        "eleven",
+        "11"
+      ],
+      "model": "eleven",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b002-q2",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What fruit did Maya pack?",
+      "match": "keyword",
+      "accept": [
+        "mandarin",
+        "orange"
+      ],
+      "model": "a mandarin",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b002-q3",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Where was Maya's real lunchbox eventually found?",
+      "match": "keyword",
+      "accept": [
+        "door",
+        "behind"
+      ],
+      "model": "behind the door",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b002-q4",
+      "kind": "short-answer",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "What was different about Sam's lunchbox, even though it looked the same?",
+      "match": "keyword",
+      "accept": [
+        "food",
+        "lunch",
+        "inside",
+        "contents",
+        "banana",
+        "cheese",
+        "insides"
+      ],
+      "model": "the food inside",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b002-q5",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What will Maya and Sam do differently from now on?",
+      "match": "keyword",
+      "accept": [
+        "name",
+        "names",
+        "write",
+        "writing",
+        "label",
+        "labels"
+      ],
+      "model": "write their names on their boxes",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b002-q6",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Who helped Maya look for her lunchbox?",
+      "match": "keyword",
+      "accept": [
+        "lee",
+        "mrs",
+        "teacher"
+      ],
+      "model": "Mrs Lee",
+      "hint": "Look again at paragraph 2.",
+      "para": 1
+    },
+    {
+      "id": "b002-q7",
+      "kind": "open",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why do you think there were so many identical lunchboxes?",
+      "model": "They were probably all bought from the same shop or brand. Any sensible idea is a good one."
+    }
+  ],
+  "gapFill": {
+    "id": "b002-gaps",
+    "kind": "gap-fill",
+    "skill": "writing.fill-blank",
+    "difficulty": 2,
+    "prompt": "Which word fits each sentence?",
+    "sentences": [
+      {
+        "text": "Maya's lunchbox looked ___ to Sam's.",
+        "answer": "identical"
+      },
+      {
+        "text": "She placed her lunch on the ___ each morning.",
+        "answer": "shelf"
+      },
+      {
+        "text": "Maya packed a sandwich, four crackers and a ___.",
+        "answer": "mandarin"
+      },
+      {
+        "text": "Maya and Sam wrote their ___ on their boxes.",
+        "answer": "names"
+      },
+      {
+        "text": "They ___ to be more careful from now on.",
+        "answer": "decided"
+      }
+    ],
+    "decoys": [
+      "recipe",
+      "stormy"
+    ]
+  },
+  "corner": [
+    {
+      "id": "b002-c1",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "Maya's class has Maya plus 11 identical lunchboxes. How many children are in the class in total?",
+      "expression": "1 + 11",
+      "tolerance": 0,
+      "unit": "children",
+      "working": "1 + 11 = 12",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b002-c2",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "Maya had 4 crackers and ate 2 at lunch. How many did she save for later?",
+      "expression": "4 - 2",
+      "tolerance": 0,
+      "unit": "crackers",
+      "working": "4 − 2 = 2",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b002-c3",
+      "kind": "open",
+      "skill": "inquiry.why-questions",
+      "difficulty": 2,
+      "prompt": "Why is it a good idea to label your belongings?",
+      "model": "So you can tell them apart from other people's things."
+    }
+  ],
+  "writing": {
+    "id": "b002-writing",
+    "kind": "writing",
+    "skill": "writing.story-mountain",
+    "difficulty": 2,
+    "prompt": "Plan a story about a mix-up: something gets lost, swapped, or muddled between two characters.",
+    "format": "story-mountain",
+    "starters": [],
+    "sentences": 3,
+    "mode": "print"
+  }
+}

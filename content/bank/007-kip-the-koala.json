@@ -1,0 +1,295 @@
+{
+  "id": "bank-007-kip-the-koala",
+  "title": "Kip the Koala",
+  "theme": "animals",
+  "source": "bank",
+  "color": "#2E7D32",
+  "inquiry": {
+    "pypTheme": "Sharing The Planet",
+    "centralIdea": "Living things depend on their habitat, so protecting habitats protects the animals that need them.",
+    "keyConcepts": [
+      "Responsibility",
+      "Connection"
+    ],
+    "learnerProfile": "Knowledgeable",
+    "tuneIn": "What do you think an animal needs from its home to survive? Name one thing.",
+    "reflect": "Knowledgeable people use facts to understand the world. What is one fact from this story you didn't know before?"
+  },
+  "passage": {
+    "title": "Kip the Koala",
+    "text": "Kip lived in a eucalyptus tree beside a river, in one of the last patches of bushland not cleared for farmland nearby. Eucalyptus leaves are mildly toxic to most animals, which meant Kip had very little competition for food.\n\nA storm tore through the bushland overnight, snapping branches and flooding the ground below. Kip gripped his tree with sharp, curved claws built exactly for holding on.\n\nWhen the storm passed, Kip's friend Wren flew down to check on him. She explained that storms like this were becoming more frequent as more bushland disappeared, leaving fewer safe trees nearby.\n\nKip realised how much he depended on that one patch of forest — for food, shelter and safety. “If people plant more of these trees,” Wren said, “there will be more koalas like you.”",
+    "glossary": [
+      {
+        "word": "toxic",
+        "meaning": "Poisonous or harmful if eaten."
+      },
+      {
+        "word": "bushland",
+        "meaning": "Natural land with native trees and plants."
+      },
+      {
+        "word": "depended on",
+        "meaning": "Needed."
+      }
+    ]
+  },
+  "vocab": [
+    {
+      "id": "b007-vocab1",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "toxic",
+      "options": [
+        "poisonous or harmful if eaten",
+        "delicious",
+        "colourful"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"toxic\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b007-vocab2",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "bushland",
+      "options": [
+        "natural land with native trees and plants",
+        "a farm",
+        "an ocean"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"bushland\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b007-vocab3",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "depended on",
+      "options": [
+        "needed",
+        "ignored",
+        "destroyed"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"depended on\" in the story and read the sentence around it."
+    }
+  ],
+  "questions": [
+    {
+      "id": "b007-q1",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What kind of tree did Kip live in?",
+      "match": "keyword",
+      "accept": [
+        "eucalyptus",
+        "eucalypt",
+        "gum"
+      ],
+      "model": "eucalyptus",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b007-q2",
+      "kind": "short-answer",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why did Kip have little competition for food?",
+      "match": "keyword",
+      "accept": [
+        "toxic",
+        "poison",
+        "poisonous",
+        "leaves",
+        "eucalyptus",
+        "harmful"
+      ],
+      "model": "eucalyptus leaves are toxic to most other animals",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b007-q3",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What did Kip use to hold onto the tree during the storm?",
+      "match": "keyword",
+      "accept": [
+        "claw",
+        "claws",
+        "nails"
+      ],
+      "model": "his claws",
+      "hint": "Look again at paragraph 2.",
+      "para": 1
+    },
+    {
+      "id": "b007-q4",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Who checked on Kip after the storm?",
+      "match": "keyword",
+      "accept": [
+        "wren",
+        "bird"
+      ],
+      "model": "Wren",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b007-q5",
+      "kind": "short-answer",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "According to Wren, why are storms becoming more frequent?",
+      "match": "keyword",
+      "accept": [
+        "bushland",
+        "trees",
+        "tree",
+        "forest",
+        "habitat",
+        "disappear",
+        "disappearing",
+        "cleared",
+        "less",
+        "fewer"
+      ],
+      "model": "because bushland is disappearing",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b007-q6",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Name the three things Kip depends on his forest for.",
+      "match": "keyword",
+      "accept": [],
+      "groups": [
+        [
+          "food",
+          "eat",
+          "leaves"
+        ],
+        [
+          "shelter",
+          "home",
+          "house"
+        ],
+        [
+          "safety",
+          "safe",
+          "protection"
+        ]
+      ],
+      "model": "food, shelter and safety",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b007-q7",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What does Wren suggest people do to help koalas?",
+      "match": "keyword",
+      "accept": [
+        "plant",
+        "planting",
+        "trees",
+        "tree"
+      ],
+      "model": "plant more trees",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    }
+  ],
+  "gapFill": {
+    "id": "b007-gaps",
+    "kind": "gap-fill",
+    "skill": "writing.fill-blank",
+    "difficulty": 2,
+    "prompt": "Which word fits each sentence?",
+    "sentences": [
+      {
+        "text": "Kip lived in a ___ tree.",
+        "answer": "eucalyptus"
+      },
+      {
+        "text": "Eucalyptus leaves are ___ to most other animals.",
+        "answer": "toxic"
+      },
+      {
+        "text": "Kip held on tightly with his sharp ___.",
+        "answer": "claws"
+      },
+      {
+        "text": "Storms are more common as ___ disappears.",
+        "answer": "bushland"
+      },
+      {
+        "text": "Kip realised how much he ___ on his forest home.",
+        "answer": "depended"
+      }
+    ],
+    "decoys": [
+      "kitchen",
+      "silver"
+    ]
+  },
+  "corner": [
+    {
+      "id": "b007-c1",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "A patch of bushland had 12 eucalyptus trees. A storm destroyed 5 of them. How many are left?",
+      "expression": "12 - 5",
+      "tolerance": 0,
+      "unit": "trees",
+      "working": "12 − 5 = 7",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b007-c2",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "Kip depends on his forest for 3 things: food, shelter, safety. If Wren adds “friendship”, how many is that now?",
+      "expression": "3 + 1",
+      "tolerance": 0,
+      "unit": "things",
+      "working": "3 + 1 = 4",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b007-c3",
+      "kind": "open",
+      "skill": "inquiry.why-questions",
+      "difficulty": 2,
+      "prompt": "Why might planting more trees help protect koalas in the future?",
+      "model": "More trees mean more food, shelter and safe homes for koalas."
+    }
+  ],
+  "writing": {
+    "id": "b007-writing",
+    "kind": "writing",
+    "skill": "writing.story-mountain",
+    "difficulty": 2,
+    "prompt": "Plan a story about an animal whose home is threatened, and what happens when someone decides to help.",
+    "format": "story-mountain",
+    "starters": [],
+    "sentences": 3,
+    "mode": "print"
+  }
+}

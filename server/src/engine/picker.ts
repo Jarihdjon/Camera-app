@@ -1,5 +1,5 @@
 import type { Strand, Theme } from "@yav/shared";
-import { THEMES } from "@yav/shared";
+import { INTEREST_THEMES } from "@yav/shared";
 
 /**
  * Chooses the shape of the next unit. Rules from the build plan, in priority order:
@@ -47,7 +47,7 @@ export function planNextUnit(input: PickInput): UnitPlan {
 
 /** The theme used least recently, so none wears out. */
 export function nextTheme(recent: Theme[]): Theme {
-  const unused = THEMES.filter((t) => !recent.includes(t));
+  const unused = INTEREST_THEMES.filter((t) => !recent.includes(t));
   if (unused.length > 0) return unused[0]!;
-  return [...recent].reverse()[0] ?? THEMES[0];
+  return [...recent].reverse()[0] ?? INTEREST_THEMES[0];
 }

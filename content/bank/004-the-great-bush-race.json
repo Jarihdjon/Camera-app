@@ -1,0 +1,260 @@
+{
+  "id": "bank-004-the-great-bush-race",
+  "title": "The Great Bush Race",
+  "theme": "animals",
+  "source": "bank",
+  "color": "#D81B60",
+  "inquiry": {
+    "pypTheme": "How We Express Ourselves",
+    "centralIdea": "People show what they value through the choices they make, not just their words.",
+    "keyConcepts": [
+      "Perspective",
+      "Responsibility"
+    ],
+    "learnerProfile": "Caring",
+    "tuneIn": "If you were racing to win, would you stop to help someone? Why or why not?",
+    "reflect": "Caring people notice when someone needs help, even in the middle of something important. Describe a time you stopped to help someone."
+  },
+  "passage": {
+    "title": "The Great Bush Race",
+    "text": "Every spring, three bush animals competed in a race: Kara, who covered ground fastest by hopping; Echo, who relied on long strides; and Wally, whose short legs made him the slowest by far. Owl always started the race and judged the finish.\n\nKara took an early lead, hopping well ahead of the others. Near the finish line, though, she heard crying coming from inside a hollow log.\n\nA wombat joey was trapped, too small to climb out alone. Kara stopped racing to help, and Echo circled back too. Together they freed the joey — who turned out to be Wally's little brother.\n\nBy the time Wally caught up, Kara and Echo were waiting for him instead of crossing the finish line. Owl gave all three the same gold medal, explaining that racing well matters less than choosing kindness when it counts.",
+    "glossary": [
+      {
+        "word": "competed",
+        "meaning": "Raced against each other."
+      },
+      {
+        "word": "relied on",
+        "meaning": "Depended on."
+      },
+      {
+        "word": "trapped",
+        "meaning": "Unable to escape."
+      }
+    ]
+  },
+  "vocab": [
+    {
+      "id": "b004-vocab1",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "competed",
+      "options": [
+        "raced against each other",
+        "cooked",
+        "slept"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"competed\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b004-vocab2",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "relied on",
+      "options": [
+        "depended on",
+        "ignored",
+        "broke"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"relied on\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b004-vocab3",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "trapped",
+      "options": [
+        "free",
+        "unable to escape",
+        "sleeping"
+      ],
+      "correctIndex": 1,
+      "hint": "Find \"trapped\" in the story and read the sentence around it."
+    }
+  ],
+  "questions": [
+    {
+      "id": "b004-q1",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Which animal was the fastest hopper?",
+      "match": "keyword",
+      "accept": [
+        "kara",
+        "kangaroo"
+      ],
+      "model": "Kara",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b004-q2",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Whose little brother was stuck in the log?",
+      "match": "keyword",
+      "accept": [
+        "wally",
+        "wombat"
+      ],
+      "model": "Wally's",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b004-q3",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What sound made Kara stop racing?",
+      "match": "keyword",
+      "accept": [
+        "cry",
+        "crying",
+        "cried"
+      ],
+      "model": "crying",
+      "hint": "Look again at paragraph 2.",
+      "para": 1
+    },
+    {
+      "id": "b004-q4",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Who helped free the joey along with Kara?",
+      "match": "keyword",
+      "accept": [
+        "echo",
+        "emu"
+      ],
+      "model": "Echo",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b004-q5",
+      "kind": "open",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why do you think Kara and Echo waited for Wally instead of finishing first?",
+      "model": "Because they cared about him and wanted to be kind and fair. Any caring reason works."
+    },
+    {
+      "id": "b004-q6",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What did all three animals receive?",
+      "match": "keyword",
+      "accept": [
+        "medal",
+        "medals",
+        "gold"
+      ],
+      "model": "a gold medal",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b004-q7",
+      "kind": "short-answer",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "According to Owl, what matters more than winning?",
+      "match": "keyword",
+      "accept": [
+        "kind",
+        "kindness"
+      ],
+      "model": "choosing kindness",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    }
+  ],
+  "gapFill": {
+    "id": "b004-gaps",
+    "kind": "gap-fill",
+    "skill": "writing.fill-blank",
+    "difficulty": 2,
+    "prompt": "Which word fits each sentence?",
+    "sentences": [
+      {
+        "text": "Kara moved fastest by ___.",
+        "answer": "hopping"
+      },
+      {
+        "text": "The crying came from inside a hollow ___.",
+        "answer": "log"
+      },
+      {
+        "text": "The baby wombat, or ___, could not climb out.",
+        "answer": "joey"
+      },
+      {
+        "text": "The joey was ___ and needed help.",
+        "answer": "trapped"
+      },
+      {
+        "text": "Owl said choosing ___ mattered more than winning.",
+        "answer": "kindness"
+      }
+    ],
+    "decoys": [
+      "umbrella",
+      "silver"
+    ]
+  },
+  "corner": [
+    {
+      "id": "b004-c1",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "Three animals raced, and Owl gave 1 medal to each. How many medals did Owl give out?",
+      "expression": "1 + 1 + 1",
+      "tolerance": 0,
+      "unit": "medals",
+      "working": "1 + 1 + 1 = 3",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b004-c2",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "If 2 more animals joined the race, how many racers would there be in total?",
+      "expression": "3 + 2",
+      "tolerance": 0,
+      "unit": "racers",
+      "working": "3 + 2 = 5",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b004-c3",
+      "kind": "open",
+      "skill": "inquiry.why-questions",
+      "difficulty": 2,
+      "prompt": "Owl said racing well matters less than choosing kindness. Do you agree? Why?",
+      "model": "There is no single right answer. A good answer gives a reason."
+    }
+  ],
+  "writing": {
+    "id": "b004-writing",
+    "kind": "writing",
+    "skill": "writing.story-mountain",
+    "difficulty": 2,
+    "prompt": "Plan a story where your character must choose between winning something and helping someone else.",
+    "format": "story-mountain",
+    "starters": [],
+    "sentences": 3,
+    "mode": "print"
+  }
+}

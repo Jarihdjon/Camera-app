@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkMaths, checkShortAnswer, evaluateArithmetic } from "../src/engine/answers.js";
+import { checkKeywords, checkMaths, checkShortAnswer, evaluateArithmetic } from "../src/engine/answers.js";
 
 describe("checkShortAnswer", () => {
   it("accepts exact and case/punctuation variants", () => {
@@ -31,5 +31,21 @@ describe("arithmetic", () => {
     expect(checkMaths("24", "6 * 4")).toBe(true);
     expect(checkMaths(" 1,000 ", "10 * 100")).toBe(true);
     expect(checkMaths("23", "6 * 4")).toBe(false);
+  });
+});
+
+describe("keyword marking (from the workbook)", () => {
+  it("finds the key word inside a sentence", () => {
+    expect(checkKeywords("it was behind the door", ["door", "behind"])).toBe(true);
+    expect(checkKeywords("on the shelf", ["door", "behind"])).toBe(false);
+  });
+  it("needs one word from each group", () => {
+    const groups = [["sun", "sunlight", "light"], ["water"], ["air"]];
+    expect(checkKeywords("sunlight, watr and air", [], groups)).toBe(true);
+    expect(checkKeywords("water and air", [], groups)).toBe(false);
+  });
+  it("accepts 'about' answers within the tolerance", () => {
+    expect(checkMaths("25", "5 + 21", 1)).toBe(true);
+    expect(checkMaths("24", "5 + 21", 1)).toBe(false);
   });
 });

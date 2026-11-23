@@ -1,167 +1,174 @@
-import { useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Lightbulb, Volume2 } from "lucide-react";
 import { api, type ChildActivity, type ChildUnit, type Wallet } from "@/lib/api";
 import { Robot } from "@/components/robot/Robot";
 import { useRobot } from "@/components/robot/RobotProvider";
 import { SpeechBubble } from "@/components/robot/SpeechBubble";
+import { AskSparky } from "@/components/ask/AskSparky";
 import { WalletBar } from "@/components/WalletBar";
-import { celebrate, pointFrom, useFlyReward } from "@/components/rewards";
+import { celebrate } from "@/components/rewards";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { WordHunter } from "./WordHunter";
 import { WritingTask } from "./WritingTask";
+import { Question } from "./unit/Question";
+import { OpenStep } from "./unit/OpenStep";
+import { GapFill } from "./unit/GapFill";
+import { SelfCheck } from "./unit/SelfCheck";
+import { Kicker, StepCard } from "./unit/shared";
 
-type Step = { kind: "activity"; activity: ChildActivity } | { kind: "passage" } | { kind: "writing" } | { kind: "done" };
+/** The PYP inquiry cycle, as in the Inquirer's Journal. */
+const PHASES = [
+  { name: "Tune in", icon: "📡" },
+  { name: "Find out", icon: "📖" },
+  { name: "Sort out", icon: "🧩" },
+  { name: "Go further", icon: "🚀" },
+  { name: "Reflect", icon: "🪞" },
+  { name: "Take action", icon: "⛰️" },
+] as const;
 
-const PRAISE = ["Yes! Great thinking!", "Brilliant!", "You got it!", "Super smart!", "Awesome work!"];
-const ENCOURAGE = ["Nearly! Let's look again.", "Good try! Here's a clue.", "Ooh, close! Try this hint."];
-const pick = (a: string[]) => a[Math.floor(Math.random() * a.length)]!;
+type Step =
+  | { t: "intro"; ph: 0 }
+  | { t: "tune"; ph: 0 }
+  | { t: "activity"; ph: number; a: ChildActivity; label: string }
+  | { t: "story"; ph: 1 }
+  | { t: "reflect"; ph: 4 }
+  | { t: "writing"; ph: 5 }
+  | { t: "self"; ph: 5 }
+  | { t: "done"; ph: 5 };
+
+function buildSteps(u: ChildUnit): Step[] {
+  const s: Step[] = [];
+  if (u.inquiry) s.push({ t: "intro", ph: 0 }, { t: "tune", ph: 0 });
+  if (u.warmup) s.push({ t: "activity", ph: 0, a: u.warmup, label: "Warm-up" });
+  if (u.passage) s.push({ t: "story", ph: 1 });
+  u.vocab.forEach((a, i) => s.push({ t: "activity", ph: 2, a, label: `Sort out · word detective ${i + 1} of ${u.vocab.length}` }));
+  u.questions.forEach((a, i) => s.push({ t: "activity", ph: 2, a, label: `Sort out · question ${i + 1} of ${u.questions.length}` }));
+  if (u.gapFill) s.push({ t: "activity", ph: 2, a: u.gapFill, label: "Sort out · fill the gaps" });
+  u.corner.forEach((a) => s.push({ t: "activity", ph: 3, a, label: a.kind === "maths" ? "Go further · maths" : "Go further · inquiry" }));
+  if (u.inquiry) s.push({ t: "reflect", ph: 4 });
+  s.push({ t: "writing", ph: 5 });
+  if (u.inquiry) s.push({ t: "self", ph: 5 });
+  s.push({ t: "done", ph: 5 });
+  return s;
+}
 
 export function UnitPlayer(props: { unit: ChildUnit; firstName: string; robotName: string; parts: string[]; wallet: Wallet; onWallet: (w: Wallet) => void; onDone: () => void }) {
   const { unit } = props;
-  const steps: Step[] = [
-    { kind: "activity", activity: unit.warmup },
-    ...(unit.passage ? [{ kind: "passage" } as const] : []),
-    ...unit.questions.map((activity) => ({ kind: "activity", activity }) as const),
-    { kind: "writing" },
-    { kind: "done" },
-  ];
+  const steps = useMemo(() => buildSteps(unit), [unit]);
   const [i, setI] = useState(0);
   const [minutes, setMinutes] = useState<number | null>(null);
   const robot = useRobot();
   const step = steps[i]!;
-  const next = () => setI((n) => n + 1);
+  const next = () => setI((n) => Math.min(n + 1, steps.length - 1));
+  const usedPhases = new Set(steps.map((s) => s.ph));
 
   async function finish() {
     const r = await api.completeUnit(unit.id);
     props.onWallet(r.wallet);
     setMinutes(r.minutesEarned);
-    next();
+    setI(steps.length - 1);
     void celebrate(true);
-    robot.say(r.minutesEarned ? `Mission complete, ${props.firstName}! You earned ${r.minutesEarned} play minutes!` : `Mission complete! Brilliant work, ${props.firstName}!`, "cheer");
+    robot.say(r.minutesEarned ? `Unit complete, ${props.firstName}! You earned ${r.minutesEarned} play minutes!` : `Unit complete! Brilliant work, ${props.firstName}!`, "cheer");
   }
 
+  const afterWriting = () => (steps[i + 1]?.t === "self" ? next() : void finish());
+
   return (
-    <div className="mx-auto max-w-5xl px-5 pb-12 pt-5">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="lg" onClick={props.onDone} aria-label="Back to base">✕</Button>
-        <RocketTrack value={i / (steps.length - 1)} />
-      </div>
-      <div className="mt-3"><WalletBar wallet={props.wallet} /></div>
+    <AskSparky unitId={unit.id} robotName={props.robotName} parts={props.parts} onWallet={props.onWallet}>
+      <div className="mx-auto max-w-5xl px-5 pb-28 pt-5" style={{ ["--unit" as string]: unit.color ?? "var(--primary)" }}>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="lg" onClick={props.onDone} aria-label="Back to base">✕</Button>
+          <span className="truncate font-display text-xl text-[var(--unit)] [filter:brightness(1.6)]">{unit.title}</span>
+          <div className="ml-auto"><WalletBar wallet={props.wallet} /></div>
+        </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_220px]">
-        <AnimatePresence mode="wait">
-          <motion.div key={i} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.25 }}>
-            {step.kind === "activity" && <ActivityView unitId={unit.id} activity={step.activity} onWallet={props.onWallet} onNext={next} />}
-            {step.kind === "passage" && unit.passage && <WordHunter passage={unit.passage} onWallet={props.onWallet} onNext={next} />}
-            {step.kind === "writing" && <WritingTask task={unit.writing} onUnlocked={() => void finish()} />}
-            {step.kind === "done" && (
-              <Card className="items-center py-10 text-center">
-                <h1 className="text-5xl text-glow">Mission complete!</h1>
-                {minutes ? (
-                  <motion.p initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ delay: 0.4 }} className="font-display text-4xl text-primary">+{minutes} play minutes</motion.p>
-                ) : (
-                  <p className="text-lg text-muted-foreground">You've reached today's play minutes, but your blocks and gems still count!</p>
-                )}
-                <Button size="kid" variant="success" onClick={props.onDone}>Back to base 🚀</Button>
-              </Card>
-            )}
-          </motion.div>
-        </AnimatePresence>
+        {/* Phase rail: where he is in the inquiry cycle. */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {PHASES.map((p, k) => usedPhases.has(k) && (
+            <motion.span key={p.name} layout
+              className={cn("flex items-center gap-1.5 rounded-full border-2 px-3 py-1 font-display text-base",
+                k === step.ph ? "border-transparent bg-[var(--unit)] font-semibold text-white shadow-[0_0_18px_var(--unit)]" : k < step.ph ? "border-[var(--unit)] text-foreground" : "border-white/15 text-muted-foreground")}>
+              <span>{k < step.ph ? "✓" : p.icon}</span>{p.name}
+            </motion.span>
+          ))}
+        </div>
+        <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/10">
+          <motion.div className="h-full rounded-full bg-[var(--unit)] [filter:brightness(1.4)]" animate={{ width: `${(i / (steps.length - 1)) * 100}%` }} transition={{ type: "spring", stiffness: 60, damping: 14 }} />
+        </div>
 
-        {/* The robot keeps him company and reacts to every answer. */}
-        <div className="order-first flex items-end gap-3 lg:order-none lg:flex-col lg:items-center">
-          <Robot size={step.kind === "done" ? 200 : 150} parts={props.parts} />
-          <SpeechBubble name={props.robotName} className="text-base" />
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_210px]">
+          <AnimatePresence mode="wait">
+            <motion.div key={i} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.25 }}>
+              {step.t === "intro" && unit.inquiry && <Intro unit={unit} onNext={next} />}
+              {step.t === "tune" && unit.inquiry && (
+                <OpenStep unitId={unit.id} kind="tune-in" label="Tune in · before you read" prompt={unit.inquiry.tuneIn} optional onWallet={props.onWallet} onNext={next} />
+              )}
+              {step.t === "story" && unit.passage && <WordHunter passage={unit.passage} onWallet={props.onWallet} onNext={next} />}
+              {step.t === "activity" && <ActivityStep key={step.a.id} unit={unit} a={step.a} label={step.label} onWallet={props.onWallet} onNext={next} />}
+              {step.t === "reflect" && unit.inquiry && (
+                <OpenStep unitId={unit.id} kind="reflect" label={`Reflect · as a ${unit.inquiry.learnerProfile}`} prompt={unit.inquiry.reflect} onWallet={props.onWallet} onNext={next} />
+              )}
+              {step.t === "writing" && <WritingTask task={unit.writing} onUnlocked={afterWriting} />}
+              {step.t === "self" && <SelfCheck unitId={unit.id} onWallet={props.onWallet} onNext={() => void finish()} />}
+              {step.t === "done" && (
+                <Card className="items-center py-10 text-center">
+                  <h1 className="text-5xl text-glow">Unit complete!</h1>
+                  {minutes ? (
+                    <motion.p initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ delay: 0.4 }} className="font-display text-4xl text-primary">+{minutes} play minutes</motion.p>
+                  ) : (
+                    <p className="text-lg text-muted-foreground">You've reached today's play minutes, but your blocks and gems still count!</p>
+                  )}
+                  <Button size="kid" variant="success" onClick={props.onDone}>Back to base 🚀</Button>
+                </Card>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="order-first flex items-end gap-3 lg:order-none lg:flex-col lg:items-center">
+            <Robot size={step.t === "done" ? 200 : 150} parts={props.parts} />
+            <SpeechBubble name={props.robotName} className="text-base" />
+          </div>
         </div>
       </div>
-    </div>
+    </AskSparky>
   );
 }
 
-function RocketTrack({ value }: { value: number }) {
-  return (
-    <div className="relative h-4 flex-1 rounded-full bg-white/10">
-      <motion.div className="h-full rounded-full bg-gradient-to-r from-glow via-success to-primary" animate={{ width: `${value * 100}%` }} transition={{ type: "spring", stiffness: 60, damping: 14 }} />
-      <motion.span className="absolute -top-4 text-4xl" animate={{ left: `calc(${value * 100}% - 20px)`, rotate: [40, 50, 40] }} transition={{ left: { type: "spring", stiffness: 60, damping: 14 }, rotate: { duration: 0.6, repeat: Infinity } }}>🚀</motion.span>
-      <span className="absolute -right-2 -top-4 text-4xl">🪐</span>
-    </div>
-  );
-}
-
-function ActivityView({ unitId, activity, onWallet, onNext }: { unitId: string; activity: ChildActivity; onWallet: (w: Wallet) => void; onNext: () => void }) {
-  const [answer, setAnswer] = useState("");
-  const [hint, setHint] = useState<string | null>(null);
-  const [state, setState] = useState<"asking" | "right" | "wrong">("asking");
-  const [tries, setTries] = useState(0);
-  const [shake, setShake] = useState(0);
-  const shownAt = useRef(Date.now());
-  const robot = useRobot();
-  const fly = useFlyReward();
-
-  if (activity.kind === "writing") return null;
-
-  async function submit(value: string | number, from: Element | null) {
-    const r = await api.attempt({ unitId, activityId: activity.id, answer: value, usedHint: hint !== null, msTaken: Date.now() - shownAt.current });
-    if (r.correct) {
-      setState("right");
-      fly("blocks", pointFrom(from), 2);
-      void celebrate();
-      robot.say(pick(PRAISE), "cheer");
-    } else {
-      setTries((t) => t + 1);
-      setState("wrong");
-      setHint(r.hint);
-      setShake((s) => s + 1);
-      robot.say(`${pick(ENCOURAGE)} ${r.hint ?? ""}`, "encourage");
-    }
-    onWallet(r.wallet);
+function ActivityStep({ unit, a, label, onWallet, onNext }: { unit: ChildUnit; a: ChildActivity; label: string; onWallet: (w: Wallet) => void; onNext: () => void }) {
+  switch (a.kind) {
+    case "open":
+      return <OpenStep unitId={unit.id} activityId={a.id} kind="open" label={label} prompt={a.prompt} onWallet={onWallet} onNext={onNext} />;
+    case "gap-fill":
+      return <GapFill unitId={unit.id} activity={a} onWallet={onWallet} onNext={onNext} />;
+    case "writing":
+      return null;
+    default:
+      return <Question unitId={unit.id} activity={a} label={label} story={unit.passage?.text} onWallet={onWallet} onNext={onNext} />;
   }
+}
 
+/** The unit's big idea, concepts and learner profile, shown like a mission briefing. */
+function Intro({ unit, onNext }: { unit: ChildUnit; onNext: () => void }) {
+  const robot = useRobot();
+  const inq = unit.inquiry!;
   return (
-    <Card className="gap-6 p-7">
-      <button type="button" className="flex cursor-pointer items-start gap-3 text-left font-display text-3xl font-medium leading-snug" onClick={() => robot.say(activity.prompt, "thinking")}>
-        <span className="flex-1">{activity.prompt}</span>
-        <Volume2 className="mt-1 size-7 shrink-0 text-glow" />
-      </button>
-
-      <motion.div key={shake} animate={shake ? { x: [0, -10, 10, -6, 6, 0] } : {}} transition={{ duration: 0.4 }}>
-        {activity.kind === "multiple-choice" ? (
-          <div className="grid gap-3">
-            {activity.options.map((o, idx) => (
-              <motion.div key={o} whileTap={{ scale: 0.97 }}>
-                <Button variant="secondary" size="kid" className="w-full justify-start whitespace-normal text-left" disabled={state === "right"}
-                  onClick={(e) => void submit(idx, e.currentTarget)}>
-                  <span className="mr-2 grid size-9 shrink-0 place-items-center rounded-full bg-white/10 font-display">{String.fromCharCode(65 + idx)}</span>{o}
-                </Button>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <form onSubmit={(e) => { e.preventDefault(); if (answer.trim()) void submit(answer.trim(), e.currentTarget); }} className="flex flex-wrap gap-3">
-            <Input className="h-16 max-w-sm flex-1 rounded-2xl font-display text-3xl" value={answer} onChange={(e) => { setAnswer(e.target.value); if (state === "asking") robot.setMood("thinking"); }}
-              disabled={state === "right"} inputMode={activity.kind === "maths" ? "numeric" : "text"} autoComplete="off" autoCorrect="off" autoFocus />
-            {state !== "right" && <Button size="kid" type="submit">Check</Button>}
-          </form>
-        )}
-      </motion.div>
-
-      <AnimatePresence>
-        {state === "wrong" && hint && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0 }} className="flex items-start gap-3 rounded-2xl border-2 border-dashed border-primary/60 bg-primary/10 p-4 text-lg">
-            <Lightbulb className="size-6 shrink-0 text-primary" /> {hint}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Attempt limit: after three tries he moves on, so nobody gets stuck. */}
-      {(state === "right" || tries >= 3) && (
-        <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-          <Button size="kid" variant="success" onClick={onNext}>Next ➜</Button>
-        </motion.div>
-      )}
-    </Card>
+    <StepCard>
+      <Kicker>Tune in · {inq.pypTheme}</Kicker>
+      <h1 className="font-display text-5xl leading-tight">{unit.title}</h1>
+      <motion.button type="button" whileTap={{ scale: 0.98 }} onClick={() => robot.say(`Our big idea: ${inq.centralIdea}`, "happy")}
+        className="cursor-pointer rounded-2xl bg-[var(--unit)]/20 px-5 py-4 text-left">
+        <span className="block font-display text-sm font-semibold uppercase tracking-[0.14em] text-[var(--unit)] [filter:brightness(1.6)]">Our big idea 🔊</span>
+        <span className="text-2xl italic leading-snug">{inq.centralIdea}</span>
+      </motion.button>
+      <div className="flex flex-wrap gap-2">
+        {inq.keyConcepts.map((k) => (
+          <span key={k} className="rounded-full border-2 border-[var(--unit)] px-4 py-1 font-display text-lg">🔑 {k}</span>
+        ))}
+        <span className="rounded-full border-2 border-primary bg-primary/15 px-4 py-1 font-display text-lg text-primary">⭐ Be a {inq.learnerProfile}</span>
+      </div>
+      <Button size="kid" variant="success" className="w-fit" onClick={onNext}>Let's go ➜</Button>
+    </StepCard>
   );
 }

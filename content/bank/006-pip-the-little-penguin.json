@@ -1,0 +1,278 @@
+{
+  "id": "bank-006-pip-the-little-penguin",
+  "title": "Pip the Little Penguin",
+  "theme": "animals",
+  "source": "bank",
+  "color": "#1565C0",
+  "inquiry": {
+    "pypTheme": "How We Organise Ourselves",
+    "centralIdea": "Groups often follow shared routines that keep every member safe.",
+    "keyConcepts": [
+      "Form",
+      "Function"
+    ],
+    "learnerProfile": "Communicator",
+    "tuneIn": "Why might animals stay close together in a group instead of going off alone?",
+    "reflect": "Communicators work well with others by sharing information and listening. How does staying close to a group help keep everyone safe?"
+  },
+  "passage": {
+    "title": "Pip the Little Penguin",
+    "text": "Pip belonged to the smallest species of penguin in the world, and lived along the southern coast of Australia. Each morning, he swam out with dozens of others to hunt, diving for small fish using wings shaped more like flippers than feathers built for flight.\n\nPenguins can't fly, but flippers make them fast, precise swimmers — ideal for chasing fish underwater rather than soaring above the waves.\n\nAt dusk, the penguins gathered offshore in a group before coming in together, rather than one at a time. Moving as a crowd made it harder for predators to target any single penguin — a system scientists call the ‘penguin parade’.\n\nPip waddled up the beach in the middle of the group, counting the shapes of his colony-mates ahead of him: 1, 2, 3, 4, 5, 6. His burrow, shared with his mother, waited just past the dunes.",
+    "glossary": [
+      {
+        "word": "species",
+        "meaning": "A specific type of animal."
+      },
+      {
+        "word": "predators",
+        "meaning": "Animals that hunt others for food."
+      },
+      {
+        "word": "colony",
+        "meaning": "A group of the same animals living together."
+      }
+    ]
+  },
+  "vocab": [
+    {
+      "id": "b006-vocab1",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "species",
+      "options": [
+        "a specific type of animal",
+        "a place penguins live",
+        "a kind of fish"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"species\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b006-vocab2",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "predators",
+      "options": [
+        "animals that hunt others for food",
+        "baby penguins",
+        "plants"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"predators\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b006-vocab3",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "colony",
+      "options": [
+        "a group of the same animals living together",
+        "a single penguin",
+        "a type of fish"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"colony\" in the story and read the sentence around it."
+    }
+  ],
+  "questions": [
+    {
+      "id": "b006-q1",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What is Pip's species known for, size-wise?",
+      "match": "keyword",
+      "accept": [
+        "smallest",
+        "small",
+        "tiny",
+        "littlest",
+        "little"
+      ],
+      "model": "smallest",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b006-q2",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What body part helps Pip swim fast?",
+      "match": "keyword",
+      "accept": [
+        "flipper",
+        "flippers",
+        "wing",
+        "wings",
+        "fin"
+      ],
+      "model": "flippers",
+      "hint": "Look again at paragraph 2.",
+      "para": 1
+    },
+    {
+      "id": "b006-q3",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What do penguins eat?",
+      "match": "keyword",
+      "accept": [
+        "fish"
+      ],
+      "model": "fish",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b006-q4",
+      "kind": "short-answer",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why do the penguins wait offshore and come in together, rather than alone?",
+      "match": "keyword",
+      "accept": [
+        "safe",
+        "safer",
+        "safety",
+        "predator",
+        "predators",
+        "protect",
+        "protection",
+        "danger"
+      ],
+      "model": "it is safer from predators",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b006-q5",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What is the name for this group behaviour?",
+      "match": "keyword",
+      "accept": [
+        "parade"
+      ],
+      "model": "the penguin parade",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b006-q6",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "How many colony-mates did Pip count ahead of him?",
+      "match": "keyword",
+      "accept": [
+        "6",
+        "six"
+      ],
+      "model": "six",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b006-q7",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Who shares Pip's burrow?",
+      "match": "keyword",
+      "accept": [
+        "mum",
+        "mom",
+        "mother",
+        "mama",
+        "mummy"
+      ],
+      "model": "his mother",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    }
+  ],
+  "gapFill": {
+    "id": "b006-gaps",
+    "kind": "gap-fill",
+    "skill": "writing.fill-blank",
+    "difficulty": 2,
+    "prompt": "Which word fits each sentence?",
+    "sentences": [
+      {
+        "text": "Pip's ___ make him a fast swimmer.",
+        "answer": "flippers"
+      },
+      {
+        "text": "Moving in a group protects penguins from ___.",
+        "answer": "predators"
+      },
+      {
+        "text": "A group of penguins living together is called a ___.",
+        "answer": "colony"
+      },
+      {
+        "text": "Walking up the beach together is called the penguin ___.",
+        "answer": "parade"
+      },
+      {
+        "text": "Pip shares his ___ with his mother.",
+        "answer": "burrow"
+      }
+    ],
+    "decoys": [
+      "bicycle",
+      "thunder"
+    ]
+  },
+  "corner": [
+    {
+      "id": "b006-c1",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "Pip counted 6 colony-mates ahead of him. Including Pip, how many penguins is that in total?",
+      "expression": "6 + 1",
+      "tolerance": 0,
+      "unit": "penguins",
+      "working": "6 + 1 = 7",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b006-c2",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "Each penguin dives for fish 4 times before breakfast. How many dives is that for 2 penguins together?",
+      "expression": "4 + 4",
+      "tolerance": 0,
+      "unit": "dives",
+      "working": "4 + 4 = 8",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b006-c3",
+      "kind": "open",
+      "skill": "inquiry.why-questions",
+      "difficulty": 2,
+      "prompt": "Why might moving in a large group be safer than swimming alone?",
+      "model": "It is harder for a predator to pick out and catch just one penguin."
+    }
+  ],
+  "writing": {
+    "id": "b006-writing",
+    "kind": "writing",
+    "skill": "writing.story-mountain",
+    "difficulty": 2,
+    "prompt": "Plan a story about a character who is safer or stronger because they are part of a group or team.",
+    "format": "story-mountain",
+    "starters": [],
+    "sentences": 3,
+    "mode": "print"
+  }
+}

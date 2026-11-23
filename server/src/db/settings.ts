@@ -10,6 +10,9 @@ export const DEFAULT_SETTINGS = {
   /** Rough AUD per USD for the spend counter. Adjust if the rate moves. */
   audPerUsd: 1.55,
   parentPinHash: "",
+  /** Ask Sparky: the robot answers questions about the current unit. */
+  askEnabled: true,
+  askDailyLimit: 30,
   pinnedSkills: [] as string[],
   pinnedTopics: [] as string[],
 };

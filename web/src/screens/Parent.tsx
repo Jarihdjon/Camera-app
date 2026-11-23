@@ -15,6 +15,8 @@ export function Parent({ onBack }: { onBack: () => void }) {
   const [err, setErr] = useState("");
   const [settings, setSettings] = useState<Record<string, unknown> | null>(null);
   const [queue, setQueue] = useState<Awaited<ReturnType<typeof api.parent.reviewQueue>>>([]);
+  const [questions, setQuestions] = useState<Awaited<ReturnType<typeof api.parent.questions>>>([]);
+  const [answers, setAnswers] = useState<Awaited<ReturnType<typeof api.parent.responses>>>([]);
 
   async function login() {
     try {
@@ -22,6 +24,8 @@ export function Parent({ onBack }: { onBack: () => void }) {
       setAuthed(true);
       setSettings(await api.parent.settings());
       setQueue(await api.parent.reviewQueue());
+      setQuestions(await api.parent.questions());
+      setAnswers(await api.parent.responses());
     } catch {
       setErr("Wrong PIN");
     }
@@ -56,6 +60,8 @@ export function Parent({ onBack }: { onBack: () => void }) {
       <Tabs defaultValue="review">
         <TabsList>
           <TabsTrigger value="review">Review queue {pending > 0 && <Badge className="ml-1">{pending}</Badge>}</TabsTrigger>
+          <TabsTrigger value="questions">Questions he asked {questions.some((q) => q.flagged) && <Badge className="ml-1 bg-pink/20 text-pink">!</Badge>}</TabsTrigger>
+          <TabsTrigger value="answers">His thinking</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="review">
@@ -74,6 +80,40 @@ export function Parent({ onBack }: { onBack: () => void }) {
                     <Button size="sm" variant="outline" onClick={() => void review(u.id, "redo")}>Ask for a redo</Button>
                   </div>
                 </div>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="questions">
+          <p className="mb-3 text-sm text-muted-foreground">Everything he asked the robot, and its reply. Flagged questions were about feelings, safety or personal things, and the robot told him to talk to a grown-up.</p>
+          <Card>
+            <Table>
+              <TableHeader><TableRow><TableHead>When</TableHead><TableHead>He asked</TableHead><TableHead>Robot replied</TableHead><TableHead>Type</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {questions.length === 0 && <TableRow><TableCell colSpan={4} className="text-muted-foreground">No questions yet.</TableCell></TableRow>}
+                {questions.map((q) => (
+                  <TableRow key={q.id} className={q.flagged ? "bg-pink/10" : ""}>
+                    <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{new Date(q.created_at + "Z").toLocaleString("en-AU", { dateStyle: "short", timeStyle: "short" })}</TableCell>
+                    <TableCell className="font-medium">{q.question}</TableCell>
+                    <TableCell className="text-muted-foreground">{q.reply}</TableCell>
+                    <TableCell>{q.flagged ? <Badge className="bg-pink/20 text-pink">talk to him</Badge> : <Badge variant="outline">{q.kind}</Badge>}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        </TabsContent>
+        <TabsContent value="answers">
+          <p className="mb-3 text-sm text-muted-foreground">Open answers, tune-in ideas, reflections and self-checks. These are not marked: they're for talking about together.</p>
+          <div className="grid gap-3">
+            {answers.length === 0 && <p className="text-muted-foreground">Nothing yet.</p>}
+            {answers.map((a) => (
+              <Card key={a.id} className="gap-1 p-4">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Badge variant="outline">{a.kind}</Badge>{a.unit_id.replace(/^bank-\d+-/, "").replace(/-/g, " ")}
+                  <span className="ml-auto">{new Date(a.created_at + "Z").toLocaleDateString("en-AU")}</span>
+                </div>
+                <p className="whitespace-pre-line">{a.talk_later ? <i>He chose to talk about this one with you.</i> : a.text || <i>(skipped)</i>}</p>
               </Card>
             ))}
           </div>

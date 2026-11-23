@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { UnitSchema, type Unit } from "@yav/shared";
+import { UnitSchema, toChildUnit, type Unit } from "@yav/shared";
 import { config } from "./config.js";
 
 /** Loads and validates every unit in content/bank. A bad file stops the server with a clear message. */
@@ -15,24 +15,4 @@ export function loadContentBank(dir = config.contentBank): Unit[] {
 }
 
 /** Strip answer keys before anything goes to the iPad; checking happens on the server. */
-export function forChild(unit: Unit) {
-  const strip = (a: Unit["questions"][number]) => {
-    switch (a.kind) {
-      case "short-answer": {
-        const { accept: _accept, ...rest } = a;
-        return rest;
-      }
-      case "multiple-choice": {
-        const { correctIndex: _c, ...rest } = a;
-        return rest;
-      }
-      case "maths": {
-        const { expression: _e, ...rest } = a;
-        return rest;
-      }
-      default:
-        return a;
-    }
-  };
-  return { ...unit, warmup: strip(unit.warmup), questions: unit.questions.map(strip) };
-}
+export const forChild = toChildUnit;

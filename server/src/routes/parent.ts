@@ -40,6 +40,8 @@ export const parentRoutes: FastifyPluginAsync<{ db: DB }> = async (app, { db }) 
     claudeModel: getSetting(db, "claudeModel"),
     pinnedSkills: getSetting(db, "pinnedSkills"),
     pinnedTopics: getSetting(db, "pinnedTopics"),
+    askEnabled: getSetting(db, "askEnabled"),
+    askDailyLimit: getSetting(db, "askDailyLimit"),
     // The key itself never leaves the PC; only whether one is set.
     claudeConfigured: Boolean(config.anthropicKey),
     spendThisMonthAud: Math.round(spendThisMonthAud(db) * 100) / 100,
@@ -54,6 +56,8 @@ export const parentRoutes: FastifyPluginAsync<{ db: DB }> = async (app, { db }) 
       claudeModel: z.string().min(1),
       pinnedSkills: z.array(z.string()),
       pinnedTopics: z.array(z.string()),
+      askEnabled: z.boolean(),
+      askDailyLimit: z.number().int().min(0).max(100),
     }).partial().parse(req.body);
     for (const [k, v] of Object.entries(body)) setSetting(db, k as never, v as never);
     return { ok: true };
@@ -67,6 +71,14 @@ export const parentRoutes: FastifyPluginAsync<{ db: DB }> = async (app, { db }) 
 
   app.get("/generation-log", async () =>
     db.prepare("SELECT id, purpose, model, valid, error, cost_aud, created_at, prompt, output FROM generation_log ORDER BY id DESC LIMIT 100").all());
+
+  /** Everything he asked the robot. Flagged ones were handed to a grown-up. */
+  app.get("/questions", async () =>
+    db.prepare("SELECT id, unit_id, question, reply, kind, flagged, created_at FROM ask_log ORDER BY id DESC LIMIT 200").all());
+
+  /** Open answers, reflections and self-checks, to talk about together. */
+  app.get("/responses", async () =>
+    db.prepare("SELECT id, unit_id, activity_id, kind, text, talk_later, created_at FROM response ORDER BY id DESC LIMIT 200").all());
 
   app.get("/skills", async () => db.prepare("SELECT id, strand, mastery, difficulty, last_practised FROM skill ORDER BY strand, id").all());
 };

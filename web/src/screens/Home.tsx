@@ -17,6 +17,7 @@ export function Home(props: {
   onStartUnit: (u: ChildUnit) => void;
   onBuild: () => void;
   onWorkshop: () => void;
+  onShelf: () => void;
   onParent: () => void;
 }) {
   const [units, setUnits] = useState<ChildUnit[] | null>(null);
@@ -59,6 +60,12 @@ export function Home(props: {
             </MissionCard>
           );
         })}
+        <MissionCard delay={0.24} glow="before:from-sky-400/40 before:to-indigo-300/10" onClick={props.onShelf}>
+          <Badge>Journal</Badge>
+          <span className="text-5xl">📚</span>
+          <span className="font-display text-2xl font-semibold">All my units</span>
+          <span className="text-base text-muted-foreground">Pick any story to explore</span>
+        </MissionCard>
         <MissionCard delay={0.3} glow="before:from-emerald-400/40 before:to-teal-300/10" onClick={props.onBuild}>
           <Badge variant="success">Build</Badge>
           <span className="text-5xl">🛰️</span>

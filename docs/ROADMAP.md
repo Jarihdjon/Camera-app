@@ -36,6 +36,22 @@
 - Unlockable parts (capes, visors, boots) from gems ever earned, so spending never re-locks anything.
   Robot workshop screen to wear them (`POST /api/robot/equip`). Catalogue in `shared/src/robotParts.ts`.
 
+## Done: Inquirer's Journal and Ask Sparky
+
+- The six Inquirer's Journal units are in the content bank (`content/bank/002` to `007`), converted by
+  `scripts/import-journal.mjs`. Units follow the PYP inquiry cycle: Tune in, Find out, Sort out, Go further,
+  Reflect, Take action, with a phase rail in each unit's colour.
+- New activity types: word detective, keyword-marked questions (with "one from each group"), fill the gaps
+  with decoys, maths with "about" answers and worked solutions, open questions, reflection, Story Mountain
+  sheet, self-check. Two tries, then the answer is shown kindly; the paragraph to look at appears after a miss.
+- Journal shelf to pick any unit; today's two missions stay on the home screen.
+- **Ask Sparky** (changes the plan's "no free chat in version 1"): he can type or dictate questions while in a
+  unit. Answers are grounded in that unit only. Safety and personal questions go to a grown-up without any AI
+  call; Claude classifies everything else as on-topic, off-topic (gentle redirect) or grown-up; replies that
+  would give away the answer are swapped for the hint; a daily limit and the spend cap apply; without a key it
+  still explains workbook words and gives hints. Every question is in the parent area, flagged ones highlighted.
+  Parents can switch it off (`askEnabled`) or change the daily limit (`askDailyLimit`).
+
 ## Phase 0: iPad checks (week one, on his iPad)
 
 - [ ] Add to Home Screen opens full screen.

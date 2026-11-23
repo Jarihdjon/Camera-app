@@ -24,5 +24,7 @@ export const SKILLS = {
 export type SkillId = keyof typeof SKILLS;
 export const SKILL_IDS = Object.keys(SKILLS) as SkillId[];
 
-export const THEMES = ["minecraft", "astro-bot", "space", "lego", "robots"] as const;
+export const THEMES = ["minecraft", "astro-bot", "space", "lego", "robots", "animals", "nature", "everyday"] as const;
 export type Theme = (typeof THEMES)[number];
+/** His interest themes, rotated by the planner for generated units. */
+export const INTEREST_THEMES = ["minecraft", "astro-bot", "space", "lego", "robots"] as const satisfies readonly Theme[];

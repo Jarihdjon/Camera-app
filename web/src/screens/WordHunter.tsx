@@ -1,65 +1,130 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Volume2 } from "lucide-react";
+import { Square, Volume2 } from "lucide-react";
 import type { Passage } from "@yav/shared";
+import { paragraphs } from "@yav/shared/childHelpers";
 import { api, type Wallet } from "@/lib/api";
 import { useRobot } from "@/components/robot/RobotProvider";
+import { useAsk } from "@/components/ask/AskSparky";
 import { pointFrom, useFlyReward } from "@/components/rewards";
+import { onSpeech } from "@/lib/speech";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Kicker, StepCard } from "./unit/shared";
 
-const clean = (s: string) => s.toLowerCase().replace(/[^a-z'-]/g, "");
+const clean = (s: string) => s.toLowerCase().replace(/[^a-z'-]/g, "").replace(/^'+|'+$/g, "");
 
 /**
- * Word Hunter: every word is tappable. Tapping always earns a gem and never
- * costs anything, so asking about words becomes the winning move.
+ * Find out: the story. Every word is tappable, and asking always earns a gem.
+ * Workbook words are explained from the glossary; any other word is explained
+ * by the robot using the sentence it's in, so the meaning fits the story.
  */
 export function WordHunter({ passage, onWallet, onNext }: { passage: Passage; onWallet: (w: Wallet) => void; onNext: () => void }) {
   const [tapped, setTapped] = useState<Set<string>>(new Set());
+  const [reading, setReading] = useState<number | null>(null);
+  const [looking, setLooking] = useState<string | null>(null);
   const glossary = new Map(passage.glossary.map((g) => [g.word.toLowerCase(), g.meaning]));
+  const paras = paragraphs(passage.text);
   const robot = useRobot();
+  const ask = useAsk();
   const fly = useFlyReward();
+  const readToken = useRef(0);
 
-  async function tap(raw: string, el: Element) {
+  useEffect(() => ask.setScreen({ prompt: passage.text }), [passage.text, ask]);
+  useEffect(() => () => void (readToken.current++), []);
+
+  /** Read the story aloud one paragraph at a time, highlighting as it goes. */
+  function readAloud() {
+    if (reading !== null) {
+      readToken.current++;
+      setReading(null);
+      speechSynthesis?.cancel?.();
+      return;
+    }
+    const token = ++readToken.current;
+    const next = (i: number) => {
+      if (token !== readToken.current) return;
+      if (i >= paras.length) return setReading(null);
+      setReading(i);
+      const off = onSpeech((e) => {
+        if (e.type === "end") {
+          off();
+          window.setTimeout(() => next(i + 1), 250);
+        }
+      });
+      robot.say(paras[i]!, "happy");
+    };
+    next(0);
+  }
+
+  async function tap(raw: string, sentence: string, el: Element) {
     const word = clean(raw);
-    if (!word) return;
-    const meaning = glossary.get(word);
-    const display = raw.replace(/[^A-Za-z'-]/g, "");
-    robot.say(meaning ? `${display}. ${meaning}` : `${display}! Great word to ask about. I've saved it in your Word Vault.`, meaning ? "happy" : "thinking");
+    if (!word || looking) return;
     setTapped((s) => new Set(s).add(word));
     fly("gems", pointFrom(el));
+    const meaning = glossary.get(word);
+    const display = raw.replace(/[^A-Za-z'-]/g, "");
+    if (meaning) {
+      robot.say(`${display}. ${meaning}`, "happy");
+    } else {
+      setLooking(word);
+      robot.setMood("thinking");
+      try {
+        robot.say(`${display}. ${await ask.explainWord(display, sentence)}`, "happy");
+      } catch {
+        robot.say(`${display}! Great word to ask about. I've saved it in your Word Vault.`, "happy");
+      } finally {
+        setLooking(null);
+      }
+    }
     onWallet((await api.tapWord(word, meaning)).wallet);
   }
 
   return (
-    <Card className="gap-5 p-7">
+    <StepCard>
+      <Kicker>Find out · read the story</Kicker>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-3xl">{passage.title}</h2>
-        <Button variant="secondary" size="lg" onClick={() => robot.say(passage.text, "happy")}><Volume2 /> Read it to me</Button>
+        <h2 className="font-display text-4xl">{passage.title}</h2>
+        <Button variant="secondary" size="lg" onClick={readAloud}>
+          {reading !== null ? <><Square /> Stop</> : <><Volume2 /> Read it to me</>}
+        </Button>
       </div>
-      <p className="text-lg text-muted-foreground">Tap any word you're not sure about. Every tap earns a 💎</p>
-      <p className="rounded-2xl bg-black/30 p-6 text-[1.6rem] leading-[2.2]">
-        {passage.text.split(/(\s+)/).map((tok, i) => {
-          if (/\s+/.test(tok)) return tok;
-          const w = clean(tok);
-          const isTapped = tapped.has(w);
+      <p className="text-lg text-muted-foreground">Tap any word you're not sure about. Asking always earns a 💎</p>
+
+      <div className="flex flex-col gap-4 rounded-2xl bg-black/30 p-6">
+        {paras.map((p, pi) => {
+          const sentences = p.match(/[^.!?]+[.!?”"]*\s*/g) ?? [p];
           return (
-            <motion.span
-              key={i}
-              whileTap={{ scale: 1.25 }}
-              onClick={(e) => void tap(tok, e.currentTarget)}
-              className={cn("cursor-pointer rounded-lg px-0.5 transition-colors", isTapped && "bg-primary/25 text-primary shadow-[0_0_14px_rgba(255,201,77,0.45)]")}
-            >
-              {tok}
-            </motion.span>
+            <motion.p key={pi} animate={{ backgroundColor: reading === pi ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0)" }}
+              className="-mx-3 rounded-xl px-3 py-1 text-[1.6rem] leading-[2.1]">
+              {sentences.map((sentence, si) =>
+                sentence.split(/(\s+)/).map((tok, i) => {
+                  if (!tok || /^\s+$/.test(tok)) return tok;
+                  const w = clean(tok);
+                  return (
+                    <motion.span
+                      key={`${si}-${i}`}
+                      whileTap={{ scale: 1.25 }}
+                      onClick={(e) => void tap(tok, sentence.trim(), e.currentTarget)}
+                      className={cn(
+                        "cursor-pointer rounded-lg px-0.5 transition-colors",
+                        tapped.has(w) && "bg-primary/25 text-primary shadow-[0_0_14px_rgba(255,201,77,0.45)]",
+                        looking === w && "animate-pulse",
+                      )}
+                    >
+                      {tok}
+                    </motion.span>
+                  );
+                }),
+              )}
+            </motion.p>
           );
         })}
-      </p>
+      </div>
       <div className="flex items-center justify-between">
         <span className="font-display text-lg text-muted-foreground">{tapped.size ? `${tapped.size} word${tapped.size > 1 ? "s" : ""} hunted 💎` : ""}</span>
         <Button size="kid" variant="success" onClick={onNext}>I've read it ➜</Button>
       </div>
-    </Card>
+    </StepCard>
   );
 }

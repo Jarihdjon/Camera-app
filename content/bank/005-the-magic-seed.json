@@ -1,0 +1,276 @@
+{
+  "id": "bank-005-the-magic-seed",
+  "title": "The Magic Seed",
+  "theme": "nature",
+  "source": "bank",
+  "color": "#00838F",
+  "inquiry": {
+    "pypTheme": "How The World Works",
+    "centralIdea": "Living things follow predictable stages of growth, shaped by the conditions around them.",
+    "keyConcepts": [
+      "Causation",
+      "Change"
+    ],
+    "learnerProfile": "Inquirer",
+    "tuneIn": "What do you think a seed needs in order to grow? Name one thing.",
+    "reflect": "Inquirers ask questions to understand how things work. What question would you like to ask a scientist about plants?"
+  },
+  "passage": {
+    "title": "The Magic Seed",
+    "text": "Ava planted a seed no bigger than a grain of rice, burying it two centimetres under the soil — deep enough to stay moist, but shallow enough for sunlight to eventually reach the sprout.\n\nFor five days, nothing appeared above the surface. Underground, though, the seed was absorbing water and splitting open as a root pushed downward and a shoot pushed up.\n\nOnce the shoot broke through the soil, growth sped up. Photosynthesis — using sunlight, water and air to make food — let the plant grow leaves, then a thick stem taller than Ava's father.\n\nBy late summer, a sunflower head opened at the top, packed with hundreds of seeds. A bee visited to collect nectar, brushing against the pollen and carrying some away to the next flower it landed on.",
+    "glossary": [
+      {
+        "word": "absorbing",
+        "meaning": "Soaking in."
+      },
+      {
+        "word": "photosynthesis",
+        "meaning": "A plant making food from sunlight, water and air."
+      },
+      {
+        "word": "pollen",
+        "meaning": "Tiny grains that help plants make seeds."
+      }
+    ]
+  },
+  "vocab": [
+    {
+      "id": "b005-vocab1",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "absorbing",
+      "options": [
+        "soaking in",
+        "pushing away",
+        "burning"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"absorbing\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b005-vocab2",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "photosynthesis",
+      "options": [
+        "a plant sleeping",
+        "a plant making food from sunlight, water and air",
+        "a plant dying"
+      ],
+      "correctIndex": 1,
+      "hint": "Find \"photosynthesis\" in the story and read the sentence around it."
+    },
+    {
+      "id": "b005-vocab3",
+      "kind": "word-meaning",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "word": "pollen",
+      "options": [
+        "tiny grains that help plants make seeds",
+        "a type of soil",
+        "a kind of leaf"
+      ],
+      "correctIndex": 0,
+      "hint": "Find \"pollen\" in the story and read the sentence around it."
+    }
+  ],
+  "questions": [
+    {
+      "id": "b005-q1",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "How deep did Ava plant the seed?",
+      "match": "keyword",
+      "accept": [
+        "2",
+        "two"
+      ],
+      "model": "2 centimetres",
+      "hint": "Look again at paragraph 1.",
+      "para": 0
+    },
+    {
+      "id": "b005-q2",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What was happening underground during the first five days?",
+      "match": "keyword",
+      "accept": [
+        "root",
+        "roots",
+        "water",
+        "absorbing",
+        "growing",
+        "grow",
+        "split",
+        "splitting",
+        "shoot",
+        "soaking"
+      ],
+      "model": "the seed was soaking up water and growing a root",
+      "hint": "Look again at paragraph 2.",
+      "para": 1
+    },
+    {
+      "id": "b005-q3",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "Name the three things a plant needs for photosynthesis.",
+      "match": "keyword",
+      "accept": [],
+      "groups": [
+        [
+          "sun",
+          "sunlight",
+          "light"
+        ],
+        [
+          "water"
+        ],
+        [
+          "air"
+        ]
+      ],
+      "model": "sunlight, water and air",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b005-q4",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What grew taller than Ava's Dad?",
+      "match": "keyword",
+      "accept": [
+        "sunflower",
+        "flower",
+        "plant",
+        "stem"
+      ],
+      "model": "the sunflower",
+      "hint": "Look again at paragraph 3.",
+      "para": 2
+    },
+    {
+      "id": "b005-q5",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What did the bee collect from the flower?",
+      "match": "keyword",
+      "accept": [
+        "nectar"
+      ],
+      "model": "nectar",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b005-q6",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What did the bee accidentally carry to the next flower?",
+      "match": "keyword",
+      "accept": [
+        "pollen"
+      ],
+      "model": "pollen",
+      "hint": "Look again at paragraph 4.",
+      "para": 3
+    },
+    {
+      "id": "b005-q7",
+      "kind": "open",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why do you think the seed needed to be planted at exactly the right depth?",
+      "model": "Deep enough to stay moist, but shallow enough for sunlight to reach the sprout."
+    }
+  ],
+  "gapFill": {
+    "id": "b005-gaps",
+    "kind": "gap-fill",
+    "skill": "writing.fill-blank",
+    "difficulty": 2,
+    "prompt": "Which word fits each sentence?",
+    "sentences": [
+      {
+        "text": "The seed spent five days ___ water underground.",
+        "answer": "absorbing"
+      },
+      {
+        "text": "A tiny green ___ broke through the soil.",
+        "answer": "shoot"
+      },
+      {
+        "text": "Plants use ___ to turn sunlight into food.",
+        "answer": "photosynthesis"
+      },
+      {
+        "text": "The sunflower's ___ grew taller than Dad.",
+        "answer": "stem"
+      },
+      {
+        "text": "Bees carry ___ from flower to flower.",
+        "answer": "pollen"
+      }
+    ],
+    "decoys": [
+      "rainy",
+      "ticket"
+    ]
+  },
+  "corner": [
+    {
+      "id": "b005-c1",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "The seed was planted 2 cm deep. A second seed was planted 3 cm deeper than the first. How deep is that?",
+      "expression": "2 + 3",
+      "tolerance": 0,
+      "unit": "cm",
+      "working": "2 + 3 = 5",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b005-c2",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 2,
+      "prompt": "The shoot took 5 days to appear, then 3 more weeks (21 days) to flower. About how many days is that in total?",
+      "expression": "5 + 21",
+      "tolerance": 1,
+      "unit": "days",
+      "working": "5 + 21 = 26",
+      "hint": "Try drawing it, or count on your fingers."
+    },
+    {
+      "id": "b005-c3",
+      "kind": "open",
+      "skill": "inquiry.why-questions",
+      "difficulty": 2,
+      "prompt": "What would likely happen to the plant if it never received any sunlight?",
+      "model": "It could not make food, so it would not grow well and would die."
+    }
+  ],
+  "writing": {
+    "id": "b005-writing",
+    "kind": "writing",
+    "skill": "writing.story-mountain",
+    "difficulty": 2,
+    "prompt": "Plan a story about something small that grows or changes into something surprising.",
+    "format": "story-mountain",
+    "starters": [],
+    "sentences": 3,
+    "mode": "print"
+  }
+}
