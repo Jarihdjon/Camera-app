@@ -29,7 +29,10 @@ export function GatePanel({ question, onAnswer, onDone, onReadStory }: {
     setNum("");
     setPicked([]);
     // Listening gates say the sentence first, then the question; others just read the question.
-    robot.say(question.gate === "listen" && question.say ? `Listen carefully. ${question.say} ... ${question.prompt}` : question.kind === "letters" ? question.say : question.prompt, "thinking");
+    // Listening and spelling must be heard, not read: the bubble never shows those words.
+    if (question.gate === "listen" && question.say) robot.say(`Listen carefully. ${question.say} ... ${question.prompt}`, "thinking", "👂 Listen carefully…");
+    else if (question.kind === "letters") robot.say(question.say, "thinking", "👂 Listen, then spell the word.");
+    else robot.say(question.prompt, "thinking");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id]);
 
@@ -63,7 +66,7 @@ export function GatePanel({ question, onAnswer, onDone, onReadStory }: {
       </div>
 
       {(question.gate === "listen" || question.kind === "letters" || question.kind === "tiles") && question.say && (
-        <Button variant="secondary" size="lg" className="mt-4" onClick={() => robot.say(question.say!, "happy")}><Volume2 /> {question.gate === "listen" ? "Hear it again" : "Hear it"}</Button>
+        <Button variant="secondary" size="lg" className="mt-4" onClick={() => robot.say(question.say!, "happy", question.gate === "listen" || question.kind === "letters" ? "👂 Listen carefully…" : undefined)}><Volume2 /> {question.gate === "listen" ? "Hear it again" : "Hear it"}</Button>
       )}
       {question.gate === "read" && <Button variant="secondary" size="lg" className="ml-2 mt-4" onClick={onReadStory}>📖 Read the story</Button>}
 

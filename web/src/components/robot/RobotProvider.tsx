@@ -8,8 +8,8 @@ export type Mood = "idle" | "happy" | "thinking" | "cheer" | "encourage" | "slee
 interface RobotApi {
   mood: Mood;
   setMood: (m: Mood) => void;
-  /** Speak a line: voice, lip-sync and speech bubble together. */
-  say: (text: string, mood?: Mood) => void;
+  /** Speak a line: voice, lip-sync and speech bubble together. `bubble` shows different text (e.g. hide a listening sentence). */
+  say: (text: string, mood?: Mood, bubble?: string) => void;
   speaking: boolean;
   /** 0 closed .. 1 open, driven by the lip-sync. */
   mouth: MotionValue<number>;
@@ -78,9 +78,9 @@ export function RobotProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const say = useCallback(
-    (text: string, m?: Mood) => {
+    (text: string, m?: Mood, bubbleText?: string) => {
       if (m) setMood(m);
-      setBubble(text);
+      setBubble(bubbleText ?? text);
       speak(text);
     },
     [setMood],
