@@ -42,6 +42,7 @@ export const parentRoutes: FastifyPluginAsync<{ db: DB }> = async (app, { db }) 
     pinnedTopics: getSetting(db, "pinnedTopics"),
     askEnabled: getSetting(db, "askEnabled"),
     askDailyLimit: getSetting(db, "askDailyLimit"),
+    askModel: getSetting(db, "askModel"),
     // The key itself never leaves the PC; only whether one is set.
     claudeConfigured: Boolean(config.anthropicKey),
     spendThisMonthAud: Math.round(spendThisMonthAud(db) * 100) / 100,
@@ -58,6 +59,7 @@ export const parentRoutes: FastifyPluginAsync<{ db: DB }> = async (app, { db }) 
       pinnedTopics: z.array(z.string()),
       askEnabled: z.boolean(),
       askDailyLimit: z.number().int().min(0).max(100),
+      askModel: z.string().min(1),
     }).partial().parse(req.body);
     for (const [k, v] of Object.entries(body)) setSetting(db, k as never, v as never);
     return { ok: true };

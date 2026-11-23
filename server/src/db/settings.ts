@@ -13,6 +13,8 @@ export const DEFAULT_SETTINGS = {
   /** Ask Sparky: the robot answers questions about the current unit. */
   askEnabled: true,
   askDailyLimit: 30,
+  /** Model for Ask Sparky. Haiku 5.5: quick replies for short questions, at a fraction of the cost. */
+  askModel: "claude-haiku-5-5",
   pinnedSkills: [] as string[],
   pinnedTopics: [] as string[],
 };

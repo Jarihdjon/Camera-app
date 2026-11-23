@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
+import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import { paragraphs, type Activity, type Unit } from "@yav/shared";
 import type { DB } from "../db/db.js";
@@ -156,22 +157,32 @@ export type AskModel = (system: string, user: string) => Promise<{ reply: ModelR
 
 let client: Anthropic | null = null;
 
-/** The real call: structured output, low effort for a quick reply, server-side fallback on a refusal. */
+/**
+ * The real call: structured output and low effort for a quick reply. Uses its own model
+ * setting (Haiku 5.5 by default: fast and cheap for short chat). Haiku has no server-side
+ * fallback, so a refusal there simply becomes the gentle off-topic reply; other models get
+ * the fallback.
+ */
 export function claudeAskModel(db: DB): AskModel | null {
   if (!config.anthropicKey) return null;
   client ??= new Anthropic({ apiKey: config.anthropicKey });
   const anthropic = client;
   return async (system, user) => {
-    const model = getSetting(db, "claudeModel");
-    const res = await anthropic.beta.messages.parse({
+    const model = getSetting(db, "askModel");
+    const common = {
       model,
       max_tokens: 2000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      output_config: { effort: "low", format: betaZodOutputFormat(AskReplySchema) },
-      system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-      messages: [{ role: "user", content: user }],
-    });
+      system: [{ type: "text" as const, text: system, cache_control: { type: "ephemeral" as const } }],
+      messages: [{ role: "user" as const, content: user }],
+    };
+    const res = model.startsWith("claude-haiku")
+      ? await anthropic.messages.parse({ ...common, output_config: { effort: "low", format: zodOutputFormat(AskReplySchema) } })
+      : await anthropic.beta.messages.parse({
+          ...common,
+          betas: ["server-side-fallback-2026-07-01"],
+          fallbacks: "default",
+          output_config: { effort: "low", format: betaZodOutputFormat(AskReplySchema) },
+        });
     return {
       reply: res.stop_reason === "refusal" ? null : (res.parsed_output ?? null),
       refused: res.stop_reason === "refusal",

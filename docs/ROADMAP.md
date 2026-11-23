@@ -50,7 +50,8 @@
   call; Claude classifies everything else as on-topic, off-topic (gentle redirect) or grown-up; replies that
   would give away the answer are swapped for the hint; a daily limit and the spend cap apply; without a key it
   still explains workbook words and gives hints. Every question is in the parent area, flagged ones highlighted.
-  Parents can switch it off (`askEnabled`) or change the daily limit (`askDailyLimit`).
+  Parents can switch it off (`askEnabled`) or change the daily limit (`askDailyLimit`). It runs on Claude Haiku 5.5
+  (`askModel`), separate from the model that writes units (`claudeModel`).
 
 ## Phase 0: iPad checks (week one, on his iPad)
 
