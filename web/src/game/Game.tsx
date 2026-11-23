@@ -87,6 +87,10 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
   const level = scene.kind === "level" ? scene : null;
   const layout = useMemo(() => (level ? buildLayout(level.pack.id, level.pack.eggs) : null), [level?.pack.id]);
   const [nearStone, setNearStone] = useState(false);
+  useEffect(() => {
+    const hook = (window as unknown as { __game?: Record<string, unknown> }).__game;
+    if (hook) hook.layout = layout;
+  }, [layout]);
   const [, setPickups] = useState(0);
 
   const onMove = useCallback((b: Body) => {
