@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { SELF_CHECK_ITEMS } from "@yav/shared/childHelpers";
 import { api, type Wallet } from "@/lib/api";
@@ -14,8 +14,9 @@ const CHOICES = [
 ];
 
 /** How did I do? Three statements, three friendly choices. Saved for the parent area. */
-export function SelfCheck({ unitId, onWallet, onNext }: { unitId: string; onWallet: (w: Wallet) => void; onNext: () => void }) {
-  const [picks, setPicks] = useState<(number | null)[]>(SELF_CHECK_ITEMS.map(() => null));
+export function SelfCheck({ unitId, initial, onState, onWallet, onNext }: { unitId: string; initial?: (number | null)[]; onState?: (s: (number | null)[]) => void; onWallet: (w: Wallet) => void; onNext: () => void }) {
+  const [picks, setPicks] = useState<(number | null)[]>(initial ?? SELF_CHECK_ITEMS.map(() => null));
+  useEffect(() => onState?.(picks), [picks, onState]);
   const robot = useRobot();
   const all = picks.every((p) => p !== null);
 

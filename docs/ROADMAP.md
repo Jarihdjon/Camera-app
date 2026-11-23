@@ -53,6 +53,26 @@
   Parents can switch it off (`askEnabled`) or change the daily limit (`askDailyLimit`). It runs on Claude Haiku 5.5
   (`askModel`), separate from the model that writes units (`claudeModel`).
 
+## Done: chapters, saved progress and adaptive content
+
+- **Star Station hub** with chapter planets that unlock in order. Each chapter is a path of stages:
+  story stages (one inquiry unit each), a **Word Vault review** built from what is due for him, and a
+  **chapter challenge** built from the chapter's own items, leaning towards his weakest skills. Finishing a
+  challenge unlocks the next planet. Up to 3 stars per stage (finished, 2 or fewer second tries, curious),
+  never taken away; new stars earn gems towards robot parts. Chapters are in `content/chapters.json`.
+- **Saved progress:** his place inside a unit is saved after every step and answer (`unit_progress`), and the
+  hub offers "Keep going". Stage completion is stored per chapter (`stage_progress`), for bank and generated units.
+- **Learning from him** (`server/src/engine/learner.ts`): a snapshot of mastery and level per skill and strand,
+  due words, missed questions, and theme preferences. Questions he misses twice are booked for review on the
+  1/3/7/14 day schedule, and review answers move items along it. At level 1 to 2 in a strand the paragraph to
+  look at shows straight away; at maths level 4 to 5 a bonus times-table stretch is added.
+- **New chapters at his level** (`server/src/ai/queue.ts`): when he starts his last chapter (and nightly at
+  8pm), Claude writes a new planet of two story units from a text-only learner summary, themed on his favourite
+  interests. Units must pass the schema plus quality checks (reading level, glossary words in the story,
+  answers findable in their paragraph, maths computed); one retry each; stops at the monthly cap.
+- Parent **Progress** tab: strand and skill mastery, next focus, Word Vault, chapters and stars, manual unlock,
+  and retiring a Claude-written chapter.
+
 ## Phase 0: iPad checks (week one, on his iPad)
 
 - [ ] Add to Home Screen opens full screen.

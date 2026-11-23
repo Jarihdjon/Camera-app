@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 /** Print, write, upload. The upload unlocks the next activity. */
-export function WritingTask({ task, onUnlocked }: { task: Unit["writing"]; onUnlocked: () => void }) {
+export function WritingTask({ task, onUnlocked }: { task: NonNullable<Unit["writing"]>; onUnlocked: () => void }) {
   const mountain = task.format === "story-mountain";
   const [status, setStatus] = useState<"idle" | "checking" | "retake" | "uploading" | "done">("idle");
   const [preview, setPreview] = useState<string | null>(null);

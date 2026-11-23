@@ -1,0 +1,45 @@
+[
+  {
+    "id": "ch1-launch-pad",
+    "title": "Launch Pad",
+    "emoji": "🚀",
+    "color": "#3949AB",
+    "planet": ["#8fa7ff", "#2b3a8f"],
+    "ring": true,
+    "stages": [
+      { "id": "lunchbox", "kind": "story", "unitId": "bank-002-the-lost-lunchbox" },
+      { "id": "rocket", "kind": "story", "unitId": "bank-003-rocket-to-the-moon" },
+      { "id": "moon-garden", "kind": "story", "unitId": "bank-001-moon-base-garden" },
+      { "id": "review", "kind": "review" },
+      { "id": "challenge", "kind": "challenge" }
+    ]
+  },
+  {
+    "id": "ch2-bushland",
+    "title": "Bushland Planet",
+    "emoji": "🐨",
+    "color": "#2E7D32",
+    "planet": ["#9be37a", "#2c6b2f"],
+    "ring": false,
+    "stages": [
+      { "id": "bush-race", "kind": "story", "unitId": "bank-004-the-great-bush-race" },
+      { "id": "koala", "kind": "story", "unitId": "bank-007-kip-the-koala" },
+      { "id": "review", "kind": "review" },
+      { "id": "challenge", "kind": "challenge" }
+    ]
+  },
+  {
+    "id": "ch3-ocean-garden",
+    "title": "Ocean & Garden World",
+    "emoji": "🐧",
+    "color": "#00838F",
+    "planet": ["#7be3e8", "#1d5f86"],
+    "ring": true,
+    "stages": [
+      { "id": "seed", "kind": "story", "unitId": "bank-005-the-magic-seed" },
+      { "id": "penguin", "kind": "story", "unitId": "bank-006-pip-the-little-penguin" },
+      { "id": "review", "kind": "review" },
+      { "id": "challenge", "kind": "challenge" }
+    ]
+  }
+]

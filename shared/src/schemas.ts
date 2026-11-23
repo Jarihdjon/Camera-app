@@ -163,7 +163,8 @@ export const UnitSchema = z
     id: z.string().min(1),
     title: z.string().min(1),
     theme: ThemeSchema,
-    source: z.enum(["bank", "claude"]),
+    /** bank: checked content; claude: written for him; built: review and challenge stages assembled by code. */
+    source: z.enum(["bank", "claude", "built"]),
     /** The unit's accent colour, e.g. "#3949AB". */
     color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     inquiry: InquirySchema.optional(),
@@ -175,12 +176,13 @@ export const UnitSchema = z
     gapFill: GapFillSchema.optional(),
     /** Go further: maths and inquiry questions. */
     corner: z.array(ActivitySchema).max(4).default([]),
-    writing: WritingTaskSchema,
+    /** Story units end with writing on paper; review and challenge stages have none. */
+    writing: WritingTaskSchema.optional(),
   })
   .superRefine((unit, ctx) => {
     if (unit.passage) {
       const words = unit.passage.text.trim().split(/\s+/).length;
-      const max = unit.source === "bank" ? 260 : 150;
+      const max = unit.source === "claude" ? 150 : 260;
       if (words < 80 || words > max) {
         ctx.addIssue({ code: "custom", path: ["passage", "text"], message: `Passage is ${words} words; must be 80 to ${max}` });
       }
@@ -200,7 +202,7 @@ export const UnitSchema = z
         ctx.addIssue({ code: "custom", path: ["activities", i], message: `${q.id}: needs accept words or groups` });
       }
     }
-    const ids = [...all, unit.writing, ...(unit.gapFill ? [unit.gapFill] : [])].map((a) => a.id);
+    const ids = [...all, ...(unit.writing ? [unit.writing] : []), ...(unit.gapFill ? [unit.gapFill] : [])].map((a) => a.id);
     if (new Set(ids).size !== ids.length) ctx.addIssue({ code: "custom", path: ["id"], message: "activity ids must be unique" });
   });
 

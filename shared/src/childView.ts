@@ -26,7 +26,7 @@ export interface ChildUnit {
   questions: ChildActivity[];
   gapFill?: ChildActivity;
   corner: ChildActivity[];
-  writing: Extract<Activity, { kind: "writing" }>;
+  writing?: Extract<Activity, { kind: "writing" }>;
 }
 
 /** Stable shuffle so the word bank order is the same every time, but not answer order. */

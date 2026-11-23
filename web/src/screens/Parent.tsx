@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "@/lib/api";
+import { api, type ParentProgress } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ export function Parent({ onBack }: { onBack: () => void }) {
   const [queue, setQueue] = useState<Awaited<ReturnType<typeof api.parent.reviewQueue>>>([]);
   const [questions, setQuestions] = useState<Awaited<ReturnType<typeof api.parent.questions>>>([]);
   const [answers, setAnswers] = useState<Awaited<ReturnType<typeof api.parent.responses>>>([]);
+  const [progress, setProgress] = useState<ParentProgress | null>(null);
 
   async function login() {
     try {
@@ -26,6 +27,7 @@ export function Parent({ onBack }: { onBack: () => void }) {
       setQueue(await api.parent.reviewQueue());
       setQuestions(await api.parent.questions());
       setAnswers(await api.parent.responses());
+      setProgress(await api.parent.progress());
     } catch {
       setErr("Wrong PIN");
     }
@@ -57,8 +59,9 @@ export function Parent({ onBack }: { onBack: () => void }) {
         <Button variant="outline" onClick={onBack}>← Back</Button>
         <h1 className="text-2xl">Parent area</h1>
       </div>
-      <Tabs defaultValue="review">
-        <TabsList>
+      <Tabs defaultValue="progress">
+        <TabsList className="flex-wrap">
+          <TabsTrigger value="progress">Progress</TabsTrigger>
           <TabsTrigger value="review">Review queue {pending > 0 && <Badge className="ml-1">{pending}</Badge>}</TabsTrigger>
           <TabsTrigger value="questions">Questions he asked {questions.some((q) => q.flagged) && <Badge className="ml-1 bg-pink/20 text-pink">!</Badge>}</TabsTrigger>
           <TabsTrigger value="answers">His thinking</TabsTrigger>
@@ -84,6 +87,7 @@ export function Parent({ onBack }: { onBack: () => void }) {
             ))}
           </div>
         </TabsContent>
+        <TabsContent value="progress">{progress && <ProgressTab p={progress} reload={async () => setProgress(await api.parent.progress())} />}</TabsContent>
         <TabsContent value="questions">
           <p className="mb-3 text-sm text-muted-foreground">Everything he asked the robot, and its reply. Flagged questions were about feelings, safety or personal things, and the robot told him to talk to a grown-up.</p>
           <Card>
@@ -131,6 +135,73 @@ export function Parent({ onBack }: { onBack: () => void }) {
           </Card>
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+const STRAND_LABEL: Record<string, string> = { reading: "Reading", writing: "Writing", maths: "Maths", inquiry: "Science & inquiry" };
+
+/** What the app has learned about him, what it will focus on next, and his journey so far. */
+function ProgressTab({ p, reload }: { p: ParentProgress; reload: () => Promise<void> }) {
+  const bar = (m: number) => (m >= 0.7 ? "bg-success" : m >= 0.45 ? "bg-primary" : "bg-pink");
+  return (
+    <div className="grid gap-4">
+      <Card className="gap-3 p-5">
+        <CardTitle>How he's going</CardTitle>
+        <CardDescription>Mastery rises with right answers, falls with misses, and fades slowly without practice. Green is secure, gold is building, pink is still learning.</CardDescription>
+        {p.strands.map((st) => (
+          <div key={st.strand} className="grid gap-1">
+            <div className="flex justify-between text-sm"><span className="font-semibold">{STRAND_LABEL[st.strand] ?? st.strand}</span><span className="text-muted-foreground">level {st.level} of 5 · {Math.round(st.mastery * 100)}%</span></div>
+            <div className="h-3 overflow-hidden rounded-full bg-white/10"><div className={`h-full rounded-full ${bar(st.mastery)}`} style={{ width: `${st.mastery * 100}%` }} /></div>
+          </div>
+        ))}
+        <p className="text-sm"><b>Next focus:</b> {STRAND_LABEL[p.weakest]} gets the most support and review; {STRAND_LABEL[p.strongest]} gets the stretch questions.</p>
+        <p className="text-sm text-muted-foreground">{p.wordsLearned} words in his Word Vault · {p.dueWords} words and {p.dueItems} questions due for review · ⭐ {p.stars} stars</p>
+      </Card>
+
+      <Card className="gap-2 p-5">
+        <CardTitle>Skills in detail</CardTitle>
+        <Table>
+          <TableHeader><TableRow><TableHead>Skill</TableHead><TableHead>Mastery</TableHead><TableHead>Level</TableHead><TableHead>Answers</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {p.skills.map((k) => (
+              <TableRow key={k.id}>
+                <TableCell>{k.label} <span className="text-xs text-muted-foreground">({STRAND_LABEL[k.strand]})</span></TableCell>
+                <TableCell><div className="h-2 w-28 overflow-hidden rounded-full bg-white/10"><div className={`h-full ${bar(k.mastery)}`} style={{ width: `${k.mastery * 100}%` }} /></div></TableCell>
+                <TableCell>{k.difficulty}</TableCell>
+                <TableCell className="text-muted-foreground">{k.attempts}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      <Card className="gap-3 p-5">
+        <CardTitle>Chapters</CardTitle>
+        {p.chapters.map((c) => (
+          <div key={c.id} className="grid gap-1 border-b border-white/10 pb-2">
+            <div className="flex items-center justify-between"><span className="font-semibold">{c.emoji} {c.number}. {c.title}</span><Badge variant={c.status === "done" ? "success" : c.status === "open" ? "default" : "outline"}>{c.status}</Badge></div>
+            <div className="flex flex-wrap gap-2 text-sm">
+              {c.stages.map((s) => (
+                <span key={s.id} className="flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5">
+                  {s.status === "done" ? "✓" : s.status === "open" ? "○" : "🔒"} {s.title} {s.stars > 0 && `⭐${s.stars}`}
+                  {s.status === "locked" && <button type="button" className="ml-1 cursor-pointer text-xs text-primary underline" onClick={() => void api.parent.unlock(c.id, s.id).then(reload)}>unlock</button>}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+        <p className="text-sm text-muted-foreground">
+          {p.generating ? "Claude is writing his next planet now." : "When he starts his last chapter, Claude writes a new one at his level (within the monthly cap)."}
+          {p.lastGeneration && ` Last attempt ${new Date(p.lastGeneration.created_at + "Z").toLocaleDateString("en-AU")}: ${p.lastGeneration.valid ? "passed the checks" : `rejected (${p.lastGeneration.error?.slice(0, 120)})`}.`}
+        </p>
+        {p.generatedChapters.map((g) => (
+          <div key={g.id} className="flex items-center justify-between text-sm">
+            <span>{g.title} <Badge variant="outline">written by Claude</Badge></span>
+            {g.status === "ready" ? <Button size="sm" variant="outline" onClick={() => void api.parent.retireChapter(g.id).then(reload)}>Retire</Button> : <span className="text-muted-foreground">retired</span>}
+          </div>
+        ))}
+      </Card>
     </div>
   );
 }

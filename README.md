@@ -20,6 +20,7 @@ Claude API key stays in `.env` on the PC and is never sent to the iPad or commit
 | `web/` | React + Vite progressive web app for the iPad. Tailwind v4 + shadcn/ui components (`web/src/components/ui`), `motion` animations, the robot companion (`web/src/components/robot`) |
 | `shared/` | The unit schema (zod) and skill map, used by both server and web |
 | `content/bank/` | Checked units that work without the AI. Each must pass the schema or the server won't start |
+| `content/chapters.json` | The starting chapters (planets) and their stages, using the bank units |
 | `scripts/windows/` | One-click start, one-time setup (firewall, start at login, backups, keep-awake), backup |
 | `docs/` | Build plan, architecture notes, roadmap |
 | `data/` | Created at runtime: database, uploads, clips. Never committed |

@@ -5,10 +5,14 @@ import { getSetting, setSetting } from "../db/settings.js";
 import { checkParentToken, hashPin, issueParentToken, verifyPin } from "../auth.js";
 import { spendThisMonthAud } from "../ai/spend.js";
 import { config } from "../config.js";
+import type { ChapterDef, Unit } from "@yav/shared";
+import { allChapters, chapterViews, learnerNow } from "../engine/chapters.js";
 
 const COOKIE = "parent";
 
-export const parentRoutes: FastifyPluginAsync<{ db: DB }> = async (app, { db }) => {
+interface ParentOpts { db: DB; bank: Unit[]; bankChapters: ChapterDef[]; isGenerating?: () => boolean }
+
+export const parentRoutes: FastifyPluginAsync<ParentOpts> = async (app, { db, bank, bankChapters, isGenerating }) => {
   app.post("/login", async (req, reply) => {
     const { pin } = z.object({ pin: z.string().min(4).max(12) }).parse(req.body);
     if (!verifyPin(pin, getSetting(db, "parentPinHash"))) return reply.code(401).send({ error: "wrong PIN" });
@@ -81,6 +85,41 @@ export const parentRoutes: FastifyPluginAsync<{ db: DB }> = async (app, { db }) 
   /** Open answers, reflections and self-checks, to talk about together. */
   app.get("/responses", async () =>
     db.prepare("SELECT id, unit_id, activity_id, kind, text, talk_later, created_at FROM response ORDER BY id DESC LIMIT 200").all());
+
+  /** What the app has learned about him, and what is coming next. */
+  app.get("/progress", async () => {
+    const chapters = allChapters(db, bankChapters);
+    const snap = learnerNow(db, bank, chapters);
+    return {
+      strands: snap.strands,
+      skills: snap.skills,
+      weakest: snap.weakest,
+      strongest: snap.strongest,
+      wordsLearned: snap.wordsLearned,
+      dueWords: snap.dueWords.length,
+      dueItems: snap.dueItems.length,
+      stars: snap.stars,
+      chapters: chapterViews(db, bank, chapters),
+      generating: isGenerating?.() ?? false,
+      lastGeneration: db.prepare("SELECT created_at, valid, error FROM generation_log WHERE purpose = 'unit' ORDER BY id DESC LIMIT 1").get() ?? null,
+      generatedChapters: (db.prepare("SELECT id, body, status FROM chapter ORDER BY position").all() as { id: string; body: string; status: string }[])
+        .map((r) => ({ id: r.id, title: (JSON.parse(r.body) as ChapterDef).title, status: r.status })),
+    };
+  });
+
+  /** Let a stage through without finishing the one before (e.g. a school topic he needs now). */
+  app.post("/unlock", async (req) => {
+    const { chapterId, stageId } = z.object({ chapterId: z.string(), stageId: z.string() }).parse(req.body);
+    db.prepare("INSERT INTO stage_progress (chapter_id, stage_id, status) VALUES (?, ?, 'open') ON CONFLICT DO NOTHING").run(chapterId, stageId);
+    return { ok: true };
+  });
+
+  /** Take a chapter Claude wrote out of his journey. */
+  app.post("/chapters/:id/retire", async (req) => {
+    const { id } = z.object({ id: z.string() }).parse(req.params);
+    db.prepare("UPDATE chapter SET status = 'retired' WHERE id = ?").run(id);
+    return { ok: true };
+  });
 
   app.get("/skills", async () => db.prepare("SELECT id, strand, mastery, difficulty, last_practised FROM skill ORDER BY strand, id").all());
 };

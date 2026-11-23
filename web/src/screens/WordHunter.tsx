@@ -19,8 +19,9 @@ const clean = (s: string) => s.toLowerCase().replace(/[^a-z'-]/g, "").replace(/^
  * Workbook words are explained from the glossary; any other word is explained
  * by the robot using the sentence it's in, so the meaning fits the story.
  */
-export function WordHunter({ passage, onWallet, onNext }: { passage: Passage; onWallet: (w: Wallet) => void; onNext: () => void }) {
-  const [tapped, setTapped] = useState<Set<string>>(new Set());
+export function WordHunter({ passage, initial, onState, onWallet, onNext }: { passage: Passage; initial?: string[]; onState?: (tapped: string[]) => void; onWallet: (w: Wallet) => void; onNext: () => void }) {
+  const [tapped, setTapped] = useState<Set<string>>(new Set(initial ?? []));
+  useEffect(() => onState?.([...tapped]), [tapped, onState]);
   const [reading, setReading] = useState<number | null>(null);
   const [looking, setLooking] = useState<string | null>(null);
   const glossary = new Map(passage.glossary.map((g) => [g.word.toLowerCase(), g.meaning]));

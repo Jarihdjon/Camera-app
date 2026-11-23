@@ -10,6 +10,8 @@ import { Feedback, Kicker, Prompt, StepCard } from "./shared";
  * A thinking question: tune-in, an open question, or a reflection. Never marked.
  * He can type, dictate, or choose to talk about it with a grown-up instead.
  */
+export type OpenState = { text: string; done: null | { model: string | null; talk: boolean } };
+
 export function OpenStep(props: {
   unitId: string;
   activityId?: string;
@@ -18,11 +20,15 @@ export function OpenStep(props: {
   prompt: string;
   optional?: boolean;
   extra?: React.ReactNode;
+  initial?: OpenState;
+  onState?: (s: OpenState) => void;
   onWallet: (w: Wallet) => void;
   onNext: () => void;
 }) {
-  const [text, setText] = useState("");
-  const [done, setDone] = useState<null | { model: string | null; talk: boolean }>(null);
+  const [text, setText] = useState(props.initial?.text ?? "");
+  const [done, setDone] = useState<null | { model: string | null; talk: boolean }>(props.initial?.done ?? null);
+  const onState = props.onState;
+  useEffect(() => onState?.({ text, done }), [text, done, onState]);
   const robot = useRobot();
   const ask = useAsk();
   useEffect(() => ask.setScreen({ activityId: props.activityId, prompt: props.prompt }), [props.activityId, props.prompt, ask]);

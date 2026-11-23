@@ -1,20 +1,26 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { api, type ChildUnit, type Wallet } from "@/lib/api";
+import { api, type ChildUnit, type Levels, type Wallet } from "@/lib/api";
 import { RobotProvider } from "@/components/robot/RobotProvider";
 import { RewardsProvider } from "@/components/rewards";
 import { Starfield } from "@/components/Starfield";
 import { Robot } from "@/components/robot/Robot";
 import { Button } from "@/components/ui/button";
 import { Onboarding } from "./screens/Onboarding";
-import { Home } from "./screens/Home";
-import { UnitPlayer } from "./screens/UnitPlayer";
+import { UnitPlayer, type StageInfo } from "./screens/UnitPlayer";
 import { Parent } from "./screens/Parent";
 import { Build } from "./screens/Build";
 import { Workshop } from "./screens/Workshop";
-import { Shelf } from "./screens/Shelf";
+import { Hub } from "./screens/Hub";
+import { ChapterMap } from "./screens/ChapterMap";
 
-type Screen = { name: "home" } | { name: "unit"; unit: ChildUnit } | { name: "build" } | { name: "parent" } | { name: "workshop" } | { name: "shelf" };
+type Screen =
+  | { name: "hub"; unlocked?: string | null }
+  | { name: "chapter"; id: string; justUnlocked?: string | null }
+  | { name: "unit"; unit: ChildUnit; stage?: StageInfo; initial?: { step: number; state: Record<string, unknown> } | null; levels?: Levels }
+  | { name: "build" }
+  | { name: "parent" }
+  | { name: "workshop" };
 type Child = Awaited<ReturnType<typeof api.child>>;
 
 export function App() {
@@ -31,7 +37,7 @@ export function App() {
 function Shell() {
   const [child, setChild] = useState<Child | null>(null);
   const [error, setError] = useState(false);
-  const [screen, setScreen] = useState<Screen>({ name: "home" });
+  const [screen, setScreen] = useState<Screen>({ name: "hub" });
 
   const refresh = useCallback(() => api.child().then(setChild).catch(() => setError(true)), []);
   useEffect(() => void refresh(), [refresh]);
@@ -49,24 +55,40 @@ function Shell() {
   if (!child) return <Centre><Robot mood="thinking" size={160} /></Centre>;
   if (!child.firstName || !child.robot.name) return <Onboarding onDone={refresh} hasName={Boolean(child.firstName)} />;
 
-  const key = screen.name === "unit" ? `unit-${screen.unit.id}` : screen.name;
+  const openStage = async (chapterId: string, stageId: string) => {
+    const r = await api.stage(chapterId, stageId);
+    setScreen({ name: "unit", unit: r.unit, stage: { chapterId, stageId, kind: r.kind }, initial: r.progress, levels: r.levels });
+  };
+  const home = () => setScreen({ name: "hub" });
+
+  const key = screen.name === "unit" ? `unit-${screen.unit.id}` : screen.name === "chapter" ? `chapter-${screen.id}` : screen.name;
   return (
     <AnimatePresence mode="wait">
       <motion.div key={key} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.25 }}>
         {screen.name === "unit" ? (
-          <UnitPlayer unit={screen.unit} firstName={child.firstName} robotName={child.robot.name} parts={child.robot.parts} wallet={child.wallet} onWallet={setWallet}
-            onDone={() => { setScreen({ name: "home" }); void refresh(); }} />
+          <UnitPlayer unit={screen.unit} firstName={child.firstName} robotName={child.robot.name} parts={child.robot.parts} wallet={child.wallet}
+            stage={screen.stage} initial={screen.initial} levels={screen.levels} onWallet={setWallet}
+            onDone={(result) => {
+              void refresh();
+              const st = screen.stage;
+              if (!st) return home();
+              if (result?.unlockedChapter) return setScreen({ name: "hub", unlocked: result.unlockedChapter.id });
+              setScreen({ name: "chapter", id: st.chapterId, justUnlocked: result?.unlockedStage ?? null });
+            }} />
+        ) : screen.name === "chapter" ? (
+          <ChapterMap chapterId={screen.id} robotName={child.robot.name} parts={child.robot.parts} justUnlocked={screen.justUnlocked}
+            onStage={(c, s) => void openStage(c, s)} onBack={home} />
         ) : screen.name === "build" ? (
-          <Build wallet={child.wallet} onBack={() => setScreen({ name: "home" })} />
-        ) : screen.name === "shelf" ? (
-          <Shelf onOpen={(unit) => setScreen({ name: "unit", unit })} onBack={() => setScreen({ name: "home" })} />
+          <Build wallet={child.wallet} onBack={home} />
         ) : screen.name === "workshop" ? (
-          <Workshop robotState={child.robot} onChange={(robot) => setChild((c) => (c ? { ...c, robot } : c))} onBack={() => setScreen({ name: "home" })} />
+          <Workshop robotState={child.robot} onChange={(robot) => setChild((c) => (c ? { ...c, robot } : c))} onBack={home} />
         ) : screen.name === "parent" ? (
-          <Parent onBack={() => setScreen({ name: "home" })} />
+          <Parent onBack={home} />
         ) : (
-          <Home firstName={child.firstName} robotName={child.robot.name} parts={child.robot.parts} wallet={child.wallet}
-            onStartUnit={(unit) => setScreen({ name: "unit", unit })} onBuild={() => setScreen({ name: "build" })} onWorkshop={() => setScreen({ name: "workshop" })} onShelf={() => setScreen({ name: "shelf" })} onParent={() => setScreen({ name: "parent" })} />
+          <Hub firstName={child.firstName} robotName={child.robot.name} parts={child.robot.parts} wallet={child.wallet} unlocked={screen.unlocked}
+            onChapter={(c) => setScreen({ name: "chapter", id: c.id })}
+            onResume={(c, s) => void openStage(c, s)}
+            onWorkshop={() => setScreen({ name: "workshop" })} onBuild={() => setScreen({ name: "build" })} onParent={() => setScreen({ name: "parent" })} />
         )}
       </motion.div>
     </AnimatePresence>

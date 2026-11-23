@@ -19,10 +19,10 @@ CREATE TABLE IF NOT EXISTS skill (
 
 CREATE TABLE IF NOT EXISTS unit (
   id TEXT PRIMARY KEY,
-  source TEXT NOT NULL CHECK (source IN ('bank','claude')),
+  source TEXT NOT NULL CHECK (source IN ('bank','claude','built')),
   theme TEXT NOT NULL,
   body TEXT NOT NULL,                -- validated Unit JSON
-  status TEXT NOT NULL DEFAULT 'ready' CHECK (status IN ('ready','served','completed','retired')),
+  status TEXT NOT NULL DEFAULT 'ready' CHECK (status IN ('ready','served','completed','retired','chapter','built','variant')),
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   completed_at TEXT
 );
@@ -130,6 +130,47 @@ CREATE TABLE IF NOT EXISTS ask_log (
   reply TEXT NOT NULL,
   kind TEXT NOT NULL,                 -- answer, word, off-topic, grown-up, offline, limit
   flagged INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Chapters and stages: only progress is stored; locked/open is worked out from it.
+CREATE TABLE IF NOT EXISTS stage_progress (
+  chapter_id TEXT NOT NULL,
+  stage_id TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('open','done')),  -- 'open' = unlocked by a parent
+  stars INTEGER NOT NULL DEFAULT 0,
+  plays INTEGER NOT NULL DEFAULT 0,
+  completed_at TEXT,
+  PRIMARY KEY (chapter_id, stage_id)
+);
+
+-- Where he is inside a unit, so closing the app never loses his place.
+CREATE TABLE IF NOT EXISTS unit_progress (
+  unit_id TEXT PRIMARY KEY,
+  chapter_id TEXT,
+  stage_id TEXT,
+  step INTEGER NOT NULL DEFAULT 0,
+  state TEXT NOT NULL DEFAULT '{}',
+  label TEXT,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Questions he missed come back on the 1, 3, 7, 14 day schedule.
+CREATE TABLE IF NOT EXISTS review_item (
+  unit_id TEXT NOT NULL,
+  activity_id TEXT NOT NULL,
+  review_step INTEGER NOT NULL DEFAULT 0,
+  due_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (unit_id, activity_id)
+);
+
+-- Chapters Claude wrote for him. Bank chapters live in content/chapters.json.
+CREATE TABLE IF NOT EXISTS chapter (
+  id TEXT PRIMARY KEY,
+  position INTEGER NOT NULL,
+  body TEXT NOT NULL,                 -- ChapterDef JSON
+  status TEXT NOT NULL DEFAULT 'ready' CHECK (status IN ('ready','retired')),
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

@@ -30,7 +30,7 @@ export const useAsk = () => {
 type Msg = { from: "me" | "bot"; text: string; kind?: AskReply["kind"] };
 const MOOD: Record<AskReply["kind"], Mood> = { answer: "happy", word: "happy", "off-topic": "thinking", "grown-up": "encourage", offline: "encourage", limit: "sleepy" };
 
-export function AskSparky({ unitId, robotName, parts, onWallet, children }: { unitId: string; robotName: string; parts: string[]; onWallet?: (w: Wallet) => void; children: ReactNode }) {
+export function AskSparky({ unitId, robotName, parts, onWallet, onAsk, children }: { unitId: string; robotName: string; parts: string[]; onWallet?: (w: Wallet) => void; onAsk?: () => void; children: ReactNode }) {
   const [isOpen, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState("");
@@ -57,6 +57,7 @@ export function AskSparky({ unitId, robotName, parts, onWallet, children }: { un
     try {
       const r = await api.ask({ unitId, activityId: screen.current.activityId, question: q });
       setMsgs((m) => [...m, { from: "bot", text: r.reply, kind: r.kind }]);
+      if (r.kind === "answer" || r.kind === "word") onAsk?.();
       robot.say(r.reply, MOOD[r.kind]);
       void refreshWallet();
     } catch {
@@ -66,7 +67,7 @@ export function AskSparky({ unitId, robotName, parts, onWallet, children }: { un
     } finally {
       setBusy(false);
     }
-  }, [busy, unitId, robot, refreshWallet]);
+  }, [busy, unitId, robot, refreshWallet, onAsk]);
 
   const api_: AskApi = {
     setScreen: (s) => { screen.current = s; },

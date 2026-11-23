@@ -17,13 +17,28 @@ type Marked = Extract<ChildActivity, { kind: "short-answer" | "multiple-choice" 
  * One marked question. Two tries: after the first miss he gets the hint and the paragraph
  * to look at; after the second the answer is shown kindly, and he moves on.
  */
-export function Question({ unitId, activity, label, story, onWallet, onNext }: { unitId: string; activity: Marked; label: string; story?: string; onWallet: (w: Wallet) => void; onNext: () => void }) {
-  const [answer, setAnswer] = useState("");
-  const [tries, setTries] = useState(0);
-  const [state, setState] = useState<"asking" | "right" | "shown">("asking");
-  const [hint, setHint] = useState<string | null>(null);
-  const [reveal, setReveal] = useState<Reveal>(null);
-  const [wrongPicks, setWrongPicks] = useState<number[]>([]);
+export type QuestionState = { answer: string; tries: number; state: "asking" | "right" | "shown"; hint: string | null; reveal: Reveal; wrongPicks: number[] };
+
+export function Question({ unitId, activity, label, story, support = false, initial, onState, onMiss, onWallet, onNext }: {
+  unitId: string;
+  activity: Marked;
+  label: string;
+  story?: string;
+  /** Show the paragraph to look at straight away (his level in this strand is 1 or 2). */
+  support?: boolean;
+  initial?: QuestionState;
+  onState?: (s: QuestionState) => void;
+  onMiss?: () => void;
+  onWallet: (w: Wallet) => void;
+  onNext: () => void;
+}) {
+  const [answer, setAnswer] = useState(initial?.answer ?? "");
+  const [tries, setTries] = useState(initial?.tries ?? 0);
+  const [state, setState] = useState<"asking" | "right" | "shown">(initial?.state ?? "asking");
+  const [hint, setHint] = useState<string | null>(initial?.hint ?? null);
+  const [reveal, setReveal] = useState<Reveal>(initial?.reveal ?? null);
+  const [wrongPicks, setWrongPicks] = useState<number[]>(initial?.wrongPicks ?? []);
+  useEffect(() => onState?.({ answer, tries, state, hint, reveal, wrongPicks }), [answer, tries, state, hint, reveal, wrongPicks, onState]);
   const [shake, setShake] = useState(0);
   const shownAt = useRef(Date.now());
   const robot = useRobot();
@@ -46,6 +61,7 @@ export function Question({ unitId, activity, label, story, onWallet, onNext }: {
       robot.say(pick(PRAISE), "cheer");
       return;
     }
+    if (tryNumber === 1) onMiss?.();
     if (typeof value === "number") setWrongPicks((w) => [...w, value]);
     setShake((s) => s + 1);
     setHint(r.hint);
@@ -108,6 +124,7 @@ export function Question({ unitId, activity, label, story, onWallet, onNext }: {
       <AnimatePresence>
         {state === "right" && <Feedback tone="good">Yes! {reveal?.text && activity.kind !== "multiple-choice" && activity.kind !== "word-meaning" ? reveal.text : ""}</Feedback>}
         {state === "shown" && <Feedback tone="try">{activity.kind === "maths" ? "Here's how it works: " : "The answer is: "}<b>{reveal?.text}</b>. Good try!</Feedback>}
+        {state === "asking" && !hint && support && para && <Peek n={(activity as { para: number }).para} text={para} />}
         {state === "asking" && hint && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
             {/* When the hint is just "look again at paragraph N", the paragraph card says it already. */}

@@ -1,6 +1,8 @@
 import type { ChildActivity, ChildUnit } from "@yav/shared";
+import type { ChapterView, HubView, Levels, StageCompleteResult } from "@yav/shared/chapterView";
 
-export type { ChildActivity, ChildUnit };
+export type { ChildActivity, ChildUnit, ChapterView, HubView, Levels, StageCompleteResult };
+export type StageOpen = { kind: "story" | "review" | "challenge"; chapter: { id: string; title: string; color: string }; unit: ChildUnit; progress: { step: number; state: Record<string, unknown> } | null; levels: Levels };
 export type RobotState = { name: string | null; parts: string[]; unlocked: string[]; gemsEarned: number };
 export type Wallet = { minutes: number; blocks: number; gems: number };
 export type Reveal = { text?: string; correctIndex?: number } | null;
@@ -21,6 +23,12 @@ export const api = {
   child: () => call<{ firstName: string | null; robot: RobotState; wallet: Wallet }>("GET", "/api/child"),
   setChild: (b: { firstName?: string; robotName?: string }) => call("POST", "/api/child", b),
   equip: (partId: string) => call<{ robot: RobotState }>("POST", "/api/robot/equip", { partId }),
+  hub: () => call<HubView>("GET", "/api/hub"),
+  stage: (chapterId: string, stageId: string) => call<StageOpen>("GET", `/api/stage/${encodeURIComponent(chapterId)}/${encodeURIComponent(stageId)}`),
+  saveProgress: (unitId: string, b: { chapterId?: string; stageId?: string; step: number; state: Record<string, unknown>; label?: string }) =>
+    call<{ ok: boolean }>("PUT", `/api/unit/${encodeURIComponent(unitId)}/progress`, b),
+  completeStage: (chapterId: string, stageId: string, m: { secondTries: number; wordsHunted: number; asked: number }) =>
+    call<StageCompleteResult & { wallet: Wallet }>("POST", `/api/stage/${encodeURIComponent(chapterId)}/${encodeURIComponent(stageId)}/complete`, m),
   units: () => call<{ id: string; title: string; theme: string; color: string | null; pypTheme: string | null; done: boolean }[]>("GET", "/api/units"),
   unit: (id: string) => call<ChildUnit>("GET", `/api/unit/${encodeURIComponent(id)}`),
   today: () => call<{ units: ChildUnit[]; wallet: Wallet }>("GET", "/api/session/today"),
@@ -43,6 +51,24 @@ export const api = {
     reviewQueue: () => call<{ id: string; created_at: string; review_status: string; parent_comment: string | null }[]>("GET", "/api/parent/review-queue"),
     questions: () => call<{ id: number; unit_id: string; question: string; reply: string; kind: string; flagged: number; created_at: string }[]>("GET", "/api/parent/questions"),
     responses: () => call<{ id: number; unit_id: string; activity_id: string | null; kind: string; text: string; talk_later: number; created_at: string }[]>("GET", "/api/parent/responses"),
+    progress: () => call<ParentProgress>("GET", "/api/parent/progress"),
+    unlock: (chapterId: string, stageId: string) => call("POST", "/api/parent/unlock", { chapterId, stageId }),
+    retireChapter: (id: string) => call("POST", `/api/parent/chapters/${encodeURIComponent(id)}/retire`),
     review: (id: string, status: "thumbs-up" | "redo", comment?: string) => call("POST", `/api/parent/uploads/${id}/review`, { status, comment }),
   },
 };
+
+export interface ParentProgress {
+  strands: { strand: string; mastery: number; level: number }[];
+  skills: { id: string; strand: string; label: string; mastery: number; difficulty: number; attempts: number }[];
+  weakest: string;
+  strongest: string;
+  wordsLearned: number;
+  dueWords: number;
+  dueItems: number;
+  stars: number;
+  chapters: ChapterView[];
+  generating: boolean;
+  lastGeneration: { created_at: string; valid: number; error: string | null } | null;
+  generatedChapters: { id: string; title: string; status: string }[];
+}

@@ -9,6 +9,9 @@ import { childRoutes } from "./routes/child.js";
 import { parentRoutes } from "./routes/parent.js";
 import { uploadRoutes } from "./routes/uploads.js";
 import { askRoutes } from "./routes/ask.js";
+import { chapterRoutes } from "./routes/chapters.js";
+import { loadBankChapters } from "./engine/chapters.js";
+import type { ChapterDef } from "@yav/shared";
 import { claudeAskModel, type AskModel } from "./ai/ask.js";
 import { config } from "./config.js";
 
@@ -18,9 +21,12 @@ export interface AppDeps {
   serveWeb?: boolean;
   /** Override the Claude call (tests). Defaults to the real model when a key is set. */
   askModel?: AskModel | null;
+  bankChapters?: ChapterDef[];
+  onLastChapterStarted?: () => void;
+  isGenerating?: () => boolean;
 }
 
-export async function buildApp({ db, bank, serveWeb = true, askModel }: AppDeps) {
+export async function buildApp({ db, bank, serveWeb = true, askModel, bankChapters, onLastChapterStarted, isGenerating }: AppDeps) {
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? (process.env.VITEST ? "silent" : "info") } });
   await app.register(fastifyCookie);
   await app.register(fastifyMultipart, { limits: { fileSize: 15 * 1024 * 1024, files: 1 } });
@@ -29,7 +35,9 @@ export async function buildApp({ db, bank, serveWeb = true, askModel }: AppDeps)
   await app.register(childRoutes, { prefix: "/api", db, bank });
   await app.register(uploadRoutes, { prefix: "/api", db });
   await app.register(askRoutes, { prefix: "/api", db, bank, model: askModel === undefined ? claudeAskModel(db) : askModel });
-  await app.register(parentRoutes, { prefix: "/api/parent", db });
+  const chapters = bankChapters ?? loadBankChapters(bank);
+  await app.register(chapterRoutes, { prefix: "/api", db, bank, bankChapters: chapters, onLastChapterStarted, isGenerating });
+  await app.register(parentRoutes, { prefix: "/api/parent", db, bank, bankChapters: chapters, isGenerating });
 
   if (serveWeb && existsSync(config.webDist)) {
     await app.register(fastifyStatic, { root: config.webDist });

@@ -11,11 +11,22 @@ import { Feedback, Kicker, StepCard } from "./shared";
 type Gaps = Extract<ChildActivity, { kind: "gap-fill" }>;
 
 /** Tap a word, then tap its blank (or the other way round). Two words are decoys. */
-export function GapFill({ unitId, activity, onWallet, onNext }: { unitId: string; activity: Gaps; onWallet: (w: Wallet) => void; onNext: () => void }) {
-  const [placed, setPlaced] = useState<(number | null)[]>(activity.sentences.map(() => null));
+export type GapState = { placed: (number | null)[]; misses: number[] };
+
+export function GapFill({ unitId, activity, initial, onState, onMiss, onWallet, onNext }: {
+  unitId: string;
+  activity: Gaps;
+  initial?: GapState;
+  onState?: (s: GapState) => void;
+  onMiss?: () => void;
+  onWallet: (w: Wallet) => void;
+  onNext: () => void;
+}) {
+  const [placed, setPlaced] = useState<(number | null)[]>(initial?.placed ?? activity.sentences.map(() => null));
   const [word, setWord] = useState<number | null>(null);
   const [blank, setBlank] = useState<number | null>(null);
-  const [misses, setMisses] = useState<number[]>(activity.sentences.map(() => 0));
+  const [misses, setMisses] = useState<number[]>(initial?.misses ?? activity.sentences.map(() => 0));
+  useEffect(() => onState?.({ placed, misses }), [placed, misses, onState]);
   const [wobble, setWobble] = useState<{ w: number; b: number; n: number } | null>(null);
   const robot = useRobot();
   const ask = useAsk();
@@ -39,6 +50,7 @@ export function GapFill({ unitId, activity, onWallet, onNext }: { unitId: string
         robot.say("All the gaps are filled! The leftover words were the tricky decoys.", "cheer");
       } else robot.say("Yes, that fits!", "happy");
     } else {
+      if (misses[b] === 0) onMiss?.();
       setMisses((m) => m.map((x, i) => (i === b ? x + 1 : x)));
       setWobble({ w, b, n: Date.now() });
       robot.say(`Hmm, "${activity.bank[w]}" doesn't fit there. Read the sentence with it. Does it make sense?`, "encourage");

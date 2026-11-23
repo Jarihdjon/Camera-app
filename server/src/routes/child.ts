@@ -5,7 +5,7 @@ import type { DB } from "../db/db.js";
 import { getSetting } from "../db/settings.js";
 import { checkKeywords, checkMaths, checkShortAnswer, evaluateArithmetic, normalise } from "../engine/answers.js";
 import { applyAttempt, type SkillState } from "../engine/mastery.js";
-import { firstReview } from "../engine/spaced.js";
+import { firstReview, scheduleReview } from "../engine/spaced.js";
 import { forChild } from "../content.js";
 import { findActivity, findUnit, pickTodaysUnits } from "../units.js";
 
@@ -41,6 +41,34 @@ export function revealFor(a: Activity): { text?: string; correctIndex?: number }
     case "word-meaning": return { correctIndex: a.correctIndex, text: a.options[a.correctIndex] };
     case "maths": return { text: a.working ?? `${a.expression} = ${evaluateArithmetic(a.expression)}` };
     default: return null;
+  }
+}
+
+/**
+ * Spaced review. In a review stage, a right first try moves the item along the
+ * 1, 3, 7, 14 day schedule and a miss sends it back to day 1. Elsewhere, a question
+ * he still missed on the second try is booked in for review.
+ */
+function trackReview(db: DB, unit: Unit, a: Activity, correct: boolean, tryNumber: number) {
+  const now = new Date();
+  if (a.id.startsWith("rv-w-")) {
+    if (tryNumber !== 1) return;
+    const w = db.prepare("SELECT review_step FROM word WHERE word = ?").get(a.id.slice(5)) as { review_step: number } | undefined;
+    if (!w) return;
+    const next = scheduleReview({ step: w.review_step, dueAt: null }, correct, now);
+    db.prepare("UPDATE word SET review_step = ?, due_at = ? WHERE word = ?").run(next.step, next.dueAt?.toISOString() ?? null, a.id.slice(5));
+  } else if (a.id.startsWith("rv-i-")) {
+    if (tryNumber !== 1) return;
+    const [unitId, activityId] = a.id.slice(5).split("~");
+    if (!unitId || !activityId) return;
+    const r = db.prepare("SELECT review_step FROM review_item WHERE unit_id = ? AND activity_id = ?").get(unitId, activityId) as { review_step: number } | undefined;
+    if (!r) return;
+    const next = scheduleReview({ step: r.review_step, dueAt: null }, correct, now);
+    db.prepare("UPDATE review_item SET review_step = ?, due_at = ? WHERE unit_id = ? AND activity_id = ?").run(next.step, next.dueAt?.toISOString() ?? null, unitId, activityId);
+  } else if (!correct && tryNumber >= 2 && unit.source !== "built" && ["short-answer", "multiple-choice", "word-meaning", "maths"].includes(a.kind)) {
+    const first = firstReview(now);
+    db.prepare(`INSERT INTO review_item (unit_id, activity_id, review_step, due_at) VALUES (?, ?, 0, ?)
+                ON CONFLICT(unit_id, activity_id) DO UPDATE SET review_step = 0, due_at = excluded.due_at`).run(unit.id, a.id, first.dueAt!.toISOString());
   }
 }
 
@@ -134,6 +162,8 @@ export const childRoutes: FastifyPluginAsync<Opts> = async (app, { db, bank }) =
     // Suspiciously fast answers earn nothing extra (anti random-tapping).
     const tooFast = body.msTaken !== undefined && body.msTaken < 1500;
     if (correct && !tooFast) earn(db, "blocks", body.usedHint ? 1 : 2, `correct:${activity.id}`);
+
+    trackReview(db, unit, activity, correct, body.tryNumber);
 
     const reveal = correct || body.tryNumber >= 2 ? revealFor(activity) : null;
     const hint = "hint" in activity ? activity.hint : "Try the word in the sentence. Does it make sense?";
