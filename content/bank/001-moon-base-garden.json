@@ -1,0 +1,84 @@
+{
+  "id": "bank-001-moon-base-garden",
+  "title": "The Moon Base Garden",
+  "theme": "space",
+  "source": "bank",
+  "warmup": {
+    "id": "b001-warmup",
+    "kind": "maths",
+    "skill": "maths.times-tables",
+    "difficulty": 3,
+    "prompt": "A robot puts 6 seeds in each of 4 pots. How many seeds is that?",
+    "expression": "6 * 4",
+    "hint": "Count in sixes, four times."
+  },
+  "passage": {
+    "title": "The Moon Base Garden",
+    "text": "Bolt the robot lived on a moon base with a small glass garden. Nothing could grow outside, because the moon has no air and no rain. Inside the glass dome, Bolt had to provide everything the plants needed. Each morning Bolt switched on bright lamps that worked like sunshine. Then Bolt sprayed a fine mist of water over the leaves. One day the bean plants began to droop. Bolt checked the water tank and found it was nearly empty. Bolt filled it right up, and by the evening the beans stood tall again. Bolt felt proud. The garden was fragile, so it needed care every single day, but it gave the astronauts fresh food to eat.",
+    "glossary": [
+      { "word": "provide", "meaning": "To give someone or something what they need." },
+      { "word": "droop", "meaning": "To bend or hang down because something is weak or tired." },
+      { "word": "fragile", "meaning": "Easy to break or hurt, so it needs gentle care." }
+    ]
+  },
+  "questions": [
+    {
+      "id": "b001-q1",
+      "kind": "short-answer",
+      "skill": "reading.recall",
+      "difficulty": 2,
+      "prompt": "What did Bolt use instead of sunshine?",
+      "accept": ["lamps", "bright lamps", "lights", "a lamp"],
+      "hint": "Look at what Bolt switched on each morning."
+    },
+    {
+      "id": "b001-q2",
+      "kind": "multiple-choice",
+      "skill": "reading.inference",
+      "difficulty": 2,
+      "prompt": "Why did the bean plants droop?",
+      "options": ["They were too cold", "They did not have enough water", "A robot stepped on them"],
+      "correctIndex": 1,
+      "hint": "What did Bolt find in the water tank?"
+    },
+    {
+      "id": "b001-q3",
+      "kind": "multiple-choice",
+      "skill": "reading.word-meaning",
+      "difficulty": 2,
+      "prompt": "The garden was fragile. Which word means the same as fragile here?",
+      "options": ["Delicate", "Enormous", "Noisy"],
+      "correctIndex": 0,
+      "hint": "Tap the word fragile in the story to hear what it means."
+    },
+    {
+      "id": "b001-q4",
+      "kind": "maths",
+      "skill": "maths.word-problems",
+      "difficulty": 3,
+      "prompt": "The garden has 3 rows of 5 bean plants. The astronauts pick 4 plants for dinner. How many plants are left?",
+      "expression": "3 * 5 - 4",
+      "hint": "First find how many plants there are, then take away the ones they picked."
+    },
+    {
+      "id": "b001-q5",
+      "kind": "multiple-choice",
+      "skill": "inquiry.concepts",
+      "difficulty": 2,
+      "prompt": "What is the function of the glass dome?",
+      "options": ["To look pretty", "To keep air and water in so plants can grow", "To keep robots out"],
+      "correctIndex": 1,
+      "hint": "Think about why nothing could grow outside the dome."
+    }
+  ],
+  "writing": {
+    "id": "b001-writing",
+    "kind": "writing",
+    "skill": "writing.three-sentences",
+    "difficulty": 2,
+    "prompt": "Design your own moon garden. What would you grow, and how would you look after it?",
+    "starters": ["In my moon garden I would grow", "To look after it I would", "The best part is"],
+    "sentences": 3,
+    "mode": "print"
+  }
+}

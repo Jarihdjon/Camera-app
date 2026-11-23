@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+# Everything about Yav lives here and never goes in git
+data/*
+!data/.gitkeep
+backups/
+*.log
+.DS_Store

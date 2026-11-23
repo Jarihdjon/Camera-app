@@ -1,0 +1,89 @@
+:root {
+  --bg: #0b1026;
+  --panel: #161d3f;
+  --text: #f1f5ff;
+  --muted: #a5b0d6;
+  --accent: #fbbf24;
+  --robot: #7dd3fc;
+  --good: #34d399;
+  --warn: #f472b6;
+  --radius: 18px;
+  color-scheme: dark;
+  font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
+  font-size: 20px;
+  background: var(--bg);
+  color: var(--text);
+}
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100%; }
+body {
+  background: var(--bg);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+h1 { font-size: 1.8rem; margin: 0; }
+h2 { font-size: 1.3rem; margin: 1rem 0 0.5rem; }
+button {
+  font: inherit; color: var(--text); background: var(--panel); border: 2px solid #2a3570;
+  border-radius: var(--radius); padding: 0.8rem 1.3rem; min-height: 56px; cursor: pointer;
+}
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.5; }
+button.primary { background: var(--accent); color: #1b1300; border-color: var(--accent); font-weight: 700; }
+.screen { max-width: 960px; margin: 0 auto; padding: 1rem 1.25rem 3rem; }
+.centre { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 1rem; }
+.stack { display: flex; flex-direction: column; gap: 1rem; }
+.centre.stack { align-items: center; }
+.row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+.muted { color: var(--muted); }
+.big { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.error { color: var(--warn); }
+.big-input {
+  font: inherit; font-size: 1.4rem; padding: 0.8rem 1rem; border-radius: var(--radius);
+  border: 2px solid #2a3570; background: #0f1532; color: var(--text); width: min(100%, 420px);
+  -webkit-user-select: text; user-select: text;
+}
+.wallet { display: flex; gap: 1rem; justify-content: flex-end; font-weight: 700; }
+.wallet span { background: var(--panel); padding: 0.4rem 0.8rem; border-radius: 999px; }
+.hero { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; }
+.bubble { background: var(--panel); border-radius: var(--radius); padding: 1rem 1.2rem; line-height: 1.4; }
+.bubble.hint { border: 2px dashed var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.card { display: flex; flex-direction: column; align-items: flex-start; gap: 0.3rem; text-align: left; padding: 1.2rem; min-height: 140px; }
+.card.build { border-color: var(--good); }
+.tag { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+.progress { height: 10px; background: var(--panel); border-radius: 999px; overflow: hidden; margin-bottom: 1.5rem; }
+.progress > div { height: 100%; background: var(--good); transition: width 0.3s; }
+.prompt { font-size: 1.35rem; line-height: 1.4; }
+.options { display: grid; gap: 0.75rem; }
+.options button { text-align: left; }
+.passage { font-size: 1.35rem; line-height: 1.9; background: #0f1532; padding: 1.25rem; border-radius: var(--radius); }
+.word { padding: 0.1rem 0.05rem; border-radius: 6px; cursor: pointer; }
+.word:active { background: #2a3570; }
+.word.tapped { background: rgba(251, 191, 36, 0.25); }
+.starters { margin: 0; line-height: 1.8; }
+.parent-corner { position: fixed; top: 0; left: 0; width: 64px; height: 64px; }
+.review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.review { margin: 0; background: var(--panel); border-radius: var(--radius); overflow: hidden; }
+.review img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
+.review figcaption { padding: 0.6rem; font-size: 0.8rem; }
+.settings { background: #0f1532; padding: 1rem; border-radius: var(--radius); font-size: 0.8rem; overflow-x: auto; }
+.robot-cheer { animation: bounce 0.6s ease infinite alternate; }
+@keyframes bounce { to { transform: translateY(-8px); } }
+
+/* The print sheet is hidden on screen and is the only thing printed. */
+.print-sheet { display: none; }
+@media print {
+  @page { size: A4; margin: 18mm; }
+  :root, body { background: #fff; color: #000; }
+  body * { visibility: hidden; }
+  .print-sheet, .print-sheet * { visibility: visible; }
+  .print-sheet { display: block; position: absolute; inset: 0; font-family: system-ui, sans-serif; }
+  .print-sheet h1 { font-size: 20pt; margin-bottom: 14mm; }
+  .print-line-group { margin-bottom: 12mm; }
+  .starter { font-size: 16pt; margin: 0 0 4mm; }
+  .line { border-bottom: 1.5px solid #555; height: 16mm; }
+  .print-footer { position: absolute; bottom: 0; font-size: 12pt; }
+}
