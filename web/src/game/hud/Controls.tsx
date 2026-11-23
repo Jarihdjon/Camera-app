@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { pressJump, releaseJump, setStick } from "../input";
 import { unlockAudio } from "../sfx";
 
@@ -7,6 +7,10 @@ export function Controls() {
   const base = useRef<HTMLDivElement>(null);
   const [knob, setKnob] = useState({ x: 0, y: 0 });
   const active = useRef<number | null>(null);
+  useEffect(() => () => {
+    setStick(0, 0);
+    releaseJump();
+  }, []);
 
   function move(e: React.PointerEvent) {
     const r = base.current!.getBoundingClientRect();

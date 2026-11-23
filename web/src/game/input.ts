@@ -77,3 +77,13 @@ export function padButtonPressed(): number | null {
   const i = p.buttons.findIndex((b, k) => k < 4 && b.pressed);
   return i >= 0 ? i : null;
 }
+
+/** Let go of everything: used whenever a panel opens or closes, so Sparky never walks off on his own. */
+export function resetInput() {
+  stick = { x: 0, y: 0 };
+  keys.clear();
+  input.x = 0;
+  input.y = 0;
+  input.jumpPressed = false;
+  input.jumpHeld = false;
+}

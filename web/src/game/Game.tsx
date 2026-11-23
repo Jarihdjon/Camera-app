@@ -11,7 +11,7 @@ import { Controls } from "./hud/Controls";
 import { GatePanel } from "./hud/GatePanel";
 import { StoryPanel } from "./hud/StoryPanel";
 import { LevelScene, RealmHub, SkyDock } from "./scenes";
-import { input, listenKeyboard } from "./input";
+import { input, listenKeyboard, resetInput } from "./input";
 import { sfx } from "./sfx";
 import type { PlayerHandle } from "./Player";
 import type { Body } from "./physics";
@@ -87,6 +87,8 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
   const level = scene.kind === "level" ? scene : null;
   const layout = useMemo(() => (level ? buildLayout(level.pack.id, level.pack.eggs) : null), [level?.pack.id]);
   const [nearStone, setNearStone] = useState(false);
+  // Opening or closing any panel lets go of the joystick and keys, so Sparky stays put.
+  useEffect(() => resetInput(), [question, story, done]);
   useEffect(() => {
     const hook = (window as unknown as { __game?: Record<string, unknown> }).__game;
     if (hook) hook.layout = layout;

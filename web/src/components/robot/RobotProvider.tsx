@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useMotionValue, type MotionValue } from "motion/react";
-import { onSpeech, say as speak } from "@/lib/speech";
+import { onSpeech, say as speak, stop as stopSpeech } from "@/lib/speech";
 import { mouthTimeline } from "./lipsync";
 
 export type Mood = "idle" | "happy" | "thinking" | "cheer" | "encourage" | "sleepy" | "wave";
@@ -10,6 +10,12 @@ interface RobotApi {
   setMood: (m: Mood) => void;
   /** Speak a line: voice, lip-sync and speech bubble together. `bubble` shows different text (e.g. hide a listening sentence). */
   say: (text: string, mood?: Mood, bubble?: string) => void;
+  /** Read a story or passage aloud in the calm narrator voice, with natural pauses. */
+  read: (text: string, bubble?: string) => void;
+  /** Stop speaking or reading at once. */
+  stop: () => void;
+  /** True while read() is going (for Read / Stop buttons). */
+  reading: boolean;
   speaking: boolean;
   /** 0 closed .. 1 open, driven by the lip-sync. */
   mouth: MotionValue<number>;
@@ -26,6 +32,7 @@ const TRANSIENT: Partial<Record<Mood, number>> = { cheer: 2600, wave: 2200, enco
 export function RobotProvider({ children }: { children: ReactNode }) {
   const [mood, setMoodState] = useState<Mood>("idle");
   const [speaking, setSpeaking] = useState(false);
+  const [reading, setReading] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
   const [lastTap, setLastTap] = useState<{ x: number; y: number } | null>(null);
   const mouth = useMotionValue(0);
@@ -56,6 +63,7 @@ export function RobotProvider({ children }: { children: ReactNode }) {
           for (const f of mouthTimeline(e.word)) timers.current.push(window.setTimeout(() => mouth.set(f.open), f.at));
         } else {
           setSpeaking(false);
+          setReading(false);
           window.clearInterval(fallback.current);
           clearMouth();
           mouth.set(0);
@@ -81,12 +89,28 @@ export function RobotProvider({ children }: { children: ReactNode }) {
     (text: string, m?: Mood, bubbleText?: string) => {
       if (m) setMood(m);
       setBubble(bubbleText ?? text);
-      speak(text);
+      setReading(false);
+      speak(text, "robot");
     },
     [setMood],
   );
 
-  const api = useMemo(() => ({ mood, setMood, say, speaking, mouth, bubble, lastTap }), [mood, setMood, say, speaking, mouth, bubble, lastTap]);
+  const read = useCallback(
+    (text: string, bubbleText?: string) => {
+      setMood("happy");
+      setBubble(bubbleText ?? "📖 Reading…");
+      speak(text, "narrator");
+      setReading(true);
+    },
+    [setMood],
+  );
+
+  const stop = useCallback(() => {
+    stopSpeech();
+    setReading(false);
+  }, []);
+
+  const api = useMemo(() => ({ mood, setMood, say, read, stop, reading, speaking, mouth, bubble, lastTap }), [mood, setMood, say, read, stop, reading, speaking, mouth, bubble, lastTap]);
   return <RobotContext.Provider value={api}>{children}</RobotContext.Provider>;
 }
 

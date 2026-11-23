@@ -37,6 +37,39 @@ describe("physics", () => {
     expect(jetMax).toBeGreaterThan(3.3);
   });
 
+  it("running into a step just stops him: no sliding sideways off the path", () => {
+    // Path 4 wide, with a step 1 block higher ahead.
+    const boxes = [
+      { id: "path", x: 0, y: -0.5, z: 0, w: 4, h: 1, d: 10, kind: "ground" as const },
+      { id: "step", x: 0, y: 0.5, z: 6, w: 4, h: 1, d: 2, kind: "ground" as const },
+    ];
+    const b = newBody(0.3, 0, 0);
+    for (let i = 0; i < 180; i++) step(b, { ...idle, y: 1 }, 1 / 60, boxes, i / 60, false);
+    expect(Math.abs(b.x - 0.3)).toBeLessThan(0.01);
+    expect(b.grounded).toBe(true);
+    expect(b.z).toBeCloseTo(5 - PHYS.halfW, 2);
+  });
+
+  it("jumping onto a step while holding forward lands on top, still on the path", () => {
+    const boxes = [
+      { id: "path", x: 0, y: -0.5, z: 0, w: 4, h: 1, d: 10, kind: "ground" as const },
+      { id: "step", x: 0, y: 0.5, z: 10, w: 4, h: 1, d: 10, kind: "ground" as const },
+    ];
+    // Push into the step first, then jump while still holding forward.
+    for (const start of [3.5, 4.4, 4.6]) {
+      const b = newBody(0.6, 0, start);
+      let jumped = false;
+      for (let i = 0; i < 90; i++) {
+        const press = !jumped && b.z > 4.3;
+        if (press) jumped = true;
+        step(b, { x: 0, y: 1, jumpPressed: press, jumpHeld: true }, 1 / 60, boxes, i / 60, false);
+        expect(b.y).toBeGreaterThan(-0.5);
+      }
+      expect(Math.abs(b.x - 0.6)).toBeLessThan(0.01);
+      expect(b.y).toBeCloseTo(1, 1);
+    }
+  });
+
   it("falls off the world when there is no ground", () => {
     const { fell } = run(120, () => idle, []);
     expect(fell).toBe(true);

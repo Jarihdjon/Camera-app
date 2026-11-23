@@ -32,14 +32,19 @@ export function WordHunter({ passage, initial, onState, onWallet, onNext }: { pa
   const readToken = useRef(0);
 
   useEffect(() => ask.setScreen({ prompt: passage.text }), [passage.text, ask]);
-  useEffect(() => () => void (readToken.current++), []);
+  useEffect(() => () => {
+    readToken.current++;
+    robot.stop();
+    // Stop reading when leaving the story.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  /** Read the story aloud one paragraph at a time, highlighting as it goes. */
+  /** Read the story aloud in the narrator voice, highlighting each paragraph; tap again to stop. */
   function readAloud() {
     if (reading !== null) {
       readToken.current++;
       setReading(null);
-      speechSynthesis?.cancel?.();
+      robot.stop();
       return;
     }
     const token = ++readToken.current;
@@ -50,10 +55,10 @@ export function WordHunter({ passage, initial, onState, onWallet, onNext }: { pa
       const off = onSpeech((e) => {
         if (e.type === "end") {
           off();
-          window.setTimeout(() => next(i + 1), 250);
+          window.setTimeout(() => next(i + 1), 600);
         }
       });
-      robot.say(paras[i]!, "happy");
+      robot.read(paras[i]!);
     };
     next(0);
   }

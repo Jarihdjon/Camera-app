@@ -78,37 +78,53 @@ export function step(body: Body, inp: StepInput, dt: number, boxes: Box[], t: nu
 
   const placed = boxes.map((b) => ({ b, c: boxAt(b, t) }));
 
-  // Move one axis at a time and push out of anything solid.
+  // Move one axis at a time. A wall only pushes back along the axis he was moving on,
+  // and only if he came from that side: running into a step stops him, and never
+  // slides him sideways off the edge.
+  const EPS = 0.001;
+  const isWall = (c: { y: number }, b: Box) => body.y < c.y + b.h / 2 - 0.25;
+
+  const prevX = body.x;
   body.x += body.vx * dt;
   for (const { b, c } of placed) {
-    if (overlaps(body, c, b) && body.y < c.y + b.h / 2 - 0.25) {
-      body.x = body.x > c.x ? c.x + b.w / 2 + PHYS.halfW : c.x - b.w / 2 - PHYS.halfW;
-      body.vx = 0;
-    }
+    if (!overlaps(body, c, b) || !isWall(c, b)) continue;
+    const left = c.x - b.w / 2 - PHYS.halfW;
+    const right = c.x + b.w / 2 + PHYS.halfW;
+    if (prevX <= left + EPS) { body.x = left; body.vx = 0; }
+    else if (prevX >= right - EPS) { body.x = right; body.vx = 0; }
   }
+  const prevZ = body.z;
   body.z += body.vz * dt;
   for (const { b, c } of placed) {
-    if (overlaps(body, c, b) && body.y < c.y + b.h / 2 - 0.25) {
-      body.z = body.z > c.z ? c.z + b.d / 2 + PHYS.halfW : c.z - b.d / 2 - PHYS.halfW;
-      body.vz = 0;
-    }
+    if (!overlaps(body, c, b) || !isWall(c, b)) continue;
+    const front = c.z - b.d / 2 - PHYS.halfW;
+    const back = c.z + b.d / 2 + PHYS.halfW;
+    if (prevZ <= front + EPS) { body.z = front; body.vz = 0; }
+    else if (prevZ >= back - EPS) { body.z = back; body.vz = 0; }
   }
+  const prevY = body.y;
   body.y += body.vy * dt;
   body.grounded = false;
   body.riding = null;
   for (const { b, c } of placed) {
     if (!overlaps(body, c, b)) continue;
     const top = c.y + b.h / 2;
-    if (body.vy <= 0 && body.y > top - 0.6) {
+    const bottom = c.y - b.h / 2;
+    if (body.y >= top - 0.35) {
+      // Feet at or just under the top surface: land on it, or (rising past a lip) step up onto it.
       body.y = top;
-      body.vy = 0;
-      body.grounded = true;
-      body.jumps = 0;
-      if (b.move) body.riding = b.id;
-    } else if (body.vy > 0) {
-      body.y = c.y - b.h / 2 - PHYS.height;
+      if (body.vy <= 0) {
+        body.vy = 0;
+        body.grounded = true;
+        body.jumps = 0;
+        if (b.move) body.riding = b.id;
+      }
+    } else if (body.vy > 0 && prevY + PHYS.height <= bottom + 0.05) {
+      // Head bumped the underside of something he was fully below.
+      body.y = bottom - PHYS.height;
       body.vy = 0;
     }
+    // Otherwise he's beside it: the wall checks above handle that, never a vertical snap.
   }
   return body.y < PHYS.fallY;
 }
