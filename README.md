@@ -17,7 +17,7 @@ Claude API key stays in `.env` on the PC and is never sent to the iPad or commit
 | Folder | What's in it |
 | --- | --- |
 | `server/` | Node + TypeScript + Fastify. SQLite (Node's built-in driver), learning engine, answer checking, Claude calls |
-| `web/` | React + Vite progressive web app for the iPad |
+| `web/` | React + Vite progressive web app for the iPad. Tailwind v4 + shadcn/ui components (`web/src/components/ui`), `motion` animations, the robot companion (`web/src/components/robot`) |
 | `shared/` | The unit schema (zod) and skill map, used by both server and web |
 | `content/bank/` | Checked units that work without the AI. Each must pass the schema or the server won't start |
 | `scripts/windows/` | One-click start, one-time setup (firewall, start at login, backups, keep-awake), backup |
@@ -61,6 +61,15 @@ npm run dev        # server on :5174 with reload, web on :5173 with hot reload (
 npm test           # engine, answer checking, API and blank-page check tests
 npm run typecheck
 ```
+
+## UI components
+
+The UI uses [shadcn/ui](https://ui.shadcn.com) components on Radix, configured in `web/components.json`.
+Add more with `npx shadcn@latest add <name>` from the `web/` folder.
+
+The robot companion is an original SVG character animated with `motion`. It blinks, follows taps, changes expression
+with mood, and lip-syncs to the iPad voice using the speech engine's word-boundary events (`web/src/components/robot/lipsync.ts`).
+Screens call `useRobot().say(text, mood)` to make it speak.
 
 ## Adding a content-bank unit
 

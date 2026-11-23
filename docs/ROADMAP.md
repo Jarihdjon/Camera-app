@@ -21,10 +21,20 @@
 - Windows scripts: start, setup (firewall, start at login, nightly backup, keep-awake), backup.
 - CI: typecheck, tests, build.
 
+## Done: rich UI
+
+- Tailwind v4 + shadcn/ui, always-dark space theme, self-hosted Fredoka and Nunito fonts (work offline).
+- Original animated robot companion: blinking eyes that follow taps, mood expressions, lip-sync to speech,
+  hover bob, springy antenna, cheer jump with booster flame, waving arm, parts slots for unlocks.
+- Animated starfield, screen transitions, floating mission cards, rocket progress track, flying gems and blocks,
+  counting wallet, confetti, scanner animation on photo upload, calm shadcn parent area.
+
 ## Phase 0: iPad checks (week one, on his iPad)
 
 - [ ] Add to Home Screen opens full screen.
 - [ ] Robot voice: is an Australian voice installed? (Settings > Accessibility > Spoken Content > Voices)
+- [ ] Lip-sync: does the voice send word-boundary events? If not, the robot falls back to a generic talking loop.
+- [ ] Animation smoothness: starfield, floating cards and confetti at a steady frame rate.
 - [ ] Camera upload from the home-screen app over http.
 - [ ] Print my sheet opens AirPrint for the Canon. If not, fall back to a PDF via the share sheet.
 - [ ] Blank-page check thresholds on real photos of his paper.
