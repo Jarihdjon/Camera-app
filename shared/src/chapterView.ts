@@ -7,6 +7,10 @@ export interface StageView {
   title: string;
   status: StageStatus;
   stars: number;
+  /** read, think or create for story stages split into three. */
+  part?: "read" | "think" | "create";
+  /** 1 (lots of help) to 5 (the chapter challenge). */
+  tier: number;
 }
 
 export interface ChapterView {

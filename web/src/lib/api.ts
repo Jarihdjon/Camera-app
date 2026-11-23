@@ -2,7 +2,8 @@ import type { ChildActivity, ChildUnit } from "@yav/shared";
 import type { ChapterView, HubView, Levels, StageCompleteResult } from "@yav/shared/chapterView";
 
 export type { ChildActivity, ChildUnit, ChapterView, HubView, Levels, StageCompleteResult };
-export type StageOpen = { kind: "story" | "review" | "challenge"; chapter: { id: string; title: string; color: string }; unit: ChildUnit; progress: { step: number; state: Record<string, unknown> } | null; levels: Levels };
+export type StagePart = "read" | "think" | "create";
+export type StageOpen = { kind: "story" | "review" | "challenge"; part: StagePart | null; tier: number; progressId: string; chapter: { id: string; title: string; color: string }; unit: ChildUnit; progress: { step: number; state: Record<string, unknown> } | null; levels: Levels };
 export type RobotState = { name: string | null; parts: string[]; unlocked: string[]; gemsEarned: number };
 export type Wallet = { minutes: number; blocks: number; gems: number };
 export type Reveal = { text?: string; correctIndex?: number } | null;

@@ -1,4 +1,4 @@
-import { INTEREST_THEMES, type ChapterDef, type Theme, type Unit } from "@yav/shared";
+import { INTEREST_THEMES, STAGE_PARTS, type ChapterDef, type Theme, type Unit } from "@yav/shared";
 import type { DB } from "../db/db.js";
 import { allChapters, chapterViews, learnerNow } from "../engine/chapters.js";
 import { learnerSummary } from "../engine/learner.js";
@@ -71,8 +71,10 @@ export class GenerationQueue {
           theme,
         };
         // One retry per unit: the checks are strict, and a second draft usually passes.
-        let r = await generateUnit(this.db, this.model, firstName, plan, learner);
-        if (!r.ok && (r.reason === "invalid" || r.reason === "quality")) r = await generateUnit(this.db, this.model, firstName, plan, learner);
+        // Writing alternates: short sentences first, one Story Mountain to end the chapter.
+        const writing = k === this.unitsPerChapter - 1 ? "story-mountain" : "sentences";
+        let r = await generateUnit(this.db, this.model, firstName, plan, learner, writing);
+        if (!r.ok && (r.reason === "invalid" || r.reason === "quality")) r = await generateUnit(this.db, this.model, firstName, plan, learner, writing);
         if (!r.ok) {
           this.lastError = r.reason;
           if (r.reason === "monthly-cap-reached" || r.reason === "no-api-key") break;
@@ -91,7 +93,7 @@ export class GenerationQueue {
         planet: look.planet,
         ring: look.ring,
         stages: [
-          ...units.map((u, k) => ({ id: `story-${k + 1}`, kind: "story" as const, unitId: u.id })),
+          ...units.flatMap((u, k) => STAGE_PARTS.map((part) => ({ id: `story-${k + 1}-${part}`, kind: "story" as const, unitId: u.id, part }))),
           { id: "review", kind: "review" as const },
           { id: "challenge", kind: "challenge" as const },
         ],

@@ -4,14 +4,98 @@
     "title": "Launch Pad",
     "emoji": "🚀",
     "color": "#3949AB",
-    "planet": ["#8fa7ff", "#2b3a8f"],
+    "planet": [
+      "#8fa7ff",
+      "#2b3a8f"
+    ],
     "ring": true,
     "stages": [
-      { "id": "lunchbox", "kind": "story", "unitId": "bank-002-the-lost-lunchbox" },
-      { "id": "rocket", "kind": "story", "unitId": "bank-003-rocket-to-the-moon" },
-      { "id": "moon-garden", "kind": "story", "unitId": "bank-001-moon-base-garden" },
-      { "id": "review", "kind": "review" },
-      { "id": "challenge", "kind": "challenge" }
+      {
+        "id": "lunchbox-read",
+        "kind": "story",
+        "unitId": "bank-002-the-lost-lunchbox",
+        "part": "read"
+      },
+      {
+        "id": "lunchbox-think",
+        "kind": "story",
+        "unitId": "bank-002-the-lost-lunchbox",
+        "part": "think"
+      },
+      {
+        "id": "lunchbox-create",
+        "kind": "story",
+        "unitId": "bank-002-the-lost-lunchbox",
+        "part": "create",
+        "writing": {
+          "format": "sentences",
+          "prompt": "Have you ever mixed something up with someone else's? Write 2 sentences about it, or make one up.",
+          "starters": [
+            "One day I",
+            "To fix it, we"
+          ],
+          "sentences": 2
+        }
+      },
+      {
+        "id": "rocket-read",
+        "kind": "story",
+        "unitId": "bank-003-rocket-to-the-moon",
+        "part": "read"
+      },
+      {
+        "id": "rocket-think",
+        "kind": "story",
+        "unitId": "bank-003-rocket-to-the-moon",
+        "part": "think"
+      },
+      {
+        "id": "rocket-create",
+        "kind": "story",
+        "unitId": "bank-003-rocket-to-the-moon",
+        "part": "create",
+        "writing": {
+          "format": "sentences",
+          "prompt": "If you built your own rocket, what would you take to space? Write 2 sentences.",
+          "starters": [
+            "In my rocket I would take",
+            "I need it because"
+          ],
+          "sentences": 2
+        }
+      },
+      {
+        "id": "moon-garden-read",
+        "kind": "story",
+        "unitId": "bank-001-moon-base-garden",
+        "part": "read"
+      },
+      {
+        "id": "moon-garden-think",
+        "kind": "story",
+        "unitId": "bank-001-moon-base-garden",
+        "part": "think"
+      },
+      {
+        "id": "moon-garden-create",
+        "kind": "story",
+        "unitId": "bank-001-moon-base-garden",
+        "part": "create",
+        "writing": {
+          "format": "story-mountain",
+          "prompt": "Plan a story about a robot who has to look after something fragile.",
+          "starters": [],
+          "sentences": 3
+        }
+      },
+      {
+        "id": "review",
+        "kind": "review"
+      },
+      {
+        "id": "challenge",
+        "kind": "challenge"
+      }
     ]
   },
   {
@@ -19,13 +103,65 @@
     "title": "Bushland Planet",
     "emoji": "🐨",
     "color": "#2E7D32",
-    "planet": ["#9be37a", "#2c6b2f"],
+    "planet": [
+      "#9be37a",
+      "#2c6b2f"
+    ],
     "ring": false,
     "stages": [
-      { "id": "bush-race", "kind": "story", "unitId": "bank-004-the-great-bush-race" },
-      { "id": "koala", "kind": "story", "unitId": "bank-007-kip-the-koala" },
-      { "id": "review", "kind": "review" },
-      { "id": "challenge", "kind": "challenge" }
+      {
+        "id": "bush-race-read",
+        "kind": "story",
+        "unitId": "bank-004-the-great-bush-race",
+        "part": "read"
+      },
+      {
+        "id": "bush-race-think",
+        "kind": "story",
+        "unitId": "bank-004-the-great-bush-race",
+        "part": "think"
+      },
+      {
+        "id": "bush-race-create",
+        "kind": "story",
+        "unitId": "bank-004-the-great-bush-race",
+        "part": "create",
+        "writing": {
+          "format": "sentences",
+          "prompt": "Write 2 sentences about a time you helped someone.",
+          "starters": [
+            "I helped",
+            "It made me feel"
+          ],
+          "sentences": 2
+        }
+      },
+      {
+        "id": "koala-read",
+        "kind": "story",
+        "unitId": "bank-007-kip-the-koala",
+        "part": "read"
+      },
+      {
+        "id": "koala-think",
+        "kind": "story",
+        "unitId": "bank-007-kip-the-koala",
+        "part": "think"
+      },
+      {
+        "id": "koala-create",
+        "kind": "story",
+        "unitId": "bank-007-kip-the-koala",
+        "part": "create"
+      },
+      {
+        "id": "review",
+        "kind": "review"
+      },
+      {
+        "id": "challenge",
+        "kind": "challenge"
+      }
     ]
   },
   {
@@ -33,13 +169,65 @@
     "title": "Ocean & Garden World",
     "emoji": "🐧",
     "color": "#00838F",
-    "planet": ["#7be3e8", "#1d5f86"],
+    "planet": [
+      "#7be3e8",
+      "#1d5f86"
+    ],
     "ring": true,
     "stages": [
-      { "id": "seed", "kind": "story", "unitId": "bank-005-the-magic-seed" },
-      { "id": "penguin", "kind": "story", "unitId": "bank-006-pip-the-little-penguin" },
-      { "id": "review", "kind": "review" },
-      { "id": "challenge", "kind": "challenge" }
+      {
+        "id": "seed-read",
+        "kind": "story",
+        "unitId": "bank-005-the-magic-seed",
+        "part": "read"
+      },
+      {
+        "id": "seed-think",
+        "kind": "story",
+        "unitId": "bank-005-the-magic-seed",
+        "part": "think"
+      },
+      {
+        "id": "seed-create",
+        "kind": "story",
+        "unitId": "bank-005-the-magic-seed",
+        "part": "create",
+        "writing": {
+          "format": "sentences",
+          "prompt": "What would you like to grow? Write 2 sentences about how you would look after it.",
+          "starters": [
+            "I would grow",
+            "To help it grow, I would"
+          ],
+          "sentences": 2
+        }
+      },
+      {
+        "id": "penguin-read",
+        "kind": "story",
+        "unitId": "bank-006-pip-the-little-penguin",
+        "part": "read"
+      },
+      {
+        "id": "penguin-think",
+        "kind": "story",
+        "unitId": "bank-006-pip-the-little-penguin",
+        "part": "think"
+      },
+      {
+        "id": "penguin-create",
+        "kind": "story",
+        "unitId": "bank-006-pip-the-little-penguin",
+        "part": "create"
+      },
+      {
+        "id": "review",
+        "kind": "review"
+      },
+      {
+        "id": "challenge",
+        "kind": "challenge"
+      }
     ]
   }
 ]

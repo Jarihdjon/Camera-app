@@ -49,7 +49,10 @@ describe("generation queue", () => {
     const chapters = allChapters(db, bankChapters);
     expect(chapters).toHaveLength(4);
     const ch4 = chapters[3]!;
-    expect(ch4.stages.map((s) => s.kind)).toEqual(["story", "story", "review", "challenge"]);
+    expect(ch4.stages.map((s) => (s.kind === "story" ? s.part : s.kind))).toEqual(["read", "think", "create", "read", "think", "create", "review", "challenge"]);
+    const prompts = (db.prepare("SELECT prompt FROM generation_log ORDER BY id").all() as { prompt: string }[]).map((r) => r.prompt);
+    expect(prompts[0]).toContain('format \"sentences\"'.replace(/\\/g, ""));
+    expect(prompts[1]).toContain("story-mountain");
     expect(chapterViews(db, bank, chapters)[3]!.status).toBe("locked");
     const logged = db.prepare("SELECT COUNT(*) AS n FROM generation_log WHERE valid = 1").get() as { n: number };
     expect(logged.n).toBe(2);

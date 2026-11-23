@@ -73,6 +73,18 @@
 - Parent **Progress** tab: strand and skill mastery, next focus, Word Vault, chapters and stars, manual unlock,
   and retiring a Claude-written chapter.
 
+## Done: short stages with a difficulty curve
+
+- Each story is split into three short stages (8 to 12 minutes): **Read** (briefing, story, word detective),
+  **Think** (questions, recall before inference, then gap fill) and **Create** (maths and inquiry, reflection,
+  writing, self-check). Chapter 1 is now 11 short stages. Play minutes are earned when a unit's Create stage is done.
+- Every stage has a **tier** from 1 to 5, shown as power bolts on the map: it climbs along the chapter, the
+  challenge is always 5, and each chapter starts a tier higher (capped at 3). Tiers 1 to 2 read questions aloud
+  and show the paragraph straight away; tier 4 drops the paragraph pointer and adds a stretch item. His own
+  level in each strand can add support (level 1 to 2) or bring the stretch forward (maths level 4 to 5).
+- Writing alternates: one Story Mountain per chapter, a 2-sentence task with starters for the other stories
+  (set per stage in `content/chapters.json`, so the workbook units are unchanged).
+
 ## Phase 0: iPad checks (week one, on his iPad)
 
 - [ ] Add to Home Screen opens full screen.

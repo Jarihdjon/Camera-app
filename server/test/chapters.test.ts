@@ -33,39 +33,57 @@ describe("chapters and stages", () => {
   it("starts with only the first stage of chapter 1 open", async () => {
     const h = await hub();
     expect(h.chapters.map((c: { status: string }) => c.status)).toEqual(["open", "locked", "locked"]);
-    expect(h.chapters[0].stages.map((s: { status: string }) => s.status)).toEqual(["open", "locked", "locked", "locked", "locked"]);
-    const locked = await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/rocket" });
+    expect(h.chapters[0].stages).toHaveLength(11);
+    expect(h.chapters[0].stages.filter((s: { status: string }) => s.status === "open").map((s: { id: string }) => s.id)).toEqual(["lunchbox-read"]);
+    const locked = await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/lunchbox-think" });
     expect(locked.statusCode).toBe(403);
   });
 
-  it("saves progress inside a unit and offers to resume it", async () => {
-    const open = (await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/lunchbox" })).json();
-    expect(open.progress).toBeNull();
-    expect(open.unit.questions[0]).not.toHaveProperty("accept");
-    await app.inject({ method: "PUT", url: `/api/unit/${open.unit.id}/progress`, payload: { chapterId: "ch1-launch-pad", stageId: "lunchbox", step: 7, state: { answer: "elev" }, label: "question 4 of 7" } });
-    const again = (await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/lunchbox" })).json();
-    expect(again.progress).toEqual({ step: 7, state: { answer: "elev" } });
-    expect((await hub()).resume).toMatchObject({ stageId: "lunchbox", label: "question 4 of 7" });
+  it("tiers climb along the chapter, and each chapter starts higher", async () => {
+    const h = await hub();
+    const t1 = h.chapters[0].stages.map((s: { tier: number }) => s.tier);
+    expect(t1[0]).toBe(1);
+    expect(t1.at(-1)).toBe(5);
+    expect([...t1].sort((a: number, b: number) => a - b)).toEqual(t1);
+    expect(h.chapters[1].stages[0].tier).toBe(2);
+    expect(h.chapters[2].stages[0].tier).toBe(3);
   });
 
-  it("finishing a stage gives stars, minutes and opens the next one, and clears the resume card", async () => {
-    const r = await complete("ch1-launch-pad", "lunchbox");
-    expect(r).toMatchObject({ stars: 3, newStars: 3, minutesEarned: 15, unlockedStage: "rocket", unlockedChapter: null });
-    const h = await hub();
-    expect(h.resume).toBeNull();
-    expect(h.chapters[0].stages[0]).toMatchObject({ status: "done", stars: 3 });
-    expect(h.chapters[0].stages[1].status).toBe("open");
+  it("saves progress per part and offers to resume it", async () => {
+    const open = (await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/lunchbox-read" })).json();
+    expect(open).toMatchObject({ part: "read", tier: 1, progress: null, progressId: "bank-002-the-lost-lunchbox#read" });
+    expect(open.unit.questions[0]).not.toHaveProperty("accept");
+    await app.inject({ method: "PUT", url: `/api/unit/${encodeURIComponent(open.progressId)}/progress`, payload: { chapterId: "ch1-launch-pad", stageId: "lunchbox-read", step: 3, state: { answer: "elev" }, label: "Reading the story" } });
+    const again = (await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/lunchbox-read" })).json();
+    expect(again.progress).toEqual({ step: 3, state: { answer: "elev" } });
+    expect((await hub()).resume).toMatchObject({ stageId: "lunchbox-read", label: "Reading the story" });
+  });
+
+  it("read and think give stars but no minutes; create finishes the unit and earns minutes", async () => {
+    const r1 = await complete("ch1-launch-pad", "lunchbox-read");
+    expect(r1).toMatchObject({ stars: 3, newStars: 3, minutesEarned: 0, unlockedStage: "lunchbox-think", unlockedChapter: null });
+    expect((await hub()).resume).toBeNull();
+    expect((await complete("ch1-launch-pad", "lunchbox-think")).minutesEarned).toBe(0);
+    const r3 = await complete("ch1-launch-pad", "lunchbox-create");
+    expect(r3).toMatchObject({ minutesEarned: 15, unlockedStage: "rocket-read" });
+  });
+
+  it("uses the stage's short writing task instead of the Story Mountain", async () => {
+    db.prepare("INSERT INTO stage_progress (chapter_id, stage_id, status) VALUES ('ch1-launch-pad', 'rocket-create', 'open')").run();
+    const create = (await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/rocket-create" })).json();
+    expect(create.part).toBe("create");
+    expect(create.unit.writing.format).toBe("sentences");
+    expect(create.unit.writing.sentences).toBe(2);
   });
 
   it("never takes stars away on a replay", async () => {
-    const r = await complete("ch1-launch-pad", "lunchbox", { secondTries: 9, wordsHunted: 0, asked: 0 });
+    const r = await complete("ch1-launch-pad", "lunchbox-read", { secondTries: 9, wordsHunted: 0, asked: 0 });
     expect(r).toMatchObject({ stars: 1, newStars: 0 });
     expect((await hub()).chapters[0].stages[0].stars).toBe(3);
   });
 
   it("builds a Word Vault review from due words, and moves them along the schedule", async () => {
-    await complete("ch1-launch-pad", "rocket");
-    await complete("ch1-launch-pad", "moon-garden");
+    for (const s of ["rocket-read", "rocket-think", "rocket-create", "moon-garden-read", "moon-garden-think", "moon-garden-create"]) await complete("ch1-launch-pad", s);
     // A word he tapped two days ago is due today.
     db.prepare("INSERT INTO word (word, meaning, source, review_step, due_at) VALUES ('identical', 'Exactly the same.', 'tapped', 0, datetime('now', '-1 day'))").run();
     const review = (await app.inject({ method: "GET", url: "/api/stage/ch1-launch-pad/review" })).json();
@@ -101,8 +119,8 @@ describe("chapters and stages", () => {
   });
 
   it("asks for a new chapter when he starts the last one", async () => {
-    db.prepare("INSERT INTO stage_progress (chapter_id, stage_id, status) VALUES ('ch3-ocean-garden', 'seed', 'open')").run();
-    await app.inject({ method: "GET", url: "/api/stage/ch3-ocean-garden/seed" });
+    db.prepare("INSERT INTO stage_progress (chapter_id, stage_id, status) VALUES ('ch3-ocean-garden', 'seed-read', 'open')").run();
+    await app.inject({ method: "GET", url: "/api/stage/ch3-ocean-garden/seed-read" });
     expect(started).toBeGreaterThan(0);
   });
 });

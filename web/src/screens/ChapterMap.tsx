@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const ICON = { story: "📖", review: "💎", challenge: "🏆" } as const;
+const PART = { read: { icon: "📖", name: "Read" }, think: { icon: "🧩", name: "Think" }, create: { icon: "🚀", name: "Create" } } as const;
 
 /** Pad positions zig-zag down the map, as % of its width and px from the top. */
 function padSpot(i: number) {
-  return { x: [22, 72, 30, 76, 40, 70, 26, 62][i % 8]!, y: 70 + i * 150 };
+  return { x: [24, 74, 28, 72, 26, 76, 30, 70][i % 8]!, y: 80 + i * 138 };
 }
 
 /**
@@ -75,11 +76,14 @@ export function ChapterMap(props: { chapterId: string; robotName: string; parts:
           const p = padSpot(i);
           const locked = s.status === "locked";
           const isNext = i === current && s.status === "open";
+          const boss = s.kind === "challenge";
+          const icon = s.part ? PART[s.part].icon : ICON[s.kind];
+          const name = s.part ? `${s.title} · ${PART[s.part].name}` : s.title;
           return (
             <motion.button
               key={s.id}
               type="button"
-              aria-label={`${s.title}${locked ? " (locked)" : ""}`}
+              aria-label={`${name}${locked ? " (locked)" : ""}`}
               className="absolute flex -translate-x-1/2 -translate-y-1/2 cursor-pointer flex-col items-center gap-1"
               style={{ left: `${p.x}%`, top: p.y }}
               initial={{ scale: 0 }}
@@ -92,13 +96,18 @@ export function ChapterMap(props: { chapterId: string; robotName: string; parts:
                 animate={isNext ? { boxShadow: ["0 0 0px var(--unit)", "0 0 32px var(--unit)", "0 0 0px var(--unit)"] } : {}}
                 transition={{ duration: 1.6, repeat: Infinity }}
                 className={cn(
-                  "grid size-24 place-items-center rounded-full border-4 text-4xl",
+                  "grid place-items-center rounded-full border-4",
+                  boss ? "size-32 text-6xl" : "size-24 text-4xl",
                   s.status === "done" ? "border-success bg-success/25" : locked ? "border-white/15 bg-black/40" : "border-[var(--unit)] bg-[var(--unit)]/35",
                 )}
               >
-                {locked ? <Lock className="size-9 text-white/50" /> : s.status === "done" ? "✓" : ICON[s.kind]}
+                {locked ? <Lock className="size-9 text-white/50" /> : s.status === "done" ? "✓" : icon}
               </motion.span>
-              <span className={cn("max-w-44 rounded-full bg-black/45 px-3 py-0.5 text-center font-display text-lg leading-tight", locked && "text-muted-foreground")}>{s.title}</span>
+              <span className={cn("max-w-52 rounded-full bg-black/45 px-3 py-0.5 text-center font-display text-lg leading-tight", locked && "text-muted-foreground", boss && "text-xl text-primary")}>{name}</span>
+              {/* Power bolts show the difficulty climbing along the chapter. */}
+              <span className="text-sm tracking-tight" aria-label={`Difficulty ${s.tier} of 5`}>
+                {[1, 2, 3, 4, 5].map((k) => <span key={k} className={k <= s.tier ? "" : "opacity-20 grayscale"}>⚡</span>)}
+              </span>
               <span className="text-xl tracking-wider">{[0, 1, 2].map((k) => <span key={k} className={k < s.stars ? "" : "opacity-25 grayscale"}>⭐</span>)}</span>
             </motion.button>
           );

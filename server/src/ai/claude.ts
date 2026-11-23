@@ -46,7 +46,7 @@ export function claudeUnitModel(db: DB): UnitModel | null {
   };
 }
 
-export function unitPrompt(firstName: string, plan: UnitPlan, learner: string): string {
+export function unitPrompt(firstName: string, plan: UnitPlan, learner: string, writing: "sentences" | "story-mountain" = "story-mountain"): string {
   return [
     `Write one learning unit for ${firstName}, for the next chapter of his journey.`,
     "",
@@ -63,16 +63,18 @@ export function unitPrompt(firstName: string, plan: UnitPlan, learner: string): 
     "- questions: 5 to 7 items. Mostly short-answer with match \"keyword\", accept words that appear in the paragraph given by para (0-based), a model answer and a hint pointing to that paragraph. Include one multiple-choice inference question and one open question.",
     "- gapFill: 4 or 5 sentences using story words, each with ___ and its answer, plus 2 decoys.",
     "- corner: 2 maths word problems from the story with an arithmetic expression, unit and working, and 1 open inquiry question.",
-    "- writing: a story-mountain task (format \"story-mountain\", mode \"print\", sentences 3, no starters) asking him to plan his own story on the same idea.",
+    writing === "story-mountain"
+      ? "- writing: a story-mountain task (format \"story-mountain\", mode \"print\", sentences 3, no starters) asking him to plan his own story on the same idea."
+      : "- writing: a short task (format \"sentences\", mode \"print\", sentences 2) linked to the story, with 2 sentence starters. He dislikes writing, so keep it small and fun.",
     "Give every id a short unique slug.",
   ].filter((l) => l !== null).join("\n");
 }
 
-export async function generateUnit(db: DB, model: UnitModel | null, firstName: string, plan: UnitPlan, learner: string): Promise<GenerationResult<Unit>> {
+export async function generateUnit(db: DB, model: UnitModel | null, firstName: string, plan: UnitPlan, learner: string, writing: "sentences" | "story-mountain" = "story-mountain"): Promise<GenerationResult<Unit>> {
   if (!model) return { ok: false, reason: "no-api-key" };
   if (!underCap(db)) return { ok: false, reason: "monthly-cap-reached" };
 
-  const prompt = unitPrompt(firstName, plan, learner);
+  const prompt = unitPrompt(firstName, plan, learner, writing);
   const log = db.prepare(
     `INSERT INTO generation_log (purpose, model, prompt, output, valid, error, input_tokens, output_tokens, cost_aud)
      VALUES ('unit', ?, ?, ?, ?, ?, ?, ?, ?)`,

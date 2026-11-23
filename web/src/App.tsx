@@ -57,7 +57,7 @@ function Shell() {
 
   const openStage = async (chapterId: string, stageId: string) => {
     const r = await api.stage(chapterId, stageId);
-    setScreen({ name: "unit", unit: r.unit, stage: { chapterId, stageId, kind: r.kind }, initial: r.progress, levels: r.levels });
+    setScreen({ name: "unit", unit: r.unit, stage: { chapterId, stageId, kind: r.kind, part: r.part, tier: r.tier, progressId: r.progressId }, initial: r.progress, levels: r.levels });
   };
   const home = () => setScreen({ name: "hub" });
 

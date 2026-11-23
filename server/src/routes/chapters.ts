@@ -14,6 +14,8 @@ import {
   findStage,
   hubView,
   learnerNow,
+  progressKey,
+  applyWriting,
   withStretch,
 } from "../engine/chapters.js";
 
@@ -43,21 +45,26 @@ export const chapterRoutes: FastifyPluginAsync<ChapterOpts> = async (app, opts) 
     if (!view || view.status === "locked") return reply.code(403).send({ error: "locked" });
 
     const snap = learnerNow(db, bank, list);
+    const tier = view.tier;
     const robot = (db.prepare("SELECT name FROM robot WHERE id = 1").get() as { name: string | null }).name ?? "Robot";
     let unit: Unit | undefined;
     if (found.stage.kind === "review") unit = buildReviewUnit(db, bank, found.chapter, snap);
     else if (found.stage.kind === "challenge") unit = buildChallengeUnit(db, bank, found.chapter, snap);
     else {
       const base = findUnit(db, bank, found.stage.unitId);
-      unit = base && withStretch(db, bank.find((b) => b.id === base.id) ?? base, snap, robot);
+      unit = base && applyWriting(withStretch(db, bank.find((b) => b.id === base.id) ?? base, snap, robot, tier), found.stage);
     }
     if (!unit) return reply.code(404).send({ error: "unknown unit" });
 
     if (list[list.length - 1]?.id === chapterId || views.filter((c) => c.status === "locked").length === 0) opts.onLastChapterStarted?.();
 
-    const saved = db.prepare("SELECT step, state FROM unit_progress WHERE unit_id = ?").get(unit.id) as { step: number; state: string } | undefined;
+    const progressId = progressKey(found.stage, chapterId);
+    const saved = db.prepare("SELECT step, state FROM unit_progress WHERE unit_id = ?").get(progressId) as { step: number; state: string } | undefined;
     return {
       kind: found.stage.kind,
+      part: found.stage.kind === "story" ? found.stage.part ?? null : null,
+      tier,
+      progressId,
       chapter: { id: found.chapter.id, title: found.chapter.title, color: found.chapter.color },
       unit: toChildUnit(unit),
       progress: saved ? { step: saved.step, state: JSON.parse(saved.state) as unknown } : null,

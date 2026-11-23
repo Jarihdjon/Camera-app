@@ -19,13 +19,17 @@ type Marked = Extract<ChildActivity, { kind: "short-answer" | "multiple-choice" 
  */
 export type QuestionState = { answer: string; tries: number; state: "asking" | "right" | "shown"; hint: string | null; reveal: Reveal; wrongPicks: number[] };
 
-export function Question({ unitId, activity, label, story, support = false, initial, onState, onMiss, onWallet, onNext }: {
+export function Question({ unitId, activity, label, story, support = false, peekOnMiss = true, autoRead = false, initial, onState, onMiss, onWallet, onNext }: {
   unitId: string;
   activity: Marked;
   label: string;
   story?: string;
   /** Show the paragraph to look at straight away (his level in this strand is 1 or 2). */
   support?: boolean;
+  /** Show the paragraph after a miss (off on harder stages, where only the hint shows). */
+  peekOnMiss?: boolean;
+  /** Read the question aloud when it appears (easier stages). */
+  autoRead?: boolean;
   initial?: QuestionState;
   onState?: (s: QuestionState) => void;
   onMiss?: () => void;
@@ -47,6 +51,11 @@ export function Question({ unitId, activity, label, story, support = false, init
 
   const promptText = activity.kind === "word-meaning" ? `Which meaning is closest to "${activity.word}"?` : activity.prompt;
   useEffect(() => ask.setScreen({ activityId: activity.id, prompt: promptText }), [activity.id, promptText, ask]);
+  useEffect(() => {
+    if (autoRead && !initial) robot.say(promptText, "thinking");
+    // Only when the question first appears.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function submit(value: string | number, from: Element | null) {
     const tryNumber = tries + 1;
@@ -128,8 +137,8 @@ export function Question({ unitId, activity, label, story, support = false, init
         {state === "asking" && hint && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
             {/* When the hint is just "look again at paragraph N", the paragraph card says it already. */}
-            {!(para && /^look again at paragraph/i.test(hint)) && <Feedback tone="try"><Lightbulb className="mr-2 inline size-6 text-primary" />{hint}</Feedback>}
-            {para && <Peek n={(activity as { para: number }).para} text={para} />}
+            {!(para && peekOnMiss && /^look again at paragraph/i.test(hint)) && <Feedback tone="try"><Lightbulb className="mr-2 inline size-6 text-primary" />{hint}</Feedback>}
+            {para && peekOnMiss && <Peek n={(activity as { para: number }).para} text={para} />}
           </motion.div>
         )}
       </AnimatePresence>

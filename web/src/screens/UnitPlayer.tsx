@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { api, type ChildActivity, type ChildUnit, type Levels, type StageCompleteResult, type Wallet } from "@/lib/api";
+import { api, type ChildActivity, type ChildUnit, type Levels, type StageCompleteResult, type StagePart, type Wallet } from "@/lib/api";
 import { Robot } from "@/components/robot/Robot";
 import { useRobot } from "@/components/robot/RobotProvider";
 import { SpeechBubble } from "@/components/robot/SpeechBubble";
@@ -38,19 +38,38 @@ type Step =
   | { t: "self"; ph: 5 }
   | { t: "done"; ph: 5 };
 
-function buildSteps(u: ChildUnit): Step[] {
+/** Recall before "why" questions, open thinking last, so difficulty climbs through a stage. */
+const SKILL_ORDER: Record<string, number> = { "reading.recall": 0, "reading.word-meaning": 1, "reading.sentence-sense": 2, "reading.inference": 3 };
+const rank = (a: ChildActivity) => (a.kind === "open" ? 9 : a.kind === "multiple-choice" ? 4 : SKILL_ORDER[a.skill] ?? 5);
+
+/**
+ * The steps of a stage. A unit split into parts plays only that part:
+ * read (briefing, story, word detective), think (questions, easiest first, then gap fill),
+ * create (maths and inquiry, reflection, writing, self-check). No part means the whole unit.
+ */
+function buildSteps(u: ChildUnit, part?: StagePart | null): Step[] {
   const s: Step[] = [];
-  if (u.inquiry) s.push({ t: "intro", ph: 0 }, { t: "tune", ph: 0 });
-  if (u.warmup) s.push({ t: "activity", ph: 0, a: u.warmup, label: "Warm-up" });
-  if (u.passage) s.push({ t: "story", ph: 1 });
-  u.vocab.forEach((a, i) => s.push({ t: "activity", ph: 2, a, label: `Sort out · word detective ${i + 1} of ${u.vocab.length}` }));
-  u.questions.forEach((a, i) => s.push({ t: "activity", ph: 2, a, label: `Sort out · question ${i + 1} of ${u.questions.length}` }));
-  if (u.gapFill) s.push({ t: "activity", ph: 2, a: u.gapFill, label: "Sort out · fill the gaps" });
-  u.corner.forEach((a) => s.push({ t: "activity", ph: 3, a, label: a.kind === "maths" ? "Go further · maths" : "Go further · inquiry" }));
-  if (u.inquiry) s.push({ t: "reflect", ph: 4 });
-  if (u.writing) s.push({ t: "writing", ph: 5 });
-  if (u.inquiry) s.push({ t: "self", ph: 5 });
-  s.push({ t: "done", ph: 5 });
+  const read = !part || part === "read";
+  const think = !part || part === "think";
+  const create = !part || part === "create";
+  if (read) {
+    if (u.inquiry) s.push({ t: "intro", ph: 0 }, { t: "tune", ph: 0 });
+    if (u.warmup) s.push({ t: "activity", ph: 0, a: u.warmup, label: "Warm-up" });
+    if (u.passage) s.push({ t: "story", ph: 1 });
+    u.vocab.forEach((a, i) => s.push({ t: "activity", ph: 2, a, label: `Sort out · word detective ${i + 1} of ${u.vocab.length}` }));
+  }
+  if (think) {
+    const qs = part ? [...u.questions].sort((a, b) => rank(a) - rank(b)) : u.questions;
+    qs.forEach((a, i) => s.push({ t: "activity", ph: 2, a, label: `Sort out · question ${i + 1} of ${qs.length}` }));
+    if (u.gapFill) s.push({ t: "activity", ph: 2, a: u.gapFill, label: "Sort out · fill the gaps" });
+  }
+  if (create) {
+    u.corner.forEach((a) => s.push({ t: "activity", ph: 3, a, label: a.id === "stretch-maths" ? "Go further · bonus challenge" : a.kind === "maths" ? "Go further · maths" : "Go further · inquiry" }));
+    if (u.inquiry) s.push({ t: "reflect", ph: 4 });
+    if (u.writing) s.push({ t: "writing", ph: 5 });
+    if (u.inquiry) s.push({ t: "self", ph: 5 });
+  }
+  s.push({ t: "done", ph: (s[s.length - 1]?.ph ?? 5) as 5 });
   return s;
 }
 
@@ -70,7 +89,7 @@ function labelFor(step: Step): string {
   }
 }
 
-export interface StageInfo { chapterId: string; stageId: string; kind: "story" | "review" | "challenge" }
+export interface StageInfo { chapterId: string; stageId: string; kind: "story" | "review" | "challenge"; part?: StagePart | null; tier: number; progressId: string }
 
 export function UnitPlayer(props: {
   unit: ChildUnit;
@@ -86,13 +105,14 @@ export function UnitPlayer(props: {
   onDone: (result?: StageCompleteResult) => void;
 }) {
   const { unit, stage } = props;
-  const steps = useMemo(() => buildSteps(unit), [unit]);
+  const steps = useMemo(() => buildSteps(unit, stage?.part), [unit, stage?.part]);
   const [i, setI] = useState(() => Math.min(props.initial?.step ?? 0, steps.length - 2));
   const [minutes, setMinutes] = useState<number | null>(null);
   const [result, setResult] = useState<StageCompleteResult | null>(null);
   const robot = useRobot();
   const step = steps[i]!;
-  const next = () => setI((n) => Math.min(n + 1, steps.length - 1));
+  // Moving on from the last step of a stage finishes it.
+  const next = () => (steps[i + 1]?.t === "done" ? void finish() : setI((n) => Math.min(n + 1, steps.length - 1)));
   const usedPhases = new Set(steps.map((s) => s.ph));
 
   // Everything needed to pick up exactly where he left off.
@@ -103,7 +123,7 @@ export function UnitPlayer(props: {
   const save = useCallback((now = false) => {
     if (!stage || finished.current || steps[i]?.t === "done") return;
     window.clearTimeout(saveTimer.current);
-    const run = () => void api.saveProgress(unit.id, {
+    const run = () => void api.saveProgress(stage.progressId, {
       chapterId: stage.chapterId, stageId: stage.stageId, step: i,
       state: { steps: stepStates.current, m: metrics.current }, label: labelFor(steps[i]!),
     }).catch(() => {});
@@ -150,10 +170,13 @@ export function UnitPlayer(props: {
     }
   }
 
-  const afterWriting = () => (steps[i + 1]?.t === "self" ? next() : void finish());
-  // At the end of the question list in review and challenge stages there is no writing: finish straight away.
-  const advance = () => (steps[i + 1]?.t === "done" ? void finish() : next());
-  const support = (skill: string) => (props.levels ? (props.levels[skill.split(".")[0] as keyof Levels] ?? 3) <= 2 : false);
+  const afterWriting = next;
+  const advance = next;
+  // Help comes from the stage's tier and from his own level in that strand, whichever gives more.
+  const tier = stage?.tier ?? 3;
+  const levelOf = (skill: string) => (props.levels ? (props.levels[skill.split(".")[0] as keyof Levels] ?? 3) : 3);
+  const support = (skill: string) => tier <= 2 || levelOf(skill) <= 2;
+  const peekOnMiss = (skill: string) => tier <= 3 || levelOf(skill) <= 2;
 
   return (
     <AskSparky unitId={unit.id} robotName={props.robotName} parts={props.parts} onWallet={props.onWallet} onAsk={onAsk}>
@@ -190,7 +213,7 @@ export function UnitPlayer(props: {
               )}
               {step.t === "story" && unit.passage && <WordHunter passage={unit.passage} initial={stateFor(i)} onState={onHunted(i)} onWallet={props.onWallet} onNext={next} />}
               {step.t === "activity" && (
-                <ActivityStep key={step.a.id} unit={unit} a={step.a} label={step.label} support={support(step.a.skill)}
+                <ActivityStep key={step.a.id} unit={unit} a={step.a} label={step.label} support={support(step.a.skill)} peekOnMiss={peekOnMiss(step.a.skill)} autoRead={tier <= 2}
                   initial={stateFor(i)} onState={setStateFor(i)} onMiss={onMiss} onWallet={props.onWallet} onNext={advance} />
               )}
               {step.t === "reflect" && unit.inquiry && (
@@ -201,7 +224,7 @@ export function UnitPlayer(props: {
               {step.t === "self" && <SelfCheck unitId={unit.id} initial={stateFor(i)} onState={setStateFor(i)} onWallet={props.onWallet} onNext={() => void finish()} />}
               {step.t === "done" && (
                 <Card className="items-center py-10 text-center">
-                  <h1 className="text-5xl text-glow">{stage?.kind === "challenge" ? "Challenge complete!" : stage?.kind === "review" ? "Review complete!" : "Stage complete!"}</h1>
+                  <h1 className="text-5xl text-glow">{stage?.kind === "challenge" ? "Challenge complete!" : stage?.kind === "review" ? "Review complete!" : stage?.part === "read" ? "Reading stage complete!" : stage?.part === "think" ? "Thinking stage complete!" : "Stage complete!"}</h1>
                   {result && (
                     <div className="flex gap-3 text-6xl">
                       {[0, 1, 2].map((k) => (
@@ -233,8 +256,8 @@ export function UnitPlayer(props: {
   );
 }
 
-function ActivityStep({ unit, a, label, support, initial, onState, onMiss, onWallet, onNext }: {
-  unit: ChildUnit; a: ChildActivity; label: string; support: boolean; initial?: unknown; onState: (s: unknown) => void; onMiss: () => void; onWallet: (w: Wallet) => void; onNext: () => void;
+function ActivityStep({ unit, a, label, support, peekOnMiss, autoRead, initial, onState, onMiss, onWallet, onNext }: {
+  unit: ChildUnit; a: ChildActivity; label: string; support: boolean; peekOnMiss: boolean; autoRead: boolean; initial?: unknown; onState: (s: unknown) => void; onMiss: () => void; onWallet: (w: Wallet) => void; onNext: () => void;
 }) {
   switch (a.kind) {
     case "open":
@@ -244,7 +267,7 @@ function ActivityStep({ unit, a, label, support, initial, onState, onMiss, onWal
     case "writing":
       return null;
     default:
-      return <Question unitId={unit.id} activity={a} label={label} story={unit.passage?.text} support={support} initial={initial as QuestionState} onState={onState} onMiss={onMiss} onWallet={onWallet} onNext={onNext} />;
+      return <Question unitId={unit.id} activity={a} label={label} story={unit.passage?.text} support={support} peekOnMiss={peekOnMiss} autoRead={autoRead} initial={initial as QuestionState} onState={onState} onMiss={onMiss} onWallet={onWallet} onNext={onNext} />;
   }
 }
 

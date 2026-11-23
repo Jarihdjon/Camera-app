@@ -41,6 +41,28 @@ export function allChapters(db: DB, bankChapters: ChapterDef[]): ChapterDef[] {
   return [...bankChapters, ...generated];
 }
 
+/**
+ * Difficulty tier for each stage: it climbs along the chapter, the challenge is always 5,
+ * and each chapter starts one tier higher than the one before (capped at 3).
+ */
+export function stageTiers(chapterIndex: number, stages: StageDef[]): number[] {
+  const base = Math.min(3, chapterIndex + 1);
+  const n = stages.filter((s) => s.kind !== "challenge").length;
+  let k = 0;
+  return stages.map((s) => {
+    if (s.tier) return s.tier;
+    if (s.kind === "challenge") return 5;
+    const t = base + Math.floor((k++ * (5 - base)) / Math.max(1, n));
+    return Math.min(4, t);
+  });
+}
+
+/** Where his place inside a stage is saved: per part, so resuming lands in the right stage. */
+export function progressKey(stage: StageDef, chapterId: string): string {
+  if (stage.kind === "story") return stage.part ? `${stage.unitId}#${stage.part}` : stage.unitId;
+  return `${stage.kind}-${chapterId}`;
+}
+
 type Progress = Map<string, { status: "open" | "done"; stars: number }>;
 const key = (c: string, s: string) => `${c}/${s}`;
 
@@ -63,11 +85,12 @@ export function chapterViews(db: DB, bank: Unit[], chapters: ChapterDef[]): Chap
     const parentOpened = c.stages.some((s) => p.get(key(c.id, s.id))?.status === "open");
     const chapterOpen = ci === 0 || prevChapterDone || parentOpened || c.stages.some((s) => p.get(key(c.id, s.id))?.status === "done");
     let prevDone = true;
+    const tiers = stageTiers(ci, c.stages);
     const stages: StageView[] = c.stages.map((s, si) => {
       const row = p.get(key(c.id, s.id));
       const status = row?.status === "done" ? "done" : chapterOpen && (si === 0 || prevDone || row?.status === "open") ? "open" : "locked";
       prevDone = status === "done";
-      return { id: s.id, kind: s.kind, title: stageTitle(db, bank, c, s), status, stars: row?.stars ?? 0 };
+      return { id: s.id, kind: s.kind, title: stageTitle(db, bank, c, s), status, stars: row?.stars ?? 0, part: s.kind === "story" ? s.part : undefined, tier: tiers[si]! };
     });
     const done = stages.every((s) => s.status === "done");
     prevChapterDone = done;
@@ -147,13 +170,12 @@ export function completeStage(
   if (newStars) earn(db, "gems", newStars * 2, `stars:${chapterId}/${stageId}`);
 
   let minutesEarned = 0;
-  if (found.stage.kind === "story") {
-    db.prepare("DELETE FROM unit_progress WHERE unit_id = ?").run(found.stage.unitId);
+  db.prepare("DELETE FROM unit_progress WHERE unit_id = ?").run(progressKey(found.stage, chapterId));
+  // A whole unit is finished when its Create stage is (or when it is played as one stage).
+  if (found.stage.kind === "story" && (!found.stage.part || found.stage.part === "create")) {
     minutesEarned = earnUnitMinutes(db, found.stage.unitId, minutes.perUnit, minutes.cap);
     db.prepare("UPDATE unit SET status='completed', completed_at=datetime('now') WHERE id = ? AND status IN ('ready','served','chapter')").run(found.stage.unitId);
     db.prepare("INSERT INTO journal_entry (kind, title, ref) VALUES ('milestone', ?, ?)").run(`Finished "${stageTitle(db, bank, found.chapter, found.stage)}"`, found.stage.unitId);
-  } else {
-    db.prepare("DELETE FROM unit_progress WHERE unit_id = ?").run(`${found.stage.kind}-${chapterId}`);
   }
 
   const after = chapterViews(db, bank, chapters);
@@ -170,12 +192,18 @@ export function completeStage(
   };
 }
 
+/** A stage's writing override, applied on top of the unit's own writing task. */
+export function applyWriting(unit: Unit, stage: StageDef): Unit {
+  if (stage.kind !== "story" || !stage.writing || !unit.writing) return unit;
+  return { ...unit, writing: { ...unit.writing, ...stage.writing, skill: stage.writing.format === "story-mountain" ? "writing.story-mountain" : "writing.three-sentences", mode: "print" } };
+}
+
 /** Finished story stages and their stars, for the learner snapshot's theme preferences. */
 export function finishedStories(db: DB, chapters: ChapterDef[]): { unitId: string; stars: number }[] {
   const p = progress(db);
   return chapters.flatMap((c) => c.stages.flatMap((s) => {
     const row = p.get(key(c.id, s.id));
-    return s.kind === "story" && row?.status === "done" ? [{ unitId: s.unitId, stars: row.stars }] : [];
+    return s.kind === "story" && row?.status === "done" && (!s.part || s.part === "create") ? [{ unitId: s.unitId, stars: row.stars }] : [];
   }));
 }
 
@@ -299,11 +327,14 @@ export function buildChallengeUnit(db: DB, bank: Unit[], c: ChapterDef, snap: Sn
 }
 
 /**
- * Stretch: when his maths level is 4 or 5, a bank story gets one bonus times-table item,
- * pitched one table past what he is secure on.
+ * Stretch: on harder stages (tier 4, or tier 3 when his maths level is 4 or 5), a bank story
+ * gets one bonus times-table item, pitched one table past what he is secure on.
  */
-export function withStretch(db: DB, unit: Unit, snap: Snapshot, robotName: string): Unit {
-  if (unit.source !== "bank" || snap.levels.maths < 4 || unit.corner.length >= 4 || unit.corner.some((a) => a.id === "stretch-maths")) return unit;
+export function withStretch(db: DB, unit: Unit, snap: Snapshot, robotName: string, tier = 3): Unit {
+  // Tier 4 stages always get a stretch; a strong maths level brings it forward to tier 3.
+  const wanted = tier >= 4 || (snap.levels.maths >= 4 && tier >= 3);
+  if (unit.source !== "bank" || !wanted || unit.corner.length >= 4) return unit;
+  if (unit.corner.some((a) => a.id === "stretch-maths")) return unit;
   const tt = snap.skills.find((s) => s.id === "maths.times-tables")?.difficulty ?? 3;
   const t = Math.min(12, 5 + tt + 1);
   const n = 3 + (hashOf(unit.id) % 4);
