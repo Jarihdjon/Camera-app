@@ -77,7 +77,7 @@ describe("game API", () => {
   beforeAll(async () => {
     app = await buildApp({ db, bank: loadContentBank(), serveWeb: false, askModel: null, gameContent: content });
   });
-  const post = (url: string, payload: unknown) => app.inject({ method: "POST", url: `/api/game${url}`, payload }).then((r) => r.json());
+  const post = (url: string, payload: Record<string, unknown>) => app.inject({ method: "POST", url: `/api/game${url}`, payload }).then((r) => r.json());
 
   let runId = "";
   it("shows every realm open, with coming-soon levels marked", async () => {
