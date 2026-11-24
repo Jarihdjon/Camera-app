@@ -159,6 +159,8 @@ describe("game API", () => {
     expect(done).toMatchObject({ minutesEarned: 15, bonusGems: 10 });
     const s = (await app.inject({ method: "GET", url: "/api/game/state" })).json();
     expect(s.realms[0].levels[0].completed).toBe(true);
+    // Finishing a mission level returns a Heartwood Compass piece to Wildlands.
+    expect(s.realms[0].quest).toMatchObject({ name: "Heartwood Compass", pieces: 1, total: 4 });
     // Answers fed the learning engine.
     const n = (db.prepare("SELECT COUNT(*) AS n FROM attempt WHERE activity_id LIKE 'game:%'").get() as { n: number }).n;
     expect(n).toBeGreaterThanOrEqual(GATES.length);
@@ -169,5 +171,33 @@ describe("game API", () => {
     const run = (await post("/level/busy-town/start", {})).runId;
     const q = await post("/gate", { runId: run, gate: 3 });
     expect(q.band).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe("missions", () => {
+  it("Jungle Jumble has a full seven-beat mission with a bridge", () => {
+    const m = jungle.mission!;
+    expect(m.beats).toHaveLength(7);
+    expect(m.beats.map((b) => b.effect)).toEqual(["fly", "signpost", "door", "bridge", "vine", "chest", "vault"]);
+    expect(m.characters.map((c) => c.id)).toContain("kip");
+  });
+
+  it("the bridge beat turns its gate into a gap that planks fill once answered", () => {
+    const withMission = buildLayout(jungle.id, jungle.eggs, jungle.mission!.beats.map((b) => b.effect));
+    const bridge = withMission.reveals.find((r) => r.gate === 3)!;
+    expect(bridge.boxes).toHaveLength(6);
+    const gate = withMission.gates[3]!;
+    const after = withMission.checkpoints[4]!;
+    // No ground between the approach and the far bank until the planks appear.
+    const gapZ = (gate.z + after.z) / 2;
+    const solid = withMission.boxes.some((b) => Math.abs(b.x) < 1 && Math.abs(b.z - gapZ) < b.d / 2 && b.kind === "ground");
+    expect(solid).toBe(false);
+  });
+
+  it("the Number beat counts the story's things", () => {
+    const content2 = loadGameContent();
+    const pack = content2.packs.get("wildlands-jungle-jumble")!;
+    const q = numberQuestion(2, { ...pack, things: pack.mission!.numberThings! }, "seed-1");
+    expect(q.prompt).toMatch(/bridge plank|log|rope/);
   });
 });

@@ -3,7 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { PackSchema, RealmDefSchema, type Pack, type RealmDef, type SkillId } from "@yav/shared";
-import { GATES, GATE_INFO, buildLayout, type Band, type GameState, type GateQuestion, type GateResult, type GateType, type PackView, type Perk } from "@yav/shared/game";
+import { GATES, GATE_INFO, layoutFor as layoutForPack, type Band, type GameState, type GateQuestion, type GateResult, type GateType, type PackView, type Perk } from "@yav/shared/game";
 import type { DB } from "../db/db.js";
 import { getSetting } from "../db/settings.js";
 import { config } from "../config.js";
@@ -40,10 +40,10 @@ export function findLevel(content: GameContent, levelId: string) {
 }
 
 export function packView(p: Pack): PackView {
-  return { id: p.id, title: p.title, emoji: p.emoji, palette: p.palette, passage: p.passage, glossary: p.glossary, eggs: p.eggs };
+  return { id: p.id, title: p.title, emoji: p.emoji, palette: p.palette, passage: p.passage, glossary: p.glossary, eggs: p.eggs, mission: p.mission };
 }
 
-const layoutFor = (p: Pack) => buildLayout(p.id, p.eggs);
+const layoutFor = (p: Pack) => layoutForPack(p);
 
 // ---------- perks and state ----------
 
@@ -61,6 +61,12 @@ export function gameState(db: DB, content: GameContent): GameState {
     perks: { shield: perkCount(db, "shield"), jet: perkCount(db, "jet") > 0, hint: perkCount(db, "hint"), magnet: perkCount(db, "magnet") > 0 },
     realms: content.realms.map((r) => ({
       id: r.id, name: r.name, emoji: r.emoji, color: r.color, sky: r.sky,
+      // One quest piece comes back with each level whose mission he has completed.
+      quest: r.quest && {
+        ...r.quest,
+        total: r.levels.length,
+        pieces: r.levels.filter((l) => l.pack && content.packs.get(l.pack)?.mission && db.prepare("SELECT 1 FROM game_level_done WHERE level_id = ?").get(l.id)).length,
+      },
       levels: r.levels.map((l) => {
         const pack = l.pack ? content.packs.get(l.pack) : undefined;
         const layout = pack && layoutFor(pack);
@@ -109,7 +115,8 @@ export function bandFor(db: DB, realmId: string, gate: GateType): Band {
 const SKILL: Partial<Record<GateType, SkillId>> = { listen: "reading.listening", word: "reading.word-meaning", science: "inquiry.concepts" };
 
 function makeQuestion(pack: Pack, gate: GateType, band: Band, seed: string, seen: Set<string>): Generated {
-  if (gate === "number") return numberQuestion(band, pack, seed);
+  // In a mission, the Number beat counts the story's things (e.g. the bridge planks).
+  if (gate === "number") return numberQuestion(band, pack.mission?.numberThings ? { ...pack, things: pack.mission.numberThings } : pack, seed);
   if (gate === "puzzle") return puzzleQuestion(band, seed);
   if (gate === "write") return hashSeed(seed) % 2 === 0 ? spellingQuestion(band, pack, seed) : sentenceQuestion(band, pack, seed);
   // Pack questions: this band first, then the nearest bands, never one already seen this run.

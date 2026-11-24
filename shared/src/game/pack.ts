@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BEAT_EFFECTS, CHARACTER_KINDS, GATES } from "./types.js";
 
 /**
  * A topic pack: everything one level needs. Every pack fills the same seven gates, so
@@ -23,6 +24,35 @@ export const PaletteSchema = z.object({
   props: z.enum(["jungle", "town", "beach", "moon", "castle"]),
 });
 
+const LineSchema = z.object({ who: z.string().min(1), line: z.string().min(1).max(220) });
+
+/** The level's story: a character who needs help, and the seven gates as steps of a treasure hunt. */
+export const MissionSchema = z.object({
+  title: z.string().min(1),
+  goal: z.string().min(1).max(120),
+  treasure: z.object({ name: z.string().min(1), emoji: z.string().min(1) }),
+  characters: z.array(z.object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    kind: z.enum(CHARACTER_KINDS),
+    color: z.string(),
+    voice: z.object({ pitch: z.number().min(0.5).max(2), rate: z.number().min(0.6).max(1.3) }).optional(),
+  })).min(1),
+  intro: z.array(LineSchema).min(1).max(6),
+  beats: z.array(z.object({
+    who: z.string().min(1),
+    setup: z.string().min(1).max(220),
+    success: z.string().min(1).max(220),
+    fail: z.string().min(1).max(220),
+    effect: z.enum(BEAT_EFFECTS),
+    clue: z.string().min(1).max(80),
+    clueIcon: z.string().min(1),
+  })).length(GATES.length),
+  finale: z.array(LineSchema).min(1).max(5),
+  /** Things the Number beat counts, so its maths fits the story (e.g. bridge planks). */
+  numberThings: z.array(z.object({ one: z.string(), many: z.string() })).optional(),
+});
+
 export const PackSchema = z.object({
   id: z.string().min(1),
   realm: z.string().min(1),
@@ -45,13 +75,22 @@ export const PackSchema = z.object({
     science: z.array(PackChoiceSchema).min(4),
   }),
   eggs: z.array(z.enum(["shield", "jet", "hint", "magnet"])).length(2).default(["jet", "shield"]),
+  mission: MissionSchema.optional(),
 }).superRefine((p, ctx) => {
+  if (p.mission) {
+    const ids = new Set(["sparky", ...p.mission.characters.map((c) => c.id)]);
+    for (const l of [...p.mission.intro, ...p.mission.finale, ...p.mission.beats]) {
+      if (!ids.has(l.who)) ctx.addIssue({ code: "custom", message: `mission line by unknown character "${l.who}"` });
+    }
+  }
   const ids = Object.values(p.questions).flat().map((q) => q.id);
   if (new Set(ids).size !== ids.length) ctx.addIssue({ code: "custom", message: "question ids must be unique" });
   for (const q of p.questions.listen) if (!q.say) ctx.addIssue({ code: "custom", message: `${q.id}: listen questions need "say"` });
 });
 
 export const RealmDefSchema = z.object({
+  /** The realm's quest item: one piece comes back with each level that has a mission. */
+  quest: z.object({ name: z.string().min(1), emoji: z.string().min(1) }).optional(),
   id: z.string().min(1),
   name: z.string().min(1),
   emoji: z.string().min(1),
@@ -63,3 +102,4 @@ export const RealmDefSchema = z.object({
 export type Pack = z.infer<typeof PackSchema>;
 export type PackChoice = z.infer<typeof PackChoiceSchema>;
 export type RealmDef = z.infer<typeof RealmDefSchema>;
+export type MissionDef = z.infer<typeof MissionSchema>;

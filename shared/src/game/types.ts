@@ -66,6 +66,8 @@ export interface RealmSummary {
   color: string;
   sky: [string, string];
   levels: LevelSummary[];
+  /** The realm's quest: pieces returned so far, out of how many. */
+  quest?: { name: string; emoji: string; pieces: number; total: number };
 }
 
 export interface GameState {
@@ -98,4 +100,38 @@ export interface PackView {
   glossary: { word: string; meaning: string }[];
   /** Perk for each easter egg, in layout order. */
   eggs: Perk[];
+  /** The level's story mission, if it has one. */
+  mission?: Mission;
+}
+
+/** What a right answer does in the world, for each story beat. */
+export const BEAT_EFFECTS = ["fly", "signpost", "door", "bridge", "vine", "chest", "vault"] as const;
+export type BeatEffect = (typeof BEAT_EFFECTS)[number];
+
+/** Original story animals and characters, drawn in code. */
+export const CHARACTER_KINDS = ["koala", "bird", "wombat", "stone", "owl"] as const;
+export type CharacterKind = (typeof CHARACTER_KINDS)[number];
+
+export interface MissionCharacter { id: string; name: string; kind: CharacterKind; color: string; voice?: { pitch: number; rate: number } }
+export interface MissionLine { who: string; line: string }
+export interface MissionBeat {
+  who: string;
+  /** Said when he reaches the beat, before the challenge. */
+  setup: string;
+  success: string;
+  fail: string;
+  effect: BeatEffect;
+  /** The clue he earns for the treasure map. */
+  clue: string;
+  clueIcon: string;
+}
+export interface Mission {
+  title: string;
+  /** One line for the mission tracker. */
+  goal: string;
+  treasure: { name: string; emoji: string };
+  characters: MissionCharacter[];
+  intro: MissionLine[];
+  beats: MissionBeat[];
+  finale: MissionLine[];
 }

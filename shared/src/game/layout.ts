@@ -1,4 +1,4 @@
-import { GATES, type Perk } from "./types.js";
+import { GATES, type BeatEffect, type Perk } from "./types.js";
 
 /**
  * Builds a level's course from a seed. Pure and deterministic, so the server and the
@@ -20,6 +20,9 @@ export interface GemSpot extends Spot { big: boolean }
 export interface EggSpot extends Spot { perk: Perk; needsJet: boolean }
 export interface GateSpot extends Spot { index: number }
 export interface PropSpot { x: number; y: number; z: number; s: number; variant: number }
+/** Pieces of the course that only appear once a beat is solved (e.g. bridge planks). */
+export interface Reveal { gate: number; boxes: Box[] }
+
 export interface Layout {
   boxes: Box[];
   gems: GemSpot[];
@@ -31,6 +34,8 @@ export interface Layout {
   finale: Spot;
   props: PropSpot[];
   length: number;
+  /** Boxes that become solid when their gate is cleared. */
+  reveals: Reveal[];
 }
 
 function hash(s: string): number {
@@ -53,7 +58,11 @@ export function rng(seed: string | number): () => number {
 
 const WIDTH = 4;
 
-export function buildLayout(seed: string, eggPerks: Perk[] = ["jet", "shield"]): Layout {
+/**
+ * `effects` (one per gate, from the level's mission) can change the gate areas: a
+ * "bridge" beat turns its gate area into a gap that planks fill once he answers.
+ */
+export function buildLayout(seed: string, eggPerks: Perk[] = ["jet", "shield"], effects: BeatEffect[] = []): Layout {
   const r = rng(seed);
   const pick = <T,>(a: T[]) => a[Math.floor(r() * a.length)]!;
   const boxes: Box[] = [];
@@ -62,6 +71,7 @@ export function buildLayout(seed: string, eggPerks: Perk[] = ["jet", "shield"]):
   const gates: GateSpot[] = [];
   const checkpoints: Spot[] = [];
   const props: PropSpot[] = [];
+  const reveals: Reveal[] = [];
   let z = 0;
   let y = 0;
   let n = 0;
@@ -153,11 +163,24 @@ export function buildLayout(seed: string, eggPerks: Perk[] = ["jet", "shield"]):
       eggs.push({ id: "egg1", x: WIDTH / 2 + 1.5, y: y + 3.2, z: z - 3, perk: eggPerks[1] ?? "shield", needsJet: true });
     }
 
-    // Gate area, then the checkpoint just past the gate.
-    slab(z, 6, y, 0, 6);
-    gates.push({ id: `gate${i}`, index: i, x: 0, y, z: z + 2.5 });
-    checkpoints.push({ id: `c${i + 1}`, x: 0, y, z: z + 4.5 });
-    z += 6;
+    if (effects[i] === "bridge") {
+      // Approach, then a ravine the bridge planks will span, then the far bank.
+      slab(z, 3, y, 0, 6);
+      gates.push({ id: `gate${i}`, index: i, x: 0, y, z: z + 2.2 });
+      const planks: Box[] = [];
+      for (let k = 0; k < 6; k++) planks.push({ id: `plank${i}-${k}`, x: 0, y: y - 0.15, z: z + 3.35 + k * 0.7, w: 3, h: 0.3, d: 0.64, kind: "ground" });
+      reveals.push({ gate: i, boxes: planks });
+      z += 3 + 4.2;
+      slab(z, 3, y, 0, 6);
+      checkpoints.push({ id: `c${i + 1}`, x: 0, y, z: z + 1.5 });
+      z += 3;
+    } else {
+      // Gate area, then the checkpoint just past the gate.
+      slab(z, 6, y, 0, 6);
+      gates.push({ id: `gate${i}`, index: i, x: 0, y, z: z + 2.5 });
+      checkpoints.push({ id: `c${i + 1}`, x: 0, y, z: z + 4.5 });
+      z += 6;
+    }
   });
 
   // Finale pad with the beacon.
@@ -171,5 +194,10 @@ export function buildLayout(seed: string, eggPerks: Perk[] = ["jet", "shield"]):
       if (r() < 0.55) props.push({ x: side * (7 + r() * 6), y: -1 - r() * 3, z: pz + r() * 2, s: 0.8 + r() * 0.8, variant: Math.floor(r() * 3) });
     }
   }
-  return { boxes, gems, eggs, gates, checkpoints, storyStone, finale, props, length: z };
+  return { boxes, gems, eggs, gates, checkpoints, storyStone, finale, props, length: z, reveals };
+}
+
+/** The layout for a level's pack, with its mission's beat effects applied. Server and iPad both use this. */
+export function layoutFor(pack: { id: string; eggs: Perk[]; mission?: { beats: { effect: BeatEffect }[] } }): Layout {
+  return buildLayout(pack.id, pack.eggs, pack.mission?.beats.map((b) => b.effect) ?? []);
 }

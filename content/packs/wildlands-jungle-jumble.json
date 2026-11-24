@@ -443,5 +443,166 @@
   "eggs": [
     "jet",
     "shield"
-  ]
+  ],
+  "mission": {
+    "title": "Kip's Lost Map",
+    "goal": "Find Kip's 7 map clues and dig up the Compass piece!",
+    "treasure": {
+      "name": "Heartwood Compass piece",
+      "emoji": "🧭"
+    },
+    "characters": [
+      {
+        "id": "kip",
+        "name": "Kip the Koala",
+        "kind": "koala",
+        "color": "#9aa0a8",
+        "voice": {
+          "pitch": 1.1,
+          "rate": 0.92
+        }
+      },
+      {
+        "id": "wren",
+        "name": "Wren",
+        "kind": "bird",
+        "color": "#b5793f",
+        "voice": {
+          "pitch": 1.45,
+          "rate": 1.05
+        }
+      },
+      {
+        "id": "boulder",
+        "name": "Boulder",
+        "kind": "stone",
+        "color": "#8a8f9e",
+        "voice": {
+          "pitch": 0.65,
+          "rate": 0.82
+        }
+      },
+      {
+        "id": "wally",
+        "name": "Wally the Wombat",
+        "kind": "wombat",
+        "color": "#8a6244",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 0.9
+        }
+      }
+    ],
+    "intro": [
+      {
+        "who": "kip",
+        "line": "Oh, Sparky, thank goodness you're here! The big storm blew my treasure map right out of my tree."
+      },
+      {
+        "who": "kip",
+        "line": "It showed the way to a piece of the Heartwood Compass. Without it, the animals can't find their way home."
+      },
+      {
+        "who": "sparky",
+        "line": "Don't worry, Kip! We'll find every clue and dig up that treasure together."
+      },
+      {
+        "who": "kip",
+        "line": "Start by reading my diary on the Story Stone. It tells what happened in the storm."
+      }
+    ],
+    "beats": [
+      {
+        "who": "wren",
+        "effect": "fly",
+        "setup": "Tweet tweet! I saw where the first clue landed. Listen carefully to my message!",
+        "success": "That's right! Follow me, the path is this way!",
+        "fail": "Oh no, that's not what I said. Fly back and listen again!",
+        "clue": "Wren's feather points north",
+        "clueIcon": "🪶"
+      },
+      {
+        "who": "kip",
+        "effect": "signpost",
+        "setup": "This signpost has my diary page pinned to it. Answer a question about my story and it will point the way.",
+        "success": "The sign is spinning! It points to the next clue.",
+        "fail": "Hmm, the sign is stuck. Let's read the story again and try once more.",
+        "clue": "The old signpost points past the gum trees",
+        "clueIcon": "🪧"
+      },
+      {
+        "who": "boulder",
+        "effect": "door",
+        "setup": "Rumble... I am Boulder, keeper of the jungle door. Answer my word riddle, and I shall let you pass.",
+        "success": "A wise answer. The door is open.",
+        "fail": "Rumble rumble... not quite. Come back and try another riddle.",
+        "clue": "Behind Boulder's door is the river",
+        "clueIcon": "🚪"
+      },
+      {
+        "who": "wally",
+        "effect": "bridge",
+        "setup": "G'day! The storm smashed my bridge. Help me count the planks and we'll build it back together!",
+        "success": "Beauty! Look at those planks drop in. Across you go!",
+        "fail": "Whoops, wrong count! The planks fell in the river. Let's try again.",
+        "clue": "Cross Wally's bridge over the river",
+        "clueIcon": "🌉"
+      },
+      {
+        "who": "kip",
+        "effect": "vine",
+        "setup": "This vine ladder wilted in the storm. Use your science brain to bring it back to life!",
+        "success": "Look, it's growing! Up we go!",
+        "fail": "The vine is still droopy. Let's think again.",
+        "clue": "Climb the vine to the high ledge",
+        "clueIcon": "🌿"
+      },
+      {
+        "who": "kip",
+        "effect": "chest",
+        "setup": "A treasure chest with a pattern lock! Work out what comes next to open it.",
+        "success": "Click! The chest is open, and there's a clue inside!",
+        "fail": "The lock won't budge. Let's go back and look at the pattern again.",
+        "clue": "The chest's clue: dig by the tallest tree",
+        "clueIcon": "🧰"
+      },
+      {
+        "who": "kip",
+        "effect": "vault",
+        "setup": "This is the treasure vault! It needs a password. Listen closely and spell it out.",
+        "success": "The vault is open! The treasure spot is just ahead!",
+        "fail": "Wrong password. The vault stays shut. Back to the checkpoint to try again!",
+        "clue": "X marks the spot!",
+        "clueIcon": "❌"
+      }
+    ],
+    "finale": [
+      {
+        "who": "kip",
+        "line": "You found every clue! X marks the spot. Dig, Sparky, dig!"
+      },
+      {
+        "who": "sparky",
+        "line": "A piece of the Heartwood Compass! It's glowing!"
+      },
+      {
+        "who": "kip",
+        "line": "Thank you, Sparky! Take it back to Wildlands, and the forest will start to come back to life."
+      }
+    ],
+    "numberThings": [
+      {
+        "one": "bridge plank",
+        "many": "bridge planks"
+      },
+      {
+        "one": "log",
+        "many": "logs"
+      },
+      {
+        "one": "rope",
+        "many": "ropes"
+      }
+    ]
+  }
 }

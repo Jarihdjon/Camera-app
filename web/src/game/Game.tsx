@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
-import { buildLayout, GATES, PERK_INFO, type GameState, type GateQuestion, type GateResult, type PackView, type Perk } from "@yav/shared/game";
+import { layoutFor, GATES, PERK_INFO, type GameState, type GateQuestion, type GateResult, type PackView, type Perk } from "@yav/shared/game";
 import { api, type Wallet } from "@/lib/api";
 import { useRobot } from "@/components/robot/RobotProvider";
 import { SpeechBubble } from "@/components/robot/SpeechBubble";
@@ -85,7 +85,7 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
 
   // ---------- level logic ----------
   const level = scene.kind === "level" ? scene : null;
-  const layout = useMemo(() => (level ? buildLayout(level.pack.id, level.pack.eggs) : null), [level?.pack.id]);
+  const layout = useMemo(() => (level ? layoutFor(level.pack) : null), [level?.pack.id]);
   const [nearStone, setNearStone] = useState(false);
   // Opening or closing any panel lets go of the joystick and keys, so Sparky stays put.
   useEffect(() => resetInput(), [question, story, done]);
