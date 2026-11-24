@@ -36,9 +36,9 @@ export function Blocks({ boxes, top, side, accent }: { boxes: Box[]; top: string
         for (let j = 0; j < nz; j++) {
           const x = b.x - b.w / 2 + tw * (i + 0.5);
           const z = b.z - b.d / 2 + td * (j + 0.5);
-          out.push({ p: [x, b.y, z], s: [tw * 0.98, b.h, td * 0.98], c: jitter(b.kind === "ledge" ? accent : top, k++) });
+          out.push({ p: [x, b.y, z], s: [tw * 1.002, b.h, td * 1.002], c: jitter(b.kind === "ledge" ? accent : top, k++) });
           // Earth below, getting darker with depth.
-          out.push({ p: [x, b.y - 1, z], s: [tw * 0.98, 1, td * 0.98], c: jitter(side, k++, 0.05) });
+          out.push({ p: [x, b.y - 1, z], s: [tw * 1.002, 1, td * 1.002], c: jitter(side, k++, 0.05) });
           if ((i + j) % 3 === 0) out.push({ p: [x, b.y - 2, z], s: [tw * 0.9, 1, td * 0.9], c: jitter(side, k++, 0.05).offsetHSL(0, 0, -0.08) });
         }
       }

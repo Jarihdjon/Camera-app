@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { AnimatePresence, motion } from "motion/react";
-import { layoutFor, GATES, PERK_INFO, type GameState, type GateQuestion, type GateResult, type PackView, type Perk } from "@yav/shared/game";
+import { layoutFor, GATES, PERK_INFO, type GameState, type GateQuestion, type GateResult, type MissionLine, type PackView, type Perk } from "@yav/shared/game";
 import { api, type Wallet } from "@/lib/api";
 import { useRobot } from "@/components/robot/RobotProvider";
 import { SpeechBubble } from "@/components/robot/SpeechBubble";
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Controls } from "./hud/Controls";
 import { GatePanel } from "./hud/GatePanel";
 import { StoryPanel } from "./hud/StoryPanel";
+import { Dialogue } from "./hud/Dialogue";
+import { TreasureMap } from "./hud/TreasureMap";
 import { LevelScene, RealmHub, SkyDock } from "./scenes";
 import { input, listenKeyboard, resetInput } from "./input";
 import { sfx } from "./sfx";
@@ -40,10 +42,17 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
   const [question, setQuestion] = useState<GateQuestion | null>(null);
   const [story, setStory] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [done, setDone] = useState<null | { minutes: number; gems: number; eggs: number; eggsTotal: number }>(null);
+  const [done, setDone] = useState<null | { minutes: number; gems: number; eggs: number; eggsTotal: number; quest?: { name: string; emoji: string; pieces: number; total: number } }>(null);
+  /** A story conversation on screen, and what happens when it ends. */
+  const [dialogue, setDialogue] = useState<null | { lines: MissionLine[]; then: () => void }>(null);
+  const [intro, setIntro] = useState(false);
+  const [misses, setMisses] = useState(0);
+  const [dug, setDug] = useState(false);
   const player = useRef<PlayerHandle | null>(null);
   const pos = useRef({ x: 0, z: 0 });
   const busy = useRef(false);
+  /** The level's finish has been sent (it must only happen once per visit). */
+  const finished = useRef(false);
   const holdTimer = useRef<number>(undefined);
 
   const refresh = useCallback(() => api.game.state().then(setState), []);
@@ -76,10 +85,22 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
 
   async function startLevel(levelId: string, realmId: string) {
     const s = await api.game.start(levelId);
+    const mission = s.pack.mission;
+    finished.current = false;
+    setDug(false);
+    setMisses(0);
+    setIntro(Boolean(mission && s.checkpoint === 0));
     go({ kind: "level", levelId, realmId, runId: s.runId, pack: s.pack, checkpoint: s.checkpoint, gems: new Set(s.gems), eggs: new Set(s.eggs) }, "#ffffff");
     window.setTimeout(() => {
-      if (s.checkpoint === 0) setStory(true);
-      robot.say(s.checkpoint ? `Welcome back to ${s.pack.title}! Let's keep going.` : `Welcome to ${s.pack.title}! First, read the Story Stone.`, "wave");
+      if (mission && s.checkpoint === 0) {
+        // The opening scene, then the Story Stone.
+        setDialogue({ lines: mission.intro, then: () => { setIntro(false); setStory(true); robot.say(mission.goal, "happy"); } });
+      } else if (mission) {
+        robot.say(`Welcome back! ${mission.goal} You've found ${s.checkpoint} of ${mission.beats.length} clues.`, "wave");
+      } else {
+        if (s.checkpoint === 0) setStory(true);
+        robot.say(s.checkpoint ? `Welcome back to ${s.pack.title}! Let's keep going.` : `Welcome to ${s.pack.title}! First, read the Story Stone.`, "wave");
+      }
     }, 900);
   }
 
@@ -88,12 +109,14 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
   const layout = useMemo(() => (level ? layoutFor(level.pack) : null), [level?.pack.id]);
   const [nearStone, setNearStone] = useState(false);
   // Opening or closing any panel lets go of the joystick and keys, so Sparky stays put.
-  useEffect(() => resetInput(), [question, story, done]);
+  useEffect(() => resetInput(), [question, story, done, dialogue]);
   useEffect(() => {
     const hook = (window as unknown as { __game?: Record<string, unknown> }).__game;
     if (hook) {
       hook.layout = layout;
       hook.openLevel = (levelId: string, realmId: string) => void startLevel(levelId, realmId);
+      hook.question = question;
+      hook.answerNow = (x: string | number) => answer(x).then((r) => afterGate(r));
     }
   });
   const [, setPickups] = useState(0);
@@ -132,25 +155,44 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
     setNearStone((v) => (v === near ? v : near));
     // Reaching the next closed gate opens its challenge.
     const gate = layout.gates[level.checkpoint];
-    if (gate && !question && b.z > gate.z - 1.6) {
+    if (gate && !question && !dialogue && b.z > gate.z - 1.6) {
       busy.current = true;
+      const beat = level.pack.mission?.beats[gate.index];
       void api.game.gate(level.runId, gate.index).then((q) => {
-        setQuestion(q);
-        busy.current = false;
+        if (beat) {
+          // The story animal sets up the challenge first.
+          setDialogue({ lines: [{ who: beat.who, line: beat.setup }], then: () => { setQuestion(q); busy.current = false; } });
+        } else {
+          setQuestion(q);
+          busy.current = false;
+        }
       });
     }
-    if (level.checkpoint >= GATES.length && Math.hypot(b.x - layout.finale.x, b.z - layout.finale.z) < 2 && !done) {
+    if (level.checkpoint >= GATES.length && Math.hypot(b.x - layout.finale.x, b.z - layout.finale.z) < 2 && !done && !dialogue && !finished.current) {
       busy.current = true;
-      void api.game.finish(level.runId).then((r) => {
+      finished.current = true;
+      const mission = level.pack.mission;
+      void api.game.finish(level.runId).then(async (r) => {
         onWallet(r.wallet);
-        sfx.finale();
+        const s = await api.game.state();
+        setState(s);
+        const quest = s.realms.find((x) => x.id === level.realmId)?.quest;
+        const finish = () => {
+          sfx.finale();
+          void celebrate(true);
+          robot.say(`Level complete! Amazing work, ${firstName}!${r.minutesEarned ? ` You earned ${r.minutesEarned} play minutes!` : ""}`, "cheer");
+          setDone({ minutes: r.minutesEarned, gems: level.gems.size, eggs: level.eggs.size, eggsTotal: layout.eggs.length, quest: mission ? quest : undefined });
+          busy.current = false;
+        };
+        if (!mission) return finish();
+        // X marks the spot: the chest digs itself up, the treasure rises, then the animals cheer.
+        setDug(true);
+        sfx.bigGem();
         void celebrate(true);
-        robot.say(`Level complete! Amazing work, ${firstName}!${r.minutesEarned ? ` You earned ${r.minutesEarned} play minutes!` : ""}`, "cheer");
-        setDone({ minutes: r.minutesEarned, gems: level.gems.size, eggs: level.eggs.size, eggsTotal: layout.eggs.length });
-        busy.current = false;
+        window.setTimeout(() => setDialogue({ lines: mission.finale, then: finish }), 2600);
       });
     }
-  }, [level, layout, question, state?.perks.magnet, done, onWallet, robot, firstName]);
+  }, [level, layout, question, dialogue, state?.perks.magnet, done, onWallet, robot, firstName]);
 
   const onFall = useCallback(() => {
     if (!level || !layout) return;
@@ -174,8 +216,14 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
   async function afterGate(r: GateResult) {
     if (!level || !layout) return;
     setQuestion(null);
+    const beat = level.pack.mission?.beats[level.checkpoint];
     if (r.correct) {
       setScene({ ...level, checkpoint: r.checkpoint });
+      if (beat) {
+        // The world changes (the effect plays) while the animal celebrates; the clue goes on the map.
+        flash(`🗺️ Clue found: ${beat.clueIcon} ${beat.clue}`);
+        setDialogue({ lines: [{ who: beat.who, line: beat.success }], then: () => {} });
+      }
     } else if (r.shielded) {
       // Same gate, fresh question, no warp.
       const q = await api.game.gate(level.runId, level.checkpoint);
@@ -183,12 +231,19 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
     } else {
       // Warp back to the previous checkpoint; the gate will have a fresh question.
       const c = layout.checkpoints[level.checkpoint]!;
-      sfx.warp();
-      setSwirl("#7cf0d8");
-      window.setTimeout(() => {
-        player.current?.teleport(c.x, c.y, c.z);
-        setSwirl(null);
-      }, 500);
+      const warp = () => {
+        sfx.warp();
+        setSwirl("#7cf0d8");
+        window.setTimeout(() => {
+          player.current?.teleport(c.x, c.y, c.z);
+          setSwirl(null);
+        }, 500);
+      };
+      if (beat) {
+        // The obstacle rumbles shut, and the animal says what went wrong, kindly.
+        setMisses((n) => n + 1);
+        setDialogue({ lines: [{ who: beat.who, line: beat.fail }], then: warp });
+      } else warp();
     }
   }
 
@@ -215,7 +270,8 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
           )}
           {level && layout && (
             <LevelScene key={`level-${level.levelId}`} pack={level.pack} layout={layout} checkpoint={level.checkpoint} gems={level.gems} eggs={level.eggs}
-              frozen={Boolean(question) || story || Boolean(done)} jet={Boolean(perks?.jet)} playerRef={player} onMove={onMove} onFall={onFall} />
+              frozen={Boolean(question) || story || Boolean(done) || Boolean(dialogue) || dug} jet={Boolean(perks?.jet)} playerRef={player} onMove={onMove} onFall={onFall}
+              intro={intro} misses={misses} dug={dug} />
           )}
         </Suspense>
       </Canvas>
@@ -225,7 +281,7 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
         {scene.kind !== "dock" && (
           <Button className="pointer-events-auto" variant="secondary" size="lg"
             onClick={() => {
-              setQuestion(null); setStory(false); setDone(null); void refresh();
+              setQuestion(null); setStory(false); setDone(null); setDialogue(null); setDug(false); busy.current = false; void refresh();
               go(scene.kind === "level" ? { kind: "realm", realmId: scene.realmId } : { kind: "dock" });
             }}>
             ← {scene.kind === "level" ? "Realm" : "Sky Dock"}
@@ -237,17 +293,25 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
             {GATES.map((g, i) => <span key={g} className={i < level.checkpoint ? "text-xl" : "text-xl opacity-30 grayscale"}>{["👂", "📖", "🔤", "🔢", "🔬", "🧩", "✏️"][i]}</span>)}
           </div>
         )}
-        <div className="ml-auto flex gap-2">
+        <div className="ml-auto flex items-start gap-2">
+          {level?.pack.mission && <TreasureMap mission={level.pack.mission} found={level.checkpoint} />}
           {perks && perks.shield > 0 && <span className="rounded-full bg-black/45 px-3 py-2 font-display text-lg backdrop-blur">🛡️ {perks.shield}</span>}
           {perks?.jet && <span className="rounded-full bg-black/45 px-3 py-2 font-display text-lg backdrop-blur">🚀</span>}
         </div>
       </div>
-      <div className="pointer-events-none fixed inset-x-0 top-20 z-10 mx-auto max-w-xl px-4"><SpeechBubble name={robotName} className="pointer-events-auto text-base" /></div>
+      <div className={`pointer-events-none fixed inset-x-0 top-20 z-10 mx-auto max-w-xl px-4 ${dialogue ? "hidden" : ""}`}><SpeechBubble name={robotName} className="pointer-events-auto text-base" /></div>
 
-      {level && nearStone && !story && !question && (
+      {level && nearStone && !story && !question && !dialogue && (
         <Button className="fixed bottom-48 left-1/2 z-30 -translate-x-1/2" size="kid" onClick={() => setStory(true)}>📖 Read the Story Stone</Button>
       )}
-      {!question && !story && !done && <Controls />}
+      {!question && !story && !done && !dialogue && <Controls />}
+
+      <AnimatePresence>
+        {dialogue && level?.pack.mission && (
+          <Dialogue key={dialogue.lines.map((l) => l.line).join("|")} lines={dialogue.lines} characters={level.pack.mission.characters} robotName={robotName} firstName={firstName}
+            onDone={() => { const then = dialogue.then; setDialogue(null); then(); }} />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {question && level && (
@@ -270,6 +334,9 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
             <h1 className="font-display text-5xl text-glow">Level complete!</h1>
             <p className="font-display text-2xl">{level.pack.emoji} {level.pack.title}</p>
             <p className="text-xl">💎 {done.gems} gems · 🥚 {done.eggs} of {done.eggsTotal} eggs</p>
+            {done.quest && (
+              <p className="rounded-2xl bg-amber-300/15 px-4 py-2 font-display text-2xl text-amber-200">{done.quest.emoji} {done.quest.name} piece {done.quest.pieces} of {done.quest.total}!</p>
+            )}
             {done.minutes > 0 && <p className="font-display text-3xl text-primary">+{done.minutes} play minutes</p>}
             {done.eggs < done.eggsTotal && <p className="text-muted-foreground">There's still a hidden egg somewhere… 👀</p>}
             <Button size="kid" variant="success" onClick={() => { setDone(null); void refresh(); go({ kind: "realm", realmId: level.realmId }); }}>Back to {realm?.name} ➜</Button>

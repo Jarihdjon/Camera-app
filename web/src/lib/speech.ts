@@ -13,7 +13,9 @@ import { wordAt } from "@/components/robot/lipsync";
  *
  * Listeners get start / word / end events so the robot can lip-sync. `stop()` stops at once.
  */
-export type SpeechEvent = { type: "start" } | { type: "word"; word: string } | { type: "end" };
+/** `who` says which character is talking (undefined = Sparky), so only their mouth moves. */
+export type SpeechEvent = { type: "start"; who?: string } | { type: "word"; word: string; who?: string } | { type: "end"; who?: string };
+export interface VoiceTune { pitch: number; rate: number }
 export type SpeechStyle = "robot" | "narrator";
 type Listener = (e: SpeechEvent) => void;
 
@@ -90,6 +92,7 @@ export function splitForSpeech(text: string): Chunk[] {
 let token = 0;
 let timer: number | undefined;
 let active = false;
+let currentWho: string | undefined;
 
 /** Stop speaking straight away. */
 export function stop() {
@@ -98,7 +101,7 @@ export function stop() {
   if (hasSpeech) speechSynthesis.cancel();
   if (active) {
     active = false;
-    emit({ type: "end" });
+    emit({ type: "end", who: currentWho });
   }
 }
 
@@ -106,18 +109,19 @@ export function isSpeaking() {
   return active;
 }
 
-export function say(text: string, style: SpeechStyle = "robot") {
+export function say(text: string, style: SpeechStyle = "robot", tune?: VoiceTune, who?: string) {
   stop();
   const my = ++token;
   const chunks = splitForSpeech(text);
   if (!chunks.length) return;
   active = true;
-  emit({ type: "start" });
+  currentWho = who;
+  emit({ type: "start", who });
 
   if (!hasSpeech) {
     // No voice available: still animate, for about as long as the line would take.
     timer = window.setTimeout(() => {
-      if (my === token) { active = false; emit({ type: "end" }); }
+      if (my === token) { active = false; emit({ type: "end", who }); }
     }, Math.min(8000, text.length * 60));
     return;
   }
@@ -126,7 +130,7 @@ export function say(text: string, style: SpeechStyle = "robot") {
     if (my !== token) return;
     if (i >= chunks.length) {
       active = false;
-      emit({ type: "end" });
+      emit({ type: "end", who });
       return;
     }
     const c = chunks[i]!;
@@ -136,11 +140,11 @@ export function say(text: string, style: SpeechStyle = "robot") {
       u.lang = voice.lang;
     } else u.lang = "en-AU";
     // Narration: a touch slower than conversation, natural pitch. Sparky's chat: a little brighter.
-    u.rate = style === "narrator" ? 0.88 : 0.96;
-    u.pitch = style === "narrator" ? 1.0 : 1.08;
+    u.rate = tune?.rate ?? (style === "narrator" ? 0.88 : 0.96);
+    u.pitch = tune?.pitch ?? (style === "narrator" ? 1.0 : 1.08);
     u.onboundary = (ev) => {
       if (my !== token || (ev.name && ev.name !== "word")) return;
-      emit({ type: "word", word: wordAt(c.text, ev.charIndex, ev.charLength) });
+      emit({ type: "word", word: wordAt(c.text, ev.charIndex, ev.charLength), who });
     };
     const next = () => {
       if (my !== token) return;

@@ -49,6 +49,8 @@ export function RobotProvider({ children }: { children: ReactNode }) {
   useEffect(
     () =>
       onSpeech((e) => {
+        // Another character is talking: Sparky listens with his mouth closed.
+        if (e.who && e.who !== "sparky") return;
         if (e.type === "start") {
           setSpeaking(true);
           gotWord.current = false;

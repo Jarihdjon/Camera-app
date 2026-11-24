@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
-import type { Box, Layout, PackView, RealmSummary } from "@yav/shared/game";
+import type { Box, Layout, Mission, PackView, RealmSummary } from "@yav/shared/game";
 import { Blocks } from "./Blocks";
 import { Props } from "./Props";
 import { Portal } from "./Portal";
@@ -11,6 +11,31 @@ import { Beacon, Eggs, Flag, Gate, Gems, StoryStone } from "./Things";
 import { labelTexture, skyTexture } from "./textures";
 import { Ambience, DioramaCamera, DioramaEffects, Flora, richLook } from "./Diorama";
 import type { Body } from "./physics";
+import { Npc } from "./Npc";
+import { BeatEffectView, REPLACES_WALL, TreasureSpot } from "./Effects";
+import { HeartwoodTree } from "./Heartwood";
+
+/** Where each story animal stands: at the start for the opening scene, beside the next beat it leads, or gathered at the X. */
+function npcSpots(mission: Mission, layout: Layout, checkpoint: number, intro: boolean): Map<string, [number, number, number]> {
+  const out = new Map<string, [number, number, number]>();
+  const introIds = new Set(mission.intro.map((l) => l.who));
+  let gathered = 0;
+  mission.characters.forEach((c, ci) => {
+    if (intro && introIds.has(c.id)) {
+      out.set(c.id, [1.4 + ci * 0.2, 0, 3.2 + ci * 0.6]);
+      return;
+    }
+    const next = mission.beats.findIndex((b, i) => i >= checkpoint && b.who === c.id);
+    const gate = next >= 0 ? layout.gates[next] : undefined;
+    if (gate) out.set(c.id, [gate.x - 1.8, gate.y, gate.z - 2.6]);
+    else {
+      const f = layout.finale;
+      out.set(c.id, [f.x - 3 + gathered * 2, f.y, f.z + 2.6]);
+      gathered++;
+    }
+  });
+  return out;
+}
 
 /** A round floor made of block rows, for the dock and the realm islands. */
 function disc(radius: number, y = 0): Box[] {
@@ -27,12 +52,13 @@ function Sky({ top, bottom, fog, stars = false, warm = false }: { top: string; b
   const { scene } = useThree();
   useEffect(() => {
     scene.background = skyTexture(top, bottom);
-    scene.fog = new THREE.Fog(fog, 30, 90);
+    // Rich look: fog fades into the sky's horizon colour, further out, so the distance isn't washed-out grey.
+    scene.fog = warm ? new THREE.Fog(bottom, 45, 140) : new THREE.Fog(fog, 30, 90);
     return () => {
       scene.background = null;
       scene.fog = null;
     };
-  }, [scene, top, bottom, fog]);
+  }, [scene, top, bottom, fog, warm]);
   return (
     <>
       <hemisphereLight args={warm ? ["#fff4dc", "#6a5a8a", 1.05] : ["#ffffff", "#5a4a7a", 1.1]} />
@@ -109,7 +135,9 @@ export function RealmHub({ realm, playerRef, pos, jet, onLevel, onHome, onComing
   onHome: () => void;
   onComingSoon: (name: string) => void;
 }) {
-  const boxes = useMemo(() => disc(13), []);
+  // The Heartwood's trunk is solid, so he walks round it.
+  const floor = useMemo(() => disc(13), []);
+  const boxes = useMemo(() => (realm.quest ? [...floor, { id: "trunk", x: -8.5, y: 2.2, z: -2.5, w: 1.6, h: 4.4, d: 1.6, kind: "ground" as const }] : floor), [floor, realm.quest]);
   // First level on the left of the screen (world +x).
   const pads = realm.levels.map((l, i) => ({ l, x: 7.5 - i * 5, z: 7 }));
   const labels = useMemo(() => realm.levels.map((l) => labelTexture(l.emoji, l.packId ? l.name : `${l.name} · soon`)), [realm]);
@@ -142,7 +170,7 @@ export function RealmHub({ realm, playerRef, pos, jet, onLevel, onHome, onComing
   return (
     <>
       <Sky top={realm.sky[0]} bottom={realm.sky[1]} fog={realm.sky[1]} stars={realm.id === "cosmo-heights"} />
-      <Blocks boxes={boxes} top={realm.color} side="#6b5a4a" accent="#ffd23f" />
+      <Blocks boxes={floor} top={realm.color} side="#6b5a4a" accent="#ffd23f" />
       <Props spots={props} palette={{ top: realm.color, side: "#6b4226", accent: "#ffd23f", prop: "#2f8f3a", prop2: "#6b4226", sky: realm.sky, fog: realm.sky[1], props: realm.id === "wildlands" ? "jungle" : "jungle" }} />
       {pads.map((p, i) => (
         <group key={p.l.id}>
@@ -153,14 +181,15 @@ export function RealmHub({ realm, playerRef, pos, jet, onLevel, onHome, onComing
           <sprite position={[p.x, 2.4, p.z]} scale={[2.8, 1.4, 1]}><spriteMaterial map={labels[i]!} transparent opacity={p.l.packId ? 1 : 0.55} /></sprite>
         </group>
       ))}
+      {realm.quest && <HeartwoodTree position={[-8.5, 0, -2.5]} pieces={realm.quest.pieces} total={realm.quest.total} name={realm.quest.name} emoji={realm.quest.emoji} />}
       <Portal position={[0, 0, -10]} rotationY={0} color="#7cf0d8" sky={["#0b1030", "#3a2a7a"]} emoji="🛸" name="Sky Dock" preview="stars" player={pos} onEnter={onHome} size={0.7} />
       <Player ref={playerRef} boxes={boxes} spawn={{ x: 0, y: 0, z: -3 }} jet={jet} onMove={onMove} onFall={() => playerRef.current?.teleport(0, 0, -3)} />
     </>
   );
 }
 
-/** A level: the course with its seven gates, gems, eggs, flags, Story Stone and beacon. */
-export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, playerRef, onMove, onFall }: {
+/** A level: the course with its seven gates, gems, eggs, flags, Story Stone and beacon (or, on a mission, the story animals, beat effects and the X). */
+export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, playerRef, onMove, onFall, intro = false, misses = 0, dug = false }: {
   pack: PackView;
   layout: Layout;
   checkpoint: number;
@@ -171,13 +200,22 @@ export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, 
   playerRef: React.RefObject<PlayerHandle | null>;
   onMove: (b: Body, t: number) => void;
   onFall: () => void;
+  /** The opening scene is playing (story animals wait at the start). */
+  intro?: boolean;
+  /** Counts wrong answers, so the current obstacle rumbles shut. */
+  misses?: number;
+  /** The treasure has been dug up. */
+  dug?: boolean;
 }) {
   const p = pack.palette;
-  // Closed gates are solid, so he can't walk through before answering.
+  const mission = pack.mission;
+  // Closed gates are solid, so he can't walk through before answering. Bridge planks become solid once built.
   const solid = useMemo(() => [
     ...layout.boxes,
+    ...layout.reveals.filter((r) => r.gate < checkpoint).flatMap((r) => r.boxes),
     ...layout.gates.filter((g) => g.index >= checkpoint).map((g) => ({ id: `wall${g.index}`, x: g.x, y: g.y + 1.5, z: g.z, w: 6, h: 3, d: 0.3, kind: "ground" as const })),
   ], [layout, checkpoint]);
+  const spots = useMemo(() => (mission ? npcSpots(mission, layout, checkpoint, intro) : null), [mission, layout, checkpoint, intro]);
   const spawn = layout.checkpoints[Math.min(checkpoint, layout.checkpoints.length - 1)]!;
   const rich = richLook();
   return (
@@ -195,10 +233,28 @@ export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, 
       <Props spots={layout.props} palette={p} />
       <Gems gems={layout.gems} collected={gems} color={p.accent} />
       <Eggs eggs={layout.eggs} found={eggs} />
-      {layout.gates.map((g) => <Gate key={g.id} gate={g} open={g.index < checkpoint} color={p.prop2} />)}
+      {layout.gates.map((g) => {
+        const effect = mission?.beats[g.index]?.effect;
+        return (
+          <group key={g.id}>
+            <Gate gate={g} open={g.index < checkpoint} color={p.prop2} wall={!(effect && REPLACES_WALL[effect])} />
+            {effect && (
+              <BeatEffectView effect={effect} gate={g} open={g.index < checkpoint} shake={g.index === checkpoint ? misses : 0}
+                reveal={layout.reveals.find((r) => r.gate === g.index)?.boxes} />
+            )}
+          </group>
+        );
+      })}
       {layout.checkpoints.slice(1).map((c, i) => <Flag key={c.id} spot={c} lit={i < checkpoint} color={p.accent} />)}
       <StoryStone spot={layout.storyStone} />
-      <Beacon spot={layout.finale} active={checkpoint >= layout.gates.length} />
+      {mission ? (
+        <>
+          <TreasureSpot spot={layout.finale} ready={checkpoint >= layout.gates.length} dug={dug} emoji={mission.treasure.emoji} />
+          {mission.characters.map((c) => <Npc key={c.id} character={c} target={spots!.get(c.id)!} />)}
+        </>
+      ) : (
+        <Beacon spot={layout.finale} active={checkpoint >= layout.gates.length} />
+      )}
       <Player ref={playerRef} boxes={solid} spawn={spawn} frozen={frozen} jet={jet} onMove={onMove} onFall={onFall} cameraOffset={rich ? [0, 7.2, -10.5] : undefined} />
     </>
   );

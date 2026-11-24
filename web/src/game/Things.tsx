@@ -77,7 +77,7 @@ export function Eggs({ eggs, found }: { eggs: EggSpot[]; found: Set<string> }) {
 }
 
 /** A gate: a block arch with a glowing energy wall and its challenge icon. Opens when cleared. */
-export function Gate({ gate, open, color }: { gate: GateSpot; open: boolean; color: string }) {
+export function Gate({ gate, open, color, wall: showWall = true }: { gate: GateSpot; open: boolean; color: string; wall?: boolean }) {
   const type = GATES[gate.index]!;
   const info = GATE_INFO[type];
   const sign = useMemo(() => labelTexture(info.icon, info.name), [info]);
@@ -91,10 +91,10 @@ export function Gate({ gate, open, color }: { gate: GateSpot; open: boolean; col
       const k = Math.min(1, (clock.elapsedTime - t0.current) * 2.5);
       w.scale.set(1, 1 - k, 1);
       w.position.y = gate.y + 1.5 + k * 1.4;
-      w.visible = k < 1;
+      w.visible = showWall && k < 1;
     } else {
       t0.current = null;
-      w.visible = true;
+      w.visible = showWall;
       w.scale.set(1, 1, 1);
       w.position.y = gate.y + 1.5;
       (w.material as THREE.MeshBasicMaterial).opacity = 0.45 + Math.sin(clock.elapsedTime * 4) * 0.15;
@@ -110,7 +110,7 @@ export function Gate({ gate, open, color }: { gate: GateSpot; open: boolean; col
       <mesh geometry={block} position={[gate.x, gate.y + 3.45, gate.z]} scale={[6, 0.7, 0.9]}>
         <meshLambertMaterial color={color} />
       </mesh>
-      <mesh ref={wall} position={[gate.x, gate.y + 1.5, gate.z]}>
+      <mesh ref={wall} position={[gate.x, gate.y + 1.5, gate.z]} visible={showWall}>
         <planeGeometry args={[4.4, 3]} />
         <meshBasicMaterial color={open ? "#7cf0d8" : "#7cf0d8"} transparent opacity={0.5} side={THREE.DoubleSide} />
       </mesh>
