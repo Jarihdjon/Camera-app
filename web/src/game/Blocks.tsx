@@ -4,6 +4,34 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three-stdlib";
 import type { Box } from "@yav/shared/game";
 import { boxAt } from "./physics";
+import { MODELS, Model, type Placement } from "./models";
+
+type Tile = { p: [number, number, number]; s: [number, number, number]; c: THREE.Color; top?: boolean };
+
+function TileMesh({ tiles }: { tiles: Tile[] }) {
+  const mesh = useRef<THREE.InstancedMesh>(null);
+  useLayoutEffect(() => {
+    const m = mesh.current;
+    if (!m) return;
+    const o = new THREE.Object3D();
+    tiles.forEach((t, i) => {
+      o.position.set(...t.p);
+      o.scale.set(...t.s);
+      o.updateMatrix();
+      m.setMatrixAt(i, o.matrix);
+      m.setColorAt(i, t.c);
+    });
+    m.instanceMatrix.needsUpdate = true;
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+    m.computeBoundingSphere();
+  }, [tiles]);
+  if (!tiles.length) return null;
+  return (
+    <instancedMesh ref={mesh} args={[tileGeo, undefined, tiles.length]} receiveShadow>
+      <meshLambertMaterial />
+    </instancedMesh>
+  );
+}
 
 const tileGeo = new RoundedBoxGeometry(1, 1, 1, 2, 0.12);
 
@@ -20,12 +48,16 @@ function jitter(hex: string, seed: number, amount = 0.07): THREE.Color {
  * little variation, and earthy blocks underneath. Static platforms are one instanced
  * mesh (fast on iPad); moving platforms follow their swing every frame.
  */
-export function Blocks({ boxes, top, side, accent }: { boxes: Box[]; top: string; side: string; accent: string }) {
+/**
+ * With `models`, the grass tops of the path are Kenney grass blocks (falling back to
+ * rounded tiles if they can't load); ledges stay gold tiles so the secret spots stand out.
+ */
+export function Blocks({ boxes, top, side, accent, models = false }: { boxes: Box[]; top: string; side: string; accent: string; models?: boolean }) {
   const statics = useMemo(() => boxes.filter((b) => !b.move), [boxes]);
   const movers = useMemo(() => boxes.filter((b) => b.move), [boxes]);
 
   const tiles = useMemo(() => {
-    const out: { p: [number, number, number]; s: [number, number, number]; c: THREE.Color }[] = [];
+    const out: Tile[] = [];
     let k = 0;
     for (const b of statics) {
       const nx = Math.max(1, Math.round(b.w));
@@ -36,7 +68,7 @@ export function Blocks({ boxes, top, side, accent }: { boxes: Box[]; top: string
         for (let j = 0; j < nz; j++) {
           const x = b.x - b.w / 2 + tw * (i + 0.5);
           const z = b.z - b.d / 2 + td * (j + 0.5);
-          out.push({ p: [x, b.y, z], s: [tw * 1.002, b.h, td * 1.002], c: jitter(b.kind === "ledge" ? accent : top, k++) });
+          out.push({ p: [x, b.y, z], s: [tw * 1.002, b.h, td * 1.002], c: jitter(b.kind === "ledge" ? accent : top, k++), top: b.kind === "ground" });
           // Earth below, getting darker with depth.
           out.push({ p: [x, b.y - 1, z], s: [tw * 1.002, 1, td * 1.002], c: jitter(side, k++, 0.05) });
           if ((i + j) % 3 === 0) out.push({ p: [x, b.y - 2, z], s: [tw * 0.9, 1, td * 0.9], c: jitter(side, k++, 0.05).offsetHSL(0, 0, -0.08) });
@@ -46,27 +78,16 @@ export function Blocks({ boxes, top, side, accent }: { boxes: Box[]; top: string
     return out;
   }, [statics, top, side, accent]);
 
-  const mesh = useRef<THREE.InstancedMesh>(null);
-  useLayoutEffect(() => {
-    const m = mesh.current;
-    if (!m) return;
-    const o = new THREE.Object3D();
-    tiles.forEach((t, i) => {
-      o.position.set(...t.p);
-      o.scale.set(...t.s);
-      o.updateMatrix();
-      m.setMatrixAt(i, o.matrix);
-      m.setColorAt(i, t.c);
-    });
-    m.instanceMatrix.needsUpdate = true;
-    if (m.instanceColor) m.instanceColor.needsUpdate = true;
-  }, [tiles]);
+  const body = useMemo(() => (models ? tiles.filter((t) => !t.top) : tiles), [tiles, models]);
+  const tops = useMemo(() => tiles.filter((t) => t.top), [tiles]);
+  const grass = useMemo<Placement[]>(() => tops.map((t) => ({ p: [t.p[0], t.p[1] - t.s[1] / 2, t.p[2]], s: [t.s[0], t.s[1], t.s[2]] })), [tops]);
 
   return (
     <>
-      <instancedMesh ref={mesh} args={[tileGeo, undefined, tiles.length]} receiveShadow>
-        <meshLambertMaterial />
-      </instancedMesh>
+      <TileMesh tiles={body} />
+      {models && <Model url={MODELS.grassBlock} items={grass} fallback={<TileMesh tiles={tops} />} />}
+      {/* A flat grass floor just under the block tops fills the dips where four rounded corners meet. */}
+      {models && <GrassFloor boxes={statics.filter((b) => b.kind === "ground")} />}
       {movers.map((b) => <Mover key={b.id} box={b} color={accent} />)}
     </>
   );
@@ -82,5 +103,29 @@ function Mover({ box, color }: { box: Box; color: string }) {
     <mesh ref={ref} geometry={tileGeo} scale={[box.w, box.h, box.d]}>
       <meshLambertMaterial color={color} emissive={color} emissiveIntensity={0.25} />
     </mesh>
+  );
+}
+
+const plane = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+function GrassFloor({ boxes }: { boxes: Box[] }) {
+  const mesh = useRef<THREE.InstancedMesh>(null);
+  useLayoutEffect(() => {
+    const m = mesh.current;
+    if (!m) return;
+    const o = new THREE.Object3D();
+    boxes.forEach((b, i) => {
+      o.position.set(b.x, b.y + b.h / 2 - 0.02, b.z);
+      o.scale.set(b.w, 1, b.d);
+      o.updateMatrix();
+      m.setMatrixAt(i, o.matrix);
+    });
+    m.instanceMatrix.needsUpdate = true;
+    m.computeBoundingSphere();
+  }, [boxes]);
+  if (!boxes.length) return null;
+  return (
+    <instancedMesh ref={mesh} args={[plane, undefined, boxes.length]}>
+      <meshLambertMaterial color="#4fb062" />
+    </instancedMesh>
   );
 }

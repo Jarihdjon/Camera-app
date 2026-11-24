@@ -25,9 +25,12 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        // 3D models are big: fetched when needed and cached then, not downloaded up front.
+        globIgnores: ["models/**"],
         // Cache the app shell and today's session so he can finish if Wi-Fi drops.
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
+          { urlPattern: /\/models\//, handler: "CacheFirst", options: { cacheName: "models", expiration: { maxEntries: 400 } } },
           { urlPattern: /\/api\/session\/today$/, handler: "NetworkFirst", options: { cacheName: "today" } },
         ],
       },

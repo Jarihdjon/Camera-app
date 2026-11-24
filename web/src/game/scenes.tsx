@@ -14,6 +14,7 @@ import type { Body } from "./physics";
 import { Npc } from "./Npc";
 import { BeatEffectView, REPLACES_WALL, TreasureSpot } from "./Effects";
 import { HeartwoodTree } from "./Heartwood";
+import { JungleScenery, Wildlife } from "./Scenery";
 
 /** Where each story animal stands: at the start for the opening scene, beside the next beat it leads, or gathered at the X. */
 function npcSpots(mission: Mission, layout: Layout, checkpoint: number, intro: boolean): Map<string, [number, number, number]> {
@@ -142,6 +143,8 @@ export function RealmHub({ realm, playerRef, pos, jet, onLevel, onHome, onComing
   const pads = realm.levels.map((l, i) => ({ l, x: 7.5 - i * 5, z: 7 }));
   const labels = useMemo(() => realm.levels.map((l) => labelTexture(l.emoji, l.packId ? l.name : `${l.name} · soon`)), [realm]);
   const fired = useRef<string | null>(null);
+  const wild = realm.id === "wildlands" && richLook();
+  const hubPalette = { top: realm.color, side: "#6b4226", accent: "#ffd23f", prop: "#2f8f3a", prop2: "#6b4226", sky: realm.sky, fog: realm.sky[1], props: "jungle" as const };
   const padRefs = useRef<THREE.Mesh[]>([]);
   const props = useMemo(() => Array.from({ length: 22 }, (_, i) => {
     const a = (i / 22) * Math.PI * 2;
@@ -171,7 +174,11 @@ export function RealmHub({ realm, playerRef, pos, jet, onLevel, onHome, onComing
     <>
       <Sky top={realm.sky[0]} bottom={realm.sky[1]} fog={realm.sky[1]} stars={realm.id === "cosmo-heights"} />
       <Blocks boxes={floor} top={realm.color} side="#6b5a4a" accent="#ffd23f" />
-      <Props spots={props} palette={{ top: realm.color, side: "#6b4226", accent: "#ffd23f", prop: "#2f8f3a", prop2: "#6b4226", sky: realm.sky, fog: realm.sky[1], props: realm.id === "wildlands" ? "jungle" : "jungle" }} />
+      {wild ? (
+        <JungleScenery spots={props} boxes={floor.filter((b) => Math.abs(b.z) > 10)} seed={realm.id} fallback={<Props spots={props} palette={hubPalette} />} />
+      ) : (
+        <Props spots={props} palette={hubPalette} />
+      )}
       {pads.map((p, i) => (
         <group key={p.l.id}>
           <mesh ref={(el) => { if (el) padRefs.current[i] = el; }} position={[p.x, 0.1, p.z]}>
@@ -218,19 +225,31 @@ export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, 
   const spots = useMemo(() => (mission ? npcSpots(mission, layout, checkpoint, intro) : null), [mission, layout, checkpoint, intro]);
   const spawn = layout.checkpoints[Math.min(checkpoint, layout.checkpoints.length - 1)]!;
   const rich = richLook();
+  // The model packs dress the jungle levels; ?look=classic keeps the original blocks.
+  const jungle = rich && p.props === "jungle";
   return (
     <>
       <Sky top={p.sky[0]} bottom={p.sky[1]} fog={p.fog} warm={rich} />
       {rich && (
         <>
           <DioramaCamera />
-          <Flora boxes={layout.boxes} palette={p} />
           <Ambience length={layout.length} kind={p.props} />
           <DioramaEffects />
         </>
       )}
-      <Blocks boxes={layout.boxes} top={p.top} side={p.side} accent={p.accent} />
-      <Props spots={layout.props} palette={p} />
+      <Blocks boxes={layout.boxes} top={p.top} side={p.side} accent={p.accent} models={jungle} />
+      {jungle ? (
+        <>
+          <JungleScenery spots={layout.props} boxes={layout.boxes} seed={pack.id}
+            fallback={<><Props spots={layout.props} palette={p} /><Flora boxes={layout.boxes} palette={p} /></>} />
+          <Wildlife start={layout.checkpoints[0]!} finish={layout.finale} />
+        </>
+      ) : (
+        <>
+          <Props spots={layout.props} palette={p} />
+          {rich && <Flora boxes={layout.boxes} palette={p} />}
+        </>
+      )}
       <Gems gems={layout.gems} collected={gems} color={p.accent} />
       <Eggs eggs={layout.eggs} found={eggs} />
       {layout.gates.map((g) => {
