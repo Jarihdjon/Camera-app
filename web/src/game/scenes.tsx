@@ -9,6 +9,7 @@ import { Portal } from "./Portal";
 import { Player, type PlayerHandle } from "./Player";
 import { Beacon, Eggs, Flag, Gate, Gems, StoryStone } from "./Things";
 import { labelTexture, skyTexture } from "./textures";
+import { Ambience, DioramaCamera, DioramaEffects, Flora, richLook } from "./Diorama";
 import type { Body } from "./physics";
 
 /** A round floor made of block rows, for the dock and the realm islands. */
@@ -22,7 +23,7 @@ function disc(radius: number, y = 0): Box[] {
   return out;
 }
 
-function Sky({ top, bottom, fog, stars = false }: { top: string; bottom: string; fog: string; stars?: boolean }) {
+function Sky({ top, bottom, fog, stars = false, warm = false }: { top: string; bottom: string; fog: string; stars?: boolean; warm?: boolean }) {
   const { scene } = useThree();
   useEffect(() => {
     scene.background = skyTexture(top, bottom);
@@ -34,8 +35,9 @@ function Sky({ top, bottom, fog, stars = false }: { top: string; bottom: string;
   }, [scene, top, bottom, fog]);
   return (
     <>
-      <hemisphereLight args={["#ffffff", "#5a4a7a", 1.1]} />
-      <directionalLight position={[8, 16, -6]} intensity={1.4} />
+      <hemisphereLight args={warm ? ["#fff4dc", "#6a5a8a", 1.05] : ["#ffffff", "#5a4a7a", 1.1]} />
+      {/* Low, warm sun from the side: long, soft modelling like late afternoon. */}
+      <directionalLight position={warm ? [12, 10, 4] : [8, 16, -6]} intensity={warm ? 1.7 : 1.4} color={warm ? "#ffe2b0" : "#ffffff"} />
       {stars && <Stars radius={80} depth={40} count={1500} factor={4} fade speed={0.5} />}
     </>
   );
@@ -177,9 +179,18 @@ export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, 
     ...layout.gates.filter((g) => g.index >= checkpoint).map((g) => ({ id: `wall${g.index}`, x: g.x, y: g.y + 1.5, z: g.z, w: 6, h: 3, d: 0.3, kind: "ground" as const })),
   ], [layout, checkpoint]);
   const spawn = layout.checkpoints[Math.min(checkpoint, layout.checkpoints.length - 1)]!;
+  const rich = richLook();
   return (
     <>
-      <Sky top={p.sky[0]} bottom={p.sky[1]} fog={p.fog} />
+      <Sky top={p.sky[0]} bottom={p.sky[1]} fog={p.fog} warm={rich} />
+      {rich && (
+        <>
+          <DioramaCamera />
+          <Flora boxes={layout.boxes} palette={p} />
+          <Ambience length={layout.length} kind={p.props} />
+          <DioramaEffects />
+        </>
+      )}
       <Blocks boxes={layout.boxes} top={p.top} side={p.side} accent={p.accent} />
       <Props spots={layout.props} palette={p} />
       <Gems gems={layout.gems} collected={gems} color={p.accent} />
@@ -188,7 +199,7 @@ export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, 
       {layout.checkpoints.slice(1).map((c, i) => <Flag key={c.id} spot={c} lit={i < checkpoint} color={p.accent} />)}
       <StoryStone spot={layout.storyStone} />
       <Beacon spot={layout.finale} active={checkpoint >= layout.gates.length} />
-      <Player ref={playerRef} boxes={solid} spawn={spawn} frozen={frozen} jet={jet} onMove={onMove} onFall={onFall} />
+      <Player ref={playerRef} boxes={solid} spawn={spawn} frozen={frozen} jet={jet} onMove={onMove} onFall={onFall} cameraOffset={rich ? [0, 7.2, -10.5] : undefined} />
     </>
   );
 }

@@ -91,8 +91,11 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
   useEffect(() => resetInput(), [question, story, done]);
   useEffect(() => {
     const hook = (window as unknown as { __game?: Record<string, unknown> }).__game;
-    if (hook) hook.layout = layout;
-  }, [layout]);
+    if (hook) {
+      hook.layout = layout;
+      hook.openLevel = (levelId: string, realmId: string) => void startLevel(levelId, realmId);
+    }
+  });
   const [, setPickups] = useState(0);
 
   const onMove = useCallback((b: Body) => {
