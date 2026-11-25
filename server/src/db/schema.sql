@@ -230,3 +230,8 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+
+-- Wrong answers a Shield absorbed: they don't reset his progress in a gate's round.
+CREATE TABLE IF NOT EXISTS game_shield_save (
+  question_id TEXT PRIMARY KEY REFERENCES game_question(id)
+);

@@ -217,7 +217,10 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
     if (!level || !layout) return;
     setQuestion(null);
     const beat = level.pack.mission?.beats[level.checkpoint];
-    if (r.correct) {
+    if (r.correct && r.progress < r.needed) {
+      // Next question of the round, straight away.
+      setQuestion(await api.game.gate(level.runId, level.checkpoint));
+    } else if (r.correct) {
       setScene({ ...level, checkpoint: r.checkpoint });
       if (beat) {
         // The world changes (the effect plays) while the animal celebrates; the clue goes on the map.

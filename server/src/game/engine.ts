@@ -3,7 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { PackSchema, RealmDefSchema, type Pack, type RealmDef, type SkillId } from "@yav/shared";
-import { GATES, GATE_INFO, layoutFor as layoutForPack, type Band, type GameState, type GateQuestion, type GateResult, type GateType, type PackView, type Perk } from "@yav/shared/game";
+import { GATES, GATE_INFO, layoutFor as layoutForPack, type Band, type GameState, type GateQuestion, type GateResult, type GateType, type PackView, type Perk, QUESTIONS_PER_GATE } from "@yav/shared/game";
 import type { DB } from "../db/db.js";
 import { getSetting } from "../db/settings.js";
 import { config } from "../config.js";
@@ -101,11 +101,15 @@ export function startLevel(db: DB, content: GameContent, levelId: string) {
 
 // ---------- questions ----------
 
-/** Band from his level in the gate's strand, nudged by the parent's difficulty for this realm. */
-export function bandFor(db: DB, realmId: string, gate: GateType): Band {
+/**
+ * Band from his level in the gate's strand, raised for later levels in a realm (the 3rd
+ * and 4th levels start a band higher) and nudged by the parent's difficulty for the realm.
+ */
+export function bandFor(db: DB, realmId: string, gate: GateType, levelIndex = 0): Band {
   const snap = snapshot(db, () => undefined);
   const level = snap.levels[GATE_INFO[gate].strand];
-  let band = level <= 2 ? 1 : level === 3 ? 2 : 3;
+  let band = level <= 1 ? 1 : level === 2 ? 2 : 3;
+  if (levelIndex >= 2) band += 1;
   const setting = getSetting(db, "gameDifficulty")[realmId] ?? "normal";
   if (setting === "easy") band -= 1;
   if (setting === "hard") band += 1;
@@ -134,13 +138,23 @@ function hashSeed(s: string): number {
   return h;
 }
 
-function toChild(id: string, gate: GateType, band: Band, g: Generated): GateQuestion {
+function toChild(id: string, gate: GateType, band: Band, g: Generated, step: number): GateQuestion {
+  const base = { id, gate, band, prompt: g.prompt, step, steps: QUESTIONS_PER_GATE };
   switch (g.kind) {
-    case "choice": return { id, gate, band, kind: "choice", prompt: g.prompt, say: g.say, options: g.options! };
-    case "number": return { id, gate, band, kind: "number", prompt: g.prompt, say: g.say, unit: g.unit };
-    case "tiles": return { id, gate, band, kind: "tiles", prompt: g.prompt, say: g.say, tiles: g.tiles! };
-    case "letters": return { id, gate, band, kind: "letters", prompt: g.prompt, say: g.say!, letters: g.letters!, length: g.length! };
+    case "choice": return { ...base, kind: "choice", say: g.say, options: g.options! };
+    case "number": return { ...base, kind: "number", say: g.say, unit: g.unit };
+    case "tiles": return { ...base, kind: "tiles", say: g.say, tiles: g.tiles! };
+    case "letters": return { ...base, kind: "letters", say: g.say!, letters: g.letters!, length: g.length! };
   }
+}
+
+/** Right answers in a row at this gate since the last miss (shield saves don't break the run). */
+function roundProgress(db: DB, runId: string, gateIndex: number): number {
+  const rows = db.prepare(`SELECT q.status, s.question_id IS NOT NULL AS saved FROM game_question q LEFT JOIN game_shield_save s ON s.question_id = q.id
+    WHERE q.run_id = ? AND q.gate = ? AND q.status != 'issued' ORDER BY q.rowid`).all(runId, gateIndex) as { status: string; saved: number }[];
+  let n = 0;
+  for (const r of rows) n = r.status === "right" ? n + 1 : r.saved ? n : 0;
+  return n;
 }
 
 /**
@@ -158,7 +172,11 @@ export function gateQuestion(db: DB, content: GameContent, runId: string, gateIn
   if (open) return JSON.parse(open.payload) as GateQuestion;
   const seen = new Set((db.prepare("SELECT source_key FROM game_question WHERE run_id = ?").all(runId) as { source_key: string }[]).map((r) => r.source_key));
   const tries = (db.prepare("SELECT COUNT(*) AS n FROM game_question WHERE run_id = ? AND gate = ?").get(runId, gateIndex) as { n: number }).n;
-  const band = bandFor(db, found.realm.id, gate);
+  const step = Math.min(QUESTIONS_PER_GATE, roundProgress(db, runId, gateIndex) + 1);
+  const levelIndex = found.realm.levels.findIndex((l) => l.id === found.level.id);
+  // The last question of each round is a "boss" question, one band harder.
+  const base = bandFor(db, found.realm.id, gate, levelIndex);
+  const band = (step === QUESTIONS_PER_GATE ? Math.min(3, base + 1) : base) as Band;
   let g: Generated | null = null;
   let id = "";
   for (let attempt = 0; attempt < 12; attempt++) {
@@ -166,7 +184,7 @@ export function gateQuestion(db: DB, content: GameContent, runId: string, gateIn
     g = makeQuestion(found.pack, gate, band, id, seen);
     if (!seen.has(g.key)) break;
   }
-  const child = toChild(id, gate, band, g!);
+  const child = toChild(id, gate, band, g!, step);
   db.prepare("INSERT INTO game_question (id, run_id, level_id, gate, gate_type, band, source_key, skill, answer, answer_text, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .run(id, runId, run.level_id, gateIndex, gate, band, g!.key, g!.skill, g!.answer, g!.answerText, JSON.stringify(child));
   return child;
@@ -199,19 +217,24 @@ export function answerGate(db: DB, questionId: string, answer: string | number):
     { run_id: string; gate: number; skill: string; answer: string; answer_text: string; status: string } | undefined;
   if (!q || q.status !== "issued") return null;
   const correct = norm(String(answer)) === norm(q.answer);
-  db.prepare("UPDATE game_question SET status = ? WHERE id = ?").run(correct ? "right" : "wrong", questionId);
-  recordAttempt(db, q.skill, `game:${questionId}`, String(answer), correct);
-
   let shielded = false;
-  if (correct) {
-    db.prepare("UPDATE game_run SET checkpoint = MAX(checkpoint, ?), updated_at = datetime('now') WHERE id = ?").run(q.gate + 1, q.run_id);
-    db.prepare("INSERT INTO wallet_entry (currency, amount, reason) VALUES ('blocks', 2, ?)").run(`gate:${questionId}`);
-  } else if (perkCount(db, "shield") > 0) {
+  if (!correct && perkCount(db, "shield") > 0) {
     addPerk(db, "shield", -1);
     shielded = true;
   }
+  // A shield save keeps his progress in the round; a plain miss starts the round again.
+  db.prepare("UPDATE game_question SET status = ? WHERE id = ?").run(correct ? "right" : "wrong", questionId);
+  if (shielded) db.prepare("INSERT INTO game_shield_save (question_id) VALUES (?)").run(questionId);
+  recordAttempt(db, q.skill, `game:${questionId}`, String(answer), correct);
+
+  const progress = roundProgress(db, q.run_id, q.gate);
+  if (correct) {
+    db.prepare("INSERT INTO wallet_entry (currency, amount, reason) VALUES ('blocks', 1, ?)").run(`gate:${questionId}`);
+    // The gate opens when the whole round is right.
+    if (progress >= QUESTIONS_PER_GATE) db.prepare("UPDATE game_run SET checkpoint = MAX(checkpoint, ?), updated_at = datetime('now') WHERE id = ?").run(q.gate + 1, q.run_id);
+  }
   const run = db.prepare("SELECT checkpoint FROM game_run WHERE id = ?").get(q.run_id) as { checkpoint: number };
-  return { correct, answer: q.answer_text, shielded, checkpoint: run.checkpoint, shields: perkCount(db, "shield") };
+  return { correct, answer: q.answer_text, shielded, checkpoint: run.checkpoint, shields: perkCount(db, "shield"), progress, needed: QUESTIONS_PER_GATE };
 }
 
 /** Pick up a gem or an easter egg. Gems count once per level, ever; eggs give their perk. */

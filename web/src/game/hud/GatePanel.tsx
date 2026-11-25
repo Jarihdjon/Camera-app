@@ -42,7 +42,8 @@ export function GatePanel({ question, onAnswer, onDone, onReadStory }: {
     try {
       const r = await onAnswer(a);
       setResult(r);
-      robot.say(r.correct ? "Yes! The gate is open!" : r.shielded ? `Your shield saved you! The answer was ${r.answer}. Here's a new one.` : `Not quite. The answer was ${r.answer}. Back to the checkpoint, you can do it!`, r.correct ? "cheer" : "encourage");
+      const more = r.correct && r.progress < r.needed;
+      robot.say(r.correct ? (more ? ["Yes! Next one!", "Correct! Keep going!", "Brilliant! One more step!"][r.progress % 3]! : "Yes! The gate is open!") : r.shielded ? `Your shield saved you! The answer was ${r.answer}. Here's a new one.` : `Not quite. The answer was ${r.answer}. Back to the checkpoint, you can do it!`, r.correct ? "cheer" : "encourage");
     } finally {
       setBusy(false);
     }
@@ -58,7 +59,19 @@ export function GatePanel({ question, onAnswer, onDone, onReadStory }: {
       <div className="flex items-center gap-3">
         <span className="grid size-14 place-items-center rounded-2xl bg-glow/20 text-4xl">{info.icon}</span>
         <div className="flex-1">
-          <p className="font-display text-sm uppercase tracking-[0.16em] text-glow">{info.name} gate</p>
+          <div className="flex items-center gap-3">
+            <p className="font-display text-sm uppercase tracking-[0.16em] text-glow">{info.name} gate</p>
+            {/* The round: one dot per question; the last one is the boss question. */}
+            <div className="flex items-center gap-1.5" aria-label={`Question ${question.step} of ${question.steps}`}>
+              {Array.from({ length: question.steps }, (_, i) => (
+                <span key={i} className={cn("grid place-items-center rounded-full text-[0.6rem]", i === question.steps - 1 ? "size-5" : "size-3.5",
+                  i < question.step - 1 || (result?.correct && i === question.step - 1) ? "bg-success" : i === question.step - 1 ? "bg-glow" : "bg-white/20")}>
+                  {i === question.steps - 1 ? "★" : ""}
+                </span>
+              ))}
+            </div>
+            {question.step === question.steps && <span className="rounded-full bg-amber-400/20 px-2 py-0.5 font-display text-xs text-amber-200">Boss question!</span>}
+          </div>
           <button type="button" className="cursor-pointer text-left font-display text-2xl leading-snug" onClick={() => robot.say(question.prompt)}>
             {question.prompt} <Volume2 className="inline size-5 opacity-70" />
           </button>
@@ -118,10 +131,10 @@ export function GatePanel({ question, onAnswer, onDone, onReadStory }: {
         {result && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-5 flex flex-wrap items-center justify-between gap-3">
             <p className={cn("font-display text-2xl", result.correct ? "text-success" : "text-primary")}>
-              {result.correct ? "✨ Gate open!" : result.shielded ? `🛡️ Shield saved you! (It was: ${result.answer})` : `💫 It was: ${result.answer}`}
+              {result.correct ? (result.progress < result.needed ? `✨ Right! ${result.progress} of ${result.needed}` : "✨ Gate open!") : result.shielded ? `🛡️ Shield saved you! (It was: ${result.answer})` : `💫 It was: ${result.answer}`}
             </p>
             <Button size="kid" variant={result.correct ? "success" : "default"} onClick={() => onDone(result)}>
-              {result.correct ? "Go! ➜" : result.shielded ? "New question" : "Back to checkpoint"}
+              {result.correct ? (result.progress < result.needed ? "Next question ➜" : "Go! ➜") : result.shielded ? "New question" : "Back to checkpoint"}
             </Button>
           </motion.div>
         )}

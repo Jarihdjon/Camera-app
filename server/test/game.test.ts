@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { buildLayout, GATES } from "@yav/shared/game";
+import { buildLayout, GATES, QUESTIONS_PER_GATE } from "@yav/shared/game";
 import { openDb } from "../src/db/db.js";
 import { setSetting } from "../src/db/settings.js";
 import { loadContentBank } from "../src/content.js";
@@ -78,6 +78,19 @@ describe("game API", () => {
     app = await buildApp({ db, bank: loadContentBank(), serveWeb: false, askModel: null, gameContent: content });
   });
   const post = (url: string, payload: Record<string, unknown>) => app.inject({ method: "POST", url: `/api/game${url}`, payload }).then((r) => r.json());
+  const rightAnswer = (q: { id: string; kind: string }) => {
+    const a = (db.prepare("SELECT answer FROM game_question WHERE id = ?").get(q.id) as { answer: string }).answer;
+    return q.kind === "choice" ? Number(a) : a;
+  };
+  /** Answer the whole round at a gate correctly. */
+  const clearGate = async (run: string, gate: number) => {
+    let r: Record<string, unknown> = {};
+    for (let i = 0; i < QUESTIONS_PER_GATE; i++) {
+      const q = await post("/gate", { runId: run, gate });
+      r = await post("/answer", { questionId: q.id, answer: rightAnswer(q) });
+    }
+    return r;
+  };
 
   let runId = "";
   it("shows every realm open, with coming-soon levels marked", async () => {
@@ -118,12 +131,31 @@ describe("game API", () => {
     expect((await app.inject({ method: "POST", url: "/api/game/answer", payload: { questionId: q1.id, answer: 0 } })).statusCode).toBe(409);
   });
 
-  it("a right answer opens the gate and moves the checkpoint on", async () => {
-    const q = await post("/gate", { runId, gate: 0 });
-    const right = (db.prepare("SELECT answer FROM game_question WHERE id = ?").get(q.id) as { answer: string }).answer;
-    const r = await post("/answer", { questionId: q.id, answer: Number(right) });
-    expect(r).toMatchObject({ correct: true, checkpoint: 1 });
+  it("a gate is a round of questions: all must be right, and the last is a harder boss question", async () => {
+    const q1 = await post("/gate", { runId, gate: 0 });
+    expect(q1).toMatchObject({ step: 1, steps: QUESTIONS_PER_GATE });
+    const r1 = await post("/answer", { questionId: q1.id, answer: rightAnswer(q1) });
+    expect(r1).toMatchObject({ correct: true, progress: 1, needed: QUESTIONS_PER_GATE, checkpoint: 0 });
+    const q2 = await post("/gate", { runId, gate: 0 });
+    expect(q2.step).toBe(2);
+    expect(q2.prompt).not.toBe(q1.prompt);
+    await post("/answer", { questionId: q2.id, answer: rightAnswer(q2) });
+    const boss = await post("/gate", { runId, gate: 0 });
+    expect(boss.step).toBe(QUESTIONS_PER_GATE);
+    expect(boss.band).toBeGreaterThanOrEqual(q2.band);
+    const r3 = await post("/answer", { questionId: boss.id, answer: rightAnswer(boss) });
+    expect(r3).toMatchObject({ correct: true, progress: 3, checkpoint: 1 });
     expect((await post("/level/jungle-jumble/start", {})).checkpoint).toBe(1);
+  });
+
+  it("a miss part-way through a round starts the round again", async () => {
+    const run = (await post("/level/busy-town/start", {})).runId;
+    const q1 = await post("/gate", { runId: run, gate: 0 });
+    await post("/answer", { questionId: q1.id, answer: rightAnswer(q1) });
+    const q2 = await post("/gate", { runId: run, gate: 0 });
+    const miss = await post("/answer", { questionId: q2.id, answer: "definitely wrong" });
+    expect(miss).toMatchObject({ correct: false, progress: 0, checkpoint: 0 });
+    expect((await post("/gate", { runId: run, gate: 0 })).step).toBe(1);
   });
 
   it("eggs give perks once, and a shield absorbs one wrong answer", async () => {
@@ -133,9 +165,12 @@ describe("game API", () => {
     expect((await post("/collect", { levelId: "jungle-jumble", kind: "egg", id: "egg0" })).perk).toBeNull();
     const sh = await post("/collect", { levelId: "jungle-jumble", kind: "egg", id: "egg1" });
     expect(sh.state.shield).toBe(2);
+    const q0 = await post("/gate", { runId, gate: 1 });
+    await post("/answer", { questionId: q0.id, answer: rightAnswer(q0) });
     const q = await post("/gate", { runId, gate: 1 });
     const r = await post("/answer", { questionId: q.id, answer: "definitely wrong" });
-    expect(r).toMatchObject({ correct: false, shielded: true, shields: 1, checkpoint: 1 });
+    // The shield saves him and keeps his place in the round.
+    expect(r).toMatchObject({ correct: false, shielded: true, shields: 1, checkpoint: 1, progress: 1 });
   });
 
   it("gems count once each, big gems are worth 5", async () => {
@@ -150,11 +185,7 @@ describe("game API", () => {
 
   it("finishing needs all seven gates, then earns minutes and a gem bonus", async () => {
     expect((await app.inject({ method: "POST", url: "/api/game/finish", payload: { runId } })).statusCode).toBe(409);
-    for (let g = 1; g < GATES.length; g++) {
-      const q = await post("/gate", { runId, gate: g });
-      const right = (db.prepare("SELECT answer FROM game_question WHERE id = ?").get(q.id) as { answer: string }).answer;
-      await post("/answer", { questionId: q.id, answer: q.kind === "choice" ? Number(right) : right });
-    }
+    for (let g = 1; g < GATES.length; g++) await clearGate(runId, g);
     const done = await post("/finish", { runId });
     expect(done).toMatchObject({ minutesEarned: 15, bonusGems: 10 });
     const s = (await app.inject({ method: "GET", url: "/api/game/state" })).json();

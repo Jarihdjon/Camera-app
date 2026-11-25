@@ -29,11 +29,16 @@ export const PERK_INFO: Record<Perk, { name: string; icon: string; about: string
 };
 
 /** What the iPad receives for a gate. The answer stays on the PC. */
+/** Each gate is a round of this many questions; all must be right to open it. */
+export const QUESTIONS_PER_GATE = 3;
+
+/** `step` of `steps`: which question of the gate's round this is (the last is a band harder). */
+interface GateQuestionBase { id: string; gate: GateType; band: Band; prompt: string; step: number; steps: number }
 export type GateQuestion =
-  | { id: string; gate: GateType; band: Band; kind: "choice"; prompt: string; say?: string; options: string[] }
-  | { id: string; gate: GateType; band: Band; kind: "number"; prompt: string; say?: string; unit?: string }
-  | { id: string; gate: GateType; band: Band; kind: "tiles"; prompt: string; say?: string; tiles: string[] }
-  | { id: string; gate: GateType; band: Band; kind: "letters"; prompt: string; say: string; letters: string[]; length: number };
+  | (GateQuestionBase & { kind: "choice"; say?: string; options: string[] })
+  | (GateQuestionBase & { kind: "number"; say?: string; unit?: string })
+  | (GateQuestionBase & { kind: "tiles"; say?: string; tiles: string[] })
+  | (GateQuestionBase & { kind: "letters"; say: string; letters: string[]; length: number });
 
 export interface GateResult {
   correct: boolean;
@@ -43,6 +48,9 @@ export interface GateResult {
   shielded: boolean;
   checkpoint: number;
   shields: number;
+  /** Right answers so far in this gate's round, out of how many are needed. */
+  progress: number;
+  needed: number;
 }
 
 export interface LevelSummary {
