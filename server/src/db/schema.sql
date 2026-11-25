@@ -235,3 +235,34 @@ CREATE TABLE IF NOT EXISTS settings (
 CREATE TABLE IF NOT EXISTS game_shield_save (
   question_id TEXT PRIMARY KEY REFERENCES game_question(id)
 );
+
+-- The Arcade: ready-made games from other services (shown in a frame) and H5P games (played offline).
+CREATE TABLE IF NOT EXISTS arcade_game (
+  id TEXT PRIMARY KEY,
+  kind TEXT NOT NULL CHECK (kind IN ('embed','h5p')),
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  url TEXT,                -- embed: the game's address
+  folder TEXT,             -- h5p: unpacked into data/h5p/<folder>
+  skill TEXT,              -- optional: an H5P score counts towards this skill
+  sort INTEGER NOT NULL DEFAULT 0,
+  hidden INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS arcade_play (
+  id TEXT PRIMARY KEY,
+  game_id TEXT NOT NULL REFERENCES arcade_game(id) ON DELETE CASCADE,
+  started_at TEXT NOT NULL DEFAULT (datetime('now')),
+  finished_at TEXT,
+  score REAL,
+  max_score REAL,
+  rewarded INTEGER NOT NULL DEFAULT 0
+);
+-- What embedded games say to the app (window.postMessage), so we can learn which services report results.
+CREATE TABLE IF NOT EXISTS arcade_message (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  game_id TEXT NOT NULL REFERENCES arcade_game(id) ON DELETE CASCADE,
+  origin TEXT NOT NULL,
+  data TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

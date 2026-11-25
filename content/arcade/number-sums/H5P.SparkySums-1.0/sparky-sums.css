@@ -1,0 +1,7 @@
+.sparky-sums { font-family: system-ui, sans-serif; padding: 16px; text-align: center; color: #2b2140; }
+.sparky-sums h2 { font-size: 28px; margin: 8px 0 16px; }
+.sparky-sums .q { font-size: 56px; font-weight: 800; margin: 12px 0 20px; }
+.sparky-sums .opts { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.sparky-sums button { font-size: 32px; min-width: 110px; padding: 14px 20px; border-radius: 18px; border: 0; background: #7cf0d8; color: #10213a; font-weight: 700; cursor: pointer; }
+.sparky-sums button.wrong { background: #ffb3b3; }
+.sparky-sums .done { font-size: 30px; margin-top: 16px; }

@@ -1,0 +1,8 @@
+{
+  "title": "Number Sums",
+  "language": "en",
+  "mainLibrary": "H5P.SparkySums",
+  "embedTypes": ["div"],
+  "license": "U",
+  "preloadedDependencies": [{ "machineName": "H5P.SparkySums", "majorVersion": 1, "minorVersion": 0 }]
+}

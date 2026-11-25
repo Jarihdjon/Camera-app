@@ -19,6 +19,10 @@ export const DEFAULT_SETTINGS = {
   pinnedTopics: [] as string[],
   /** Game difficulty per realm: easy, normal (default) or hard. */
   gameDifficulty: {} as Record<string, "easy" | "normal" | "hard">,
+  /** Arcade: sites whose games may be shown in a frame (a site's subdomains count too). */
+  arcadeHosts: ["educaplay.com", "wordwall.net", "learningapps.org", "h5p.org", "h5p.com"] as string[],
+  /** The built-in sample game has been added once (removing it keeps it removed). */
+  arcadeSeeded: false,
 };
 
 export type Settings = typeof DEFAULT_SETTINGS;

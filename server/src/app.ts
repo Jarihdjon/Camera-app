@@ -17,6 +17,8 @@ import { loadGameContent, type GameContent } from "./game/engine.js";
 import { claudeAskModel, type AskModel } from "./ai/ask.js";
 import { config } from "./config.js";
 import { ttsRoutes } from "./routes/tts.js";
+import { arcadeParentRoutes, arcadeRoutes } from "./arcade/routes.js";
+import path from "node:path";
 import type { Tts } from "./tts.js";
 
 export interface AppDeps {
@@ -31,9 +33,11 @@ export interface AppDeps {
   gameContent?: GameContent;
   /** The natural reading voice (null: the iPad uses its own voice). */
   tts?: Tts | null;
+  /** Where H5P games are unpacked (tests use a temporary folder). */
+  h5pRoot?: string;
 }
 
-export async function buildApp({ db, bank, serveWeb = true, askModel, bankChapters, onLastChapterStarted, isGenerating, gameContent, tts = null }: AppDeps) {
+export async function buildApp({ db, bank, serveWeb = true, askModel, bankChapters, onLastChapterStarted, isGenerating, gameContent, tts = null, h5pRoot = path.join(config.dataDir, "h5p") }: AppDeps) {
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? (process.env.VITEST ? "silent" : "info") } });
   await app.register(fastifyCookie);
   await app.register(fastifyMultipart, { limits: { fileSize: 15 * 1024 * 1024, files: 1 } });
@@ -46,6 +50,8 @@ export async function buildApp({ db, bank, serveWeb = true, askModel, bankChapte
   await app.register(chapterRoutes, { prefix: "/api", db, bank, bankChapters: chapters, onLastChapterStarted, isGenerating });
   await app.register(gameRoutes, { prefix: "/api/game", db, content: gameContent ?? loadGameContent() });
   await app.register(ttsRoutes, { prefix: "/api", tts });
+  await app.register(arcadeRoutes, { prefix: "/api", db, h5pRoot });
+  await app.register(arcadeParentRoutes, { prefix: "/api/parent/arcade", db, h5pRoot });
   await app.register(parentRoutes, { prefix: "/api/parent", db, bank, bankChapters: chapters, isGenerating });
 
   if (serveWeb && existsSync(config.webDist)) {

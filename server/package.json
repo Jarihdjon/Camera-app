@@ -16,6 +16,7 @@
     "@fastify/static": "^10.1.12",
     "@yav/shared": "*",
     "fastify": "^5.12.8",
+    "fflate": "^0.8.2",
     "tsx": "^4.23.15",
     "zod": "^4.6.7"
   },

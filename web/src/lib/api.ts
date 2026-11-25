@@ -21,7 +21,23 @@ async function call<T>(method: string, url: string, body?: unknown): Promise<T> 
   return res.json() as Promise<T>;
 }
 
+export type ArcadeCategory = "numbers" | "words" | "puzzles" | "science";
+export type ArcadeGame = { id: string; kind: "embed" | "h5p"; title: string; category: ArcadeCategory; url: string | null; folder: string | null; plays: number; best: number | null; rewardedToday: boolean };
+export type ArcadeFinish = { gems: number; minutes: number; reason: "score" | "finished" | "too-quick" | "already-today"; wallet: { gems: number } };
+export type ParentArcade = {
+  games: (ArcadeGame & { skill: string | null; hidden: number; sort: number })[];
+  hosts: string[];
+  messages: { game_id: string; title: string; origin: string; data: string; created_at: string }[];
+  skills: string[];
+};
+
 export const api = {
+  arcade: {
+    list: () => call<ArcadeGame[]>("GET", "/api/arcade"),
+    start: (id: string) => call<{ playId: string }>("POST", `/api/arcade/${encodeURIComponent(id)}/start`, {}),
+    finish: (playId: string, result: { score?: number; max?: number } = {}) => call<ArcadeFinish>("POST", `/api/arcade/play/${encodeURIComponent(playId)}/finish`, result),
+    message: (id: string, origin: string, data: string) => call("POST", `/api/arcade/${encodeURIComponent(id)}/message`, { origin, data }),
+  },
   child: () => call<{ firstName: string | null; robot: RobotState; wallet: Wallet }>("GET", "/api/child"),
   setChild: (b: { firstName?: string; robotName?: string }) => call("POST", "/api/child", b),
   equip: (partId: string) => call<{ robot: RobotState }>("POST", "/api/robot/equip", { partId }),
@@ -57,6 +73,14 @@ export const api = {
     return call<{ id: string; unlocked: boolean }>("POST", "/api/uploads", fd);
   },
   parent: {
+    arcade: {
+      get: () => call<ParentArcade>("GET", "/api/parent/arcade"),
+      addLink: (b: { link: string; title: string; category: ArcadeCategory; skill?: string | null }) => call<{ id: string }>("POST", "/api/parent/arcade", b),
+      addH5p: (form: FormData) => call<{ id: string; title: string; missing: string[] }>("POST", "/api/parent/arcade/h5p", form),
+      update: (id: string, b: { title?: string; category?: ArcadeCategory; skill?: string | null; hidden?: boolean; sort?: number }) => call("PATCH", `/api/parent/arcade/${encodeURIComponent(id)}`, b),
+      remove: (id: string) => call("DELETE", `/api/parent/arcade/${encodeURIComponent(id)}`),
+      setHosts: (hosts: string[]) => call<{ hosts: string[] }>("PUT", "/api/parent/arcade/hosts", { hosts }),
+    },
     login: (pin: string) => call("POST", "/api/parent/login", { pin }),
     settings: () => call<Record<string, unknown>>("GET", "/api/parent/settings"),
     reviewQueue: () => call<{ id: string; created_at: string; review_status: string; parent_comment: string | null }[]>("GET", "/api/parent/review-queue"),

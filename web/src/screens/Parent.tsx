@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Centre } from "../App";
+import { ParentArcadeTab } from "./ParentArcade";
 
 /** PIN-protected parent area. Calm and functional. Phase 1 adds the digest, allowance editor and steering. */
 export function Parent({ onBack }: { onBack: () => void }) {
@@ -65,6 +66,7 @@ export function Parent({ onBack }: { onBack: () => void }) {
           <TabsTrigger value="review">Review queue {pending > 0 && <Badge className="ml-1">{pending}</Badge>}</TabsTrigger>
           <TabsTrigger value="questions">Questions he asked {questions.some((q) => q.flagged) && <Badge className="ml-1 bg-pink/20 text-pink">!</Badge>}</TabsTrigger>
           <TabsTrigger value="answers">His thinking</TabsTrigger>
+          <TabsTrigger value="arcade">🕹️ Arcade</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="review">
@@ -122,6 +124,7 @@ export function Parent({ onBack }: { onBack: () => void }) {
             ))}
           </div>
         </TabsContent>
+        <TabsContent value="arcade"><ParentArcadeTab /></TabsContent>
         <TabsContent value="settings">
           <Card>
             <Table>

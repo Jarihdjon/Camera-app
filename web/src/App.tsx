@@ -15,6 +15,7 @@ import { Hub } from "./screens/Hub";
 
 // The 3D game is loaded only when it opens, so the first load stays small.
 const Game = lazy(() => import("./game/Game").then((m) => ({ default: m.Game })));
+const Arcade = lazy(() => import("./arcade/Arcade").then((m) => ({ default: m.Arcade })));
 import { ChapterMap } from "./screens/ChapterMap";
 
 type Screen =
@@ -24,7 +25,8 @@ type Screen =
   | { name: "unit"; unit: ChildUnit; stage?: StageInfo; initial?: { step: number; state: Record<string, unknown> } | null; levels?: Levels }
   | { name: "build" }
   | { name: "parent" }
-  | { name: "workshop" };
+  | { name: "workshop" }
+  | { name: "arcade" };
 type Child = Awaited<ReturnType<typeof api.child>>;
 
 export function App() {
@@ -72,7 +74,11 @@ function Shell() {
         {screen.name === "game" ? (
           <Suspense fallback={<Centre><Robot mood="thinking" size={160} /><p className="font-display text-2xl">Loading Sky Dock…</p></Centre>}>
             <Game firstName={child.firstName} robotName={child.robot.name} wallet={child.wallet} onWallet={setWallet}
-              onWorkshop={() => setScreen({ name: "workshop" })} onParent={() => setScreen({ name: "parent" })} />
+              onWorkshop={() => setScreen({ name: "workshop" })} onArcade={() => setScreen({ name: "arcade" })} onParent={() => setScreen({ name: "parent" })} />
+          </Suspense>
+        ) : screen.name === "arcade" ? (
+          <Suspense fallback={<Centre><Robot mood="thinking" size={160} /><p className="font-display text-2xl">Opening the Arcade…</p></Centre>}>
+            <Arcade robotName={child.robot.name ?? "Sparky"} wallet={child.wallet} onWallet={setWallet} onBack={home} />
           </Suspense>
         ) : screen.name === "unit" ? (
           <UnitPlayer unit={screen.unit} firstName={child.firstName} robotName={child.robot.name} parts={child.robot.parts} wallet={child.wallet}

@@ -7,7 +7,7 @@ import { GATES, GATE_INFO, layoutFor as layoutForPack, type Band, type GameState
 import type { DB } from "../db/db.js";
 import { getSetting } from "../db/settings.js";
 import { config } from "../config.js";
-import { applyAttempt } from "../engine/mastery.js";
+import { recordAttempt } from "../engine/attempts.js";
 import { snapshot } from "../engine/learner.js";
 import { earnUnitMinutes } from "../engine/chapters.js";
 import { fromPack, numberQuestion, puzzleQuestion, sentenceQuestion, spellingQuestion, type Generated } from "./generators.js";
@@ -188,21 +188,6 @@ export function gateQuestion(db: DB, content: GameContent, runId: string, gateIn
   db.prepare("INSERT INTO game_question (id, run_id, level_id, gate, gate_type, band, source_key, skill, answer, answer_text, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .run(id, runId, run.level_id, gateIndex, gate, band, g!.key, g!.skill, g!.answer, g!.answerText, JSON.stringify(child));
   return child;
-}
-
-function recordAttempt(db: DB, skill: string, activityId: string, answer: string, correct: boolean) {
-  const row = db.prepare("SELECT mastery, difficulty, streak_correct, streak_missed, last_practised FROM skill WHERE id = ?").get(skill) as
-    { mastery: number; difficulty: number; streak_correct: number; streak_missed: number; last_practised: string | null } | undefined;
-  if (!row) return;
-  const now = new Date();
-  const after = applyAttempt(
-    { mastery: row.mastery, difficulty: row.difficulty, streakCorrect: row.streak_correct, streakMissed: row.streak_missed, lastPractised: row.last_practised ? new Date(row.last_practised) : null },
-    { correct, usedHint: false },
-    now,
-  );
-  db.prepare("UPDATE skill SET mastery=?, difficulty=?, streak_correct=?, streak_missed=?, last_practised=? WHERE id=?")
-    .run(after.mastery, after.difficulty, after.streakCorrect, after.streakMissed, now.toISOString(), skill);
-  db.prepare("INSERT INTO attempt (activity_id, skill_id, answer, correct, used_hint) VALUES (?, ?, ?, ?, 0)").run(activityId, skill, answer, correct ? 1 : 0);
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();

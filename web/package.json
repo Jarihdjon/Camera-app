@@ -21,6 +21,7 @@
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "h5p-standalone": "^3.8.2",
     "lucide-react": "^1.78.0",
     "motion": "^14.14.0",
     "postprocessing": "^6.39.6",

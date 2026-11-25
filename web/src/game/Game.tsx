@@ -27,12 +27,13 @@ type Scene =
  * Sparky's Learning Worlds. Sky Dock is home; portals lead to realms; each realm's pads
  * lead to levels; each level is a course with seven challenge gates.
  */
-export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onParent }: {
+export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onArcade, onParent }: {
   firstName: string;
   robotName: string;
   wallet: Wallet;
   onWallet: (w: Wallet) => void;
   onWorkshop: () => void;
+  onArcade: () => void;
   onParent: () => void;
 }) {
   const robot = useRobot();
@@ -263,7 +264,7 @@ export function Game({ firstName, robotName, wallet, onWallet, onWorkshop, onPar
                 robot.say(`To ${r.name}!`, "cheer");
                 go({ kind: "realm", realmId: id }, r.color);
               }}
-              onWorkshop={onWorkshop} />
+              onWorkshop={onWorkshop} onArcade={onArcade} />
           )}
           {scene.kind === "realm" && realm && (
             <RealmHub key={`realm-${realm.id}`} realm={realm} playerRef={player} pos={pos} jet={Boolean(perks?.jet)}

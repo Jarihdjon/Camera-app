@@ -14,6 +14,7 @@ import type { Body } from "./physics";
 import { Npc } from "./Npc";
 import { BeatEffectView, REPLACES_WALL, TreasureSpot } from "./Effects";
 import { HeartwoodTree } from "./Heartwood";
+import { ArcadeCabinet } from "./ArcadeCabinet";
 import { JungleScenery, Wildlife } from "./Scenery";
 
 /** Where each story animal stands: at the start for the opening scene, beside the next beat it leads, or gathered at the X. */
@@ -77,21 +78,30 @@ const PREVIEW: Record<string, "leaves" | "bubbles" | "stars" | "sparkles"> = { w
  * Sky Dock: the floating base. Four realm portals stand in an arc in front of Sparky;
  * each one wakes as he walks towards it.
  */
-export function SkyDock({ realms, playerRef, pos, jet, onRealm, onWorkshop }: {
+export function SkyDock({ realms, playerRef, pos, jet, onRealm, onWorkshop, onArcade }: {
   realms: RealmSummary[];
   playerRef: React.RefObject<PlayerHandle | null>;
   pos: React.MutableRefObject<{ x: number; z: number }>;
   jet: boolean;
   onRealm: (id: string) => void;
   onWorkshop: () => void;
+  onArcade: () => void;
 }) {
   const boxes = useMemo(() => disc(15), []);
   // Left to right on screen (screen-left is world +x).
   const spots: [number, number, number][] = [[10, 0, 6], [3.6, 0, 11], [-3.6, 0, 11], [-10, 0, 6]];
   const shop = useMemo(() => labelTexture("🔧", "Workshop"), []);
   const shopFired = useRef(false);
+  const arcadeFired = useRef(false);
   const onMove = (b: Body) => {
     pos.current = { x: b.x, z: b.z };
+    // The arcade pad, behind and to the right (screen-right is world -x).
+    const a = Math.hypot(b.x + 7, b.z + 7);
+    if (a < 1.4 && !arcadeFired.current) {
+      arcadeFired.current = true;
+      onArcade();
+    }
+    if (a > 3) arcadeFired.current = false;
     const d = Math.hypot(b.x - 7, b.z + 7);
     if (d < 1.4 && !shopFired.current) {
       shopFired.current = true;
@@ -121,6 +131,7 @@ export function SkyDock({ realms, playerRef, pos, jet, onRealm, onWorkshop }: {
         <meshStandardMaterial color="#ff8a3d" emissive="#ff8a3d" emissiveIntensity={0.5} />
       </mesh>
       <sprite position={[7, 2.2, -7]} scale={[2.4, 1.2, 1]}><spriteMaterial map={shop} transparent /></sprite>
+      <ArcadeCabinet position={[-7, 0, -7]} player={pos} />
       <Player ref={playerRef} boxes={boxes} spawn={{ x: 0, y: 0, z: -4 }} jet={jet} onMove={onMove}
         onFall={() => playerRef.current?.teleport(0, 0, -4)} />
     </>

@@ -1,0 +1,12 @@
+{
+  "title": "Sparky Sums",
+  "machineName": "H5P.SparkySums",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 1,
+  "license": "MIT",
+  "author": "Yav's Learning Journey",
+  "preloadedJs": [{ "path": "sparky-sums.js" }],
+  "preloadedCss": [{ "path": "sparky-sums.css" }]
+}
