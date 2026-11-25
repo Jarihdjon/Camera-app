@@ -25,7 +25,7 @@
         "id": "peak-pass",
         "name": "Peak Pass",
         "emoji": "⛰️",
-        "pack": null
+        "pack": "wildlands-peak-pass"
       },
       {
         "id": "sandstorm-dunes",
@@ -53,7 +53,7 @@
         "id": "coconut-isles",
         "name": "Coconut Isles",
         "emoji": "🐧",
-        "pack": null
+        "pack": "splash-bay-coconut-isles"
       },
       {
         "id": "coral-kingdom",
@@ -93,7 +93,7 @@
         "id": "moonbase-bounce",
         "name": "Moonbase Bounce",
         "emoji": "🌙",
-        "pack": null
+        "pack": "cosmo-heights-moonbase-bounce"
       },
       {
         "id": "planet-parade",
@@ -133,7 +133,7 @@
         "id": "cloud-castle",
         "name": "Cloud Castle",
         "emoji": "🏰",
-        "pack": null
+        "pack": "dreamforge-cloud-castle"
       },
       {
         "id": "dragon-hollow",

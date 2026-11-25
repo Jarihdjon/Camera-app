@@ -31,8 +31,18 @@ export const MODELS = {
   clover: `${Q_NAT}Clover_1.gltf`,
   mushroom: `${Q_NAT}Mushroom_Common.gltf`,
   rocks: [1, 2, 3].map((i) => `${Q_NAT}Rock_Medium_${i}.gltf`),
+  // Beach and moon scenery (Kenney Nature Kit, ~1.3 units tall)
+  palms: ["tree_palmTall", "tree_palmBend", "tree_palmDetailedTall"].map((n) => `${K_NAT}${n}.glb`),
+  tallRocks: ["rock_tallA", "rock_tallB", "rock_tallC", "rock_tallD"].map((n) => `${K_NAT}${n}.glb`),
+  bigRocks: ["rock_largeA", "rock_largeB", "rock_largeC"].map((n) => `${K_NAT}${n}.glb`),
+  smallRocks: ["rock_smallA", "rock_smallC", "rock_smallE"].map((n) => `${K_NAT}${n}.glb`),
+  kFlowers: ["flower_redA", "flower_yellowA", "flower_purpleA"].map((n) => `${K_NAT}${n}.glb`),
+  // Grey stones for the Moon (Quaternius)
+  moonRocks: [1, 2, 3].map((i) => `${Q_NAT}Rock_Medium_${i}.gltf`),
+  pebbles: [1, 2, 3, 4, 5].map((i) => `${Q_NAT}Pebble_Round_${i}.gltf`),
   // Islands under the scenery
   cliff: `${K_NAT}cliff_block_rock.glb`,
+  cliffStone: `${K_NAT}cliff_block_stone.glb`,
   log: `${K_NAT}log_large.glb`,
   // Animals that roam the scenery
   deer: `${Q_ANIM}Deer.gltf`,

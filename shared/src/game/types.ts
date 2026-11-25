@@ -117,7 +117,7 @@ export const BEAT_EFFECTS = ["fly", "signpost", "door", "bridge", "vine", "chest
 export type BeatEffect = (typeof BEAT_EFFECTS)[number];
 
 /** Original story animals and characters, drawn in code. */
-export const CHARACTER_KINDS = ["koala", "bird", "wombat", "stone", "owl"] as const;
+export const CHARACTER_KINDS = ["koala", "bird", "wombat", "stone", "owl", "turtle", "crab", "alien", "dragon"] as const;
 export type CharacterKind = (typeof CHARACTER_KINDS)[number];
 
 export interface MissionCharacter { id: string; name: string; kind: CharacterKind; color: string; voice?: { pitch: number; rate: number } }

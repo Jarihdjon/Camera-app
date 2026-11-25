@@ -15,7 +15,7 @@ import { Worker } from "node:worker_threads";
  * If the package or model isn't available the iPad falls back to its own voice.
  */
 
-export const VOICES = ["af_heart", "af_bella", "af_nicole", "af_sky", "af_sarah", "am_michael", "am_puck", "am_echo", "am_onyx", "am_fenrir", "bf_emma", "bf_isabella", "bf_lily", "bm_george", "bm_lewis", "bm_fable", "bm_daniel"] as const;
+export const VOICES = ["af_heart", "af_bella", "af_nicole", "af_sky", "af_sarah", "af_nova", "am_michael", "am_puck", "am_echo", "am_onyx", "am_fenrir", "bf_emma", "bf_isabella", "bf_lily", "bm_george", "bm_lewis", "bm_fable", "bm_daniel"] as const;
 export type Voice = (typeof VOICES)[number];
 
 /** Makes the audio for one line. The real one runs Kokoro in a worker thread (ttsWorker.mjs). */

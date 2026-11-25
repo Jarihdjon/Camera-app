@@ -23,7 +23,8 @@ function npcSpots(mission: Mission, layout: Layout, checkpoint: number, intro: b
   let gathered = 0;
   mission.characters.forEach((c, ci) => {
     if (intro && introIds.has(c.id)) {
-      out.set(c.id, [1.4 + ci * 0.2, 0, 3.2 + ci * 0.6]);
+      // Spread out along the side of the start pad, so nobody stands on anyone else.
+      out.set(c.id, [ci % 2 ? 2.4 : 1.4, 0, 0.6 + ci * 1.8]);
       return;
     }
     const next = mission.beats.findIndex((b, i) => i >= checkpoint && b.who === c.id);
@@ -227,22 +228,23 @@ export function LevelScene({ pack, layout, checkpoint, gems, eggs, frozen, jet, 
   const rich = richLook();
   // The model packs dress the jungle levels; ?look=classic keeps the original blocks.
   const jungle = rich && p.props === "jungle";
+  const themed = rich && p.props !== "town";
   return (
     <>
-      <Sky top={p.sky[0]} bottom={p.sky[1]} fog={p.fog} warm={rich} />
+      <Sky top={p.sky[0]} bottom={p.sky[1]} fog={p.fog} warm={rich} stars={p.props === "moon"} />
       {rich && (
         <>
           <DioramaCamera />
-          <Ambience length={layout.length} kind={p.props} />
+          {p.props !== "moon" && <Ambience length={layout.length} kind={p.props} />}
           <DioramaEffects />
         </>
       )}
       <Blocks boxes={layout.boxes} top={p.top} side={p.side} accent={p.accent} models={jungle} />
-      {jungle ? (
+      {themed ? (
         <>
-          <JungleScenery spots={layout.props} boxes={layout.boxes} seed={pack.id}
+          <JungleScenery spots={layout.props} boxes={layout.boxes} seed={pack.id} theme={p.props as Exclude<typeof p.props, "town">}
             fallback={<><Props spots={layout.props} palette={p} /><Flora boxes={layout.boxes} palette={p} /></>} />
-          <Wildlife start={layout.checkpoints[0]!} finish={layout.finale} />
+          {jungle && <Wildlife start={layout.checkpoints[0]!} finish={layout.finale} />}
         </>
       ) : (
         <>

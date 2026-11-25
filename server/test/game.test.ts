@@ -11,9 +11,12 @@ const content = loadGameContent();
 const jungle = content.packs.get("wildlands-jungle-jumble")!;
 
 describe("game content", () => {
-  it("loads both packs and the four realms", () => {
+  it("loads the packs and the four realms, and every realm has a level with a mission", () => {
     expect(content.realms.map((r) => r.name)).toEqual(["Wildlands", "Splash Bay", "Cosmo Heights", "Dreamforge"]);
-    expect([...content.packs.keys()].sort()).toEqual(["wildlands-busy-town", "wildlands-jungle-jumble"]);
+    expect(content.packs.size).toBeGreaterThanOrEqual(6);
+    for (const r of content.realms) expect(r.levels.some((l) => l.pack && content.packs.get(l.pack)?.mission)).toBe(true);
+    // Rounds use three questions per gate, so every pack has plenty of each kind.
+    for (const p of content.packs.values()) for (const g of ["listen", "read", "word", "science"] as const) expect(p.questions[g].length).toBeGreaterThanOrEqual(6);
   });
 
   it("builds the same course from the same seed, with 7 gates, 8 checkpoints and 2 eggs", () => {
@@ -99,7 +102,7 @@ describe("game API", () => {
     const wild = s.realms[0];
     expect(wild.levels[0]).toMatchObject({ name: "Jungle Jumble", completed: false, checkpoint: 0 });
     expect(wild.levels[0].gemsTotal).toBeGreaterThan(10);
-    expect(wild.levels[2].packId).toBeNull();
+    expect(wild.levels[3].packId).toBeNull();
   });
 
   it("starts a level and resumes the same run", async () => {

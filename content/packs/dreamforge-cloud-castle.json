@@ -1,0 +1,612 @@
+{
+  "id": "dreamforge-cloud-castle",
+  "realm": "dreamforge",
+  "level": "cloud-castle",
+  "title": "Cloud Castle",
+  "emoji": "🏰",
+  "palette": {
+    "top": "#f4eefe",
+    "side": "#a99cc8",
+    "accent": "#ffd23f",
+    "prop": "#8fd3a8",
+    "prop2": "#7a68a8",
+    "sky": [
+      "#a7c8ff",
+      "#ffe6f4"
+    ],
+    "fog": "#efe4ff",
+    "props": "castle"
+  },
+  "passage": {
+    "title": "Ember and the Rain Clouds",
+    "text": "High above the hills there is a castle made of clouds, where a little dragon called Ember lives. Ember's job is very important: she helps make the rain.\n\nEvery morning, the warm sun heats the water in the seas, lakes and rivers. Some of the water turns into a gas called water vapour and rises up into the sky. This is called evaporation.\n\nHigh in the sky the air is cold, so the water vapour cools down and turns back into tiny drops of water. Millions of drops gather together to make a cloud. When the drops get big and heavy, they fall as rain, and the rain flows back into the rivers and the sea. Then it all happens again!\n\nBut one day, Ember sneezed a giant sneeze, and the castle's cloud machine went quiet. “Oh no,” she said. “Without rain, the gardens down below will dry up!”"
+  },
+  "glossary": [
+    {
+      "word": "evaporation",
+      "meaning": "When water warms up and turns into a gas that rises into the air."
+    },
+    {
+      "word": "water vapour",
+      "meaning": "Water as an invisible gas in the air."
+    },
+    {
+      "word": "gather",
+      "meaning": "To come together in one place."
+    },
+    {
+      "word": "heavy",
+      "meaning": "Hard to lift, weighing a lot."
+    },
+    {
+      "word": "castle",
+      "meaning": "A big, strong building with towers."
+    }
+  ],
+  "things": [
+    {
+      "one": "raindrop",
+      "many": "raindrops"
+    },
+    {
+      "one": "cloud",
+      "many": "clouds"
+    },
+    {
+      "one": "dragon",
+      "many": "dragons"
+    },
+    {
+      "one": "tower",
+      "many": "towers"
+    },
+    {
+      "one": "star",
+      "many": "stars"
+    }
+  ],
+  "spelling": [
+    "rain",
+    "sun",
+    "cloud",
+    "drop",
+    "sky",
+    "wind",
+    "castle",
+    "dragon",
+    "water",
+    "storm"
+  ],
+  "sentences": [
+    {
+      "band": 1,
+      "text": "The rain is wet."
+    },
+    {
+      "band": 1,
+      "text": "Ember is a little dragon."
+    },
+    {
+      "band": 2,
+      "text": "The sun warms the water in the sea."
+    },
+    {
+      "band": 2,
+      "text": "Tiny drops gather to make a cloud."
+    },
+    {
+      "band": 3,
+      "text": "When the drops get heavy, they fall as rain."
+    },
+    {
+      "band": 3,
+      "text": "Ember sneezed and the cloud machine went quiet."
+    }
+  ],
+  "questions": {
+    "listen": [
+      {
+        "id": "dl1",
+        "band": 1,
+        "prompt": "How many wings did Ember have?",
+        "options": [
+          "One",
+          "Two",
+          "Four"
+        ],
+        "correct": 1,
+        "hint": "Listen again and count.",
+        "say": "Ember had two little wings and a long tail."
+      },
+      {
+        "id": "dl2",
+        "band": 1,
+        "prompt": "What colour was the tower?",
+        "options": [
+          "Pink",
+          "Blue",
+          "Gold"
+        ],
+        "correct": 0,
+        "hint": "Listen for the colour.",
+        "say": "The castle had a tall pink tower."
+      },
+      {
+        "id": "dl3",
+        "band": 1,
+        "prompt": "What shone over the garden?",
+        "options": [
+          "The moon",
+          "A rainbow",
+          "A lamp"
+        ],
+        "correct": 1,
+        "hint": "Listen for what shone.",
+        "say": "A rainbow shone over the garden."
+      },
+      {
+        "id": "dl4",
+        "band": 2,
+        "prompt": "Where did Ember land?",
+        "options": [
+          "On the castle wall",
+          "In the river",
+          "On a cloud"
+        ],
+        "correct": 0,
+        "hint": "Listen for where she landed.",
+        "say": "Ember flew over the river and landed on the castle wall."
+      },
+      {
+        "id": "dl5",
+        "band": 2,
+        "prompt": "Where was the spell book?",
+        "options": [
+          "Under the bed",
+          "On the highest shelf",
+          "In the garden"
+        ],
+        "correct": 1,
+        "hint": "Listen for where it was.",
+        "say": "The wizard owl kept his spell book on the highest shelf."
+      },
+      {
+        "id": "dl6",
+        "band": 3,
+        "prompt": "Why did Ember blow warm air?",
+        "options": [
+          "To dry her wings",
+          "Because warm air helps water rise",
+          "To light a candle"
+        ],
+        "correct": 1,
+        "hint": "Listen for 'because'.",
+        "say": "Ember blew a puff of warm air, because warm air helps water rise up into the sky."
+      },
+      {
+        "id": "dl7",
+        "band": 3,
+        "prompt": "What happened after the water rose into the sky?",
+        "options": [
+          "It warmed up",
+          "It made a cloud",
+          "It fell into the sea"
+        ],
+        "correct": 1,
+        "hint": "Listen for the order.",
+        "say": "First the water warmed up, then it rose into the sky, and then it made a cloud."
+      }
+    ],
+    "read": [
+      {
+        "id": "dr1",
+        "band": 1,
+        "prompt": "What is the castle made of?",
+        "options": [
+          "Clouds",
+          "Stone",
+          "Ice"
+        ],
+        "correct": 0,
+        "hint": "Look at the first sentence."
+      },
+      {
+        "id": "dr2",
+        "band": 1,
+        "prompt": "What kind of animal is Ember?",
+        "options": [
+          "A cat",
+          "A little dragon",
+          "An owl"
+        ],
+        "correct": 1,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "dr3",
+        "band": 1,
+        "prompt": "What is Ember's job?",
+        "options": [
+          "To make the rain",
+          "To bake bread",
+          "To guard gold"
+        ],
+        "correct": 0,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "dr4",
+        "band": 2,
+        "prompt": "What heats the water every morning?",
+        "options": [
+          "The moon",
+          "The warm sun",
+          "A fire"
+        ],
+        "correct": 1,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "dr5",
+        "band": 2,
+        "prompt": "What do millions of tiny drops make?",
+        "options": [
+          "A cloud",
+          "A river",
+          "A rainbow"
+        ],
+        "correct": 0,
+        "hint": "Look at the third paragraph."
+      },
+      {
+        "id": "dr6",
+        "band": 3,
+        "prompt": "Why did the cloud machine go quiet?",
+        "options": [
+          "It ran out of water",
+          "Ember sneezed a giant sneeze",
+          "It was night time"
+        ],
+        "correct": 1,
+        "hint": "Look at the last paragraph."
+      },
+      {
+        "id": "dr7",
+        "band": 3,
+        "prompt": "Why was Ember worried?",
+        "options": [
+          "Without rain, the gardens would dry up",
+          "She lost her hat",
+          "The castle would fly away"
+        ],
+        "correct": 0,
+        "hint": "Read what she said at the end."
+      }
+    ],
+    "word": [
+      {
+        "id": "dw1",
+        "band": 1,
+        "prompt": "What is a 'castle'?",
+        "options": [
+          "A big, strong building with towers",
+          "A small tent",
+          "A kind of boat"
+        ],
+        "correct": 0,
+        "hint": "Ember lives in one."
+      },
+      {
+        "id": "dw2",
+        "band": 1,
+        "prompt": "What does 'heavy' mean?",
+        "options": [
+          "Light as a feather",
+          "Hard to lift, weighing a lot",
+          "Very fast"
+        ],
+        "correct": 1,
+        "hint": "Big drops get heavy and fall."
+      },
+      {
+        "id": "dw3",
+        "band": 2,
+        "prompt": "What does 'gather' mean?",
+        "options": [
+          "To come together in one place",
+          "To run away",
+          "To get smaller"
+        ],
+        "correct": 0,
+        "hint": "Drops do this to make a cloud."
+      },
+      {
+        "id": "dw4",
+        "band": 2,
+        "prompt": "What is 'water vapour'?",
+        "options": [
+          "Water as an invisible gas in the air",
+          "A kind of ice",
+          "Muddy water"
+        ],
+        "correct": 0,
+        "hint": "It rises into the sky."
+      },
+      {
+        "id": "dw5",
+        "band": 3,
+        "prompt": "What is 'evaporation'?",
+        "options": [
+          "When water warms up and turns into a gas",
+          "When water freezes",
+          "When rain falls"
+        ],
+        "correct": 0,
+        "hint": "Read the second paragraph."
+      },
+      {
+        "id": "dw6",
+        "band": 3,
+        "prompt": "The machine 'went quiet'. What does that mean?",
+        "options": [
+          "It stopped working",
+          "It got louder",
+          "It flew away"
+        ],
+        "correct": 0,
+        "hint": "No more noise from it."
+      }
+    ],
+    "science": [
+      {
+        "id": "ds1",
+        "band": 1,
+        "prompt": "Where does rain come from?",
+        "options": [
+          "Clouds",
+          "Trees",
+          "The ground"
+        ],
+        "correct": 0,
+        "hint": "Look up on a rainy day."
+      },
+      {
+        "id": "ds2",
+        "band": 1,
+        "prompt": "What do plants need to grow?",
+        "options": [
+          "Water and sunlight",
+          "Only darkness",
+          "Only sand"
+        ],
+        "correct": 0,
+        "hint": "Think about a garden."
+      },
+      {
+        "id": "ds3",
+        "band": 1,
+        "prompt": "What can you see in the sky after rain when the sun comes out?",
+        "options": [
+          "A rainbow",
+          "A snowman",
+          "A rocket"
+        ],
+        "correct": 0,
+        "hint": "It has lots of colours."
+      },
+      {
+        "id": "ds4",
+        "band": 2,
+        "prompt": "When the sun warms a puddle, the puddle slowly...",
+        "options": [
+          "gets bigger",
+          "dries up",
+          "turns to ice"
+        ],
+        "correct": 1,
+        "hint": "The water rises into the air."
+      },
+      {
+        "id": "ds5",
+        "band": 2,
+        "prompt": "Is the air higher up in the sky warmer or colder?",
+        "options": [
+          "Colder",
+          "Warmer",
+          "The same"
+        ],
+        "correct": 0,
+        "hint": "Read Ember's story."
+      },
+      {
+        "id": "ds6",
+        "band": 3,
+        "prompt": "What is it called when water vapour cools and turns into drops?",
+        "options": [
+          "Condensation",
+          "Melting",
+          "Boiling"
+        ],
+        "correct": 0,
+        "hint": "It's how clouds form."
+      },
+      {
+        "id": "ds7",
+        "band": 3,
+        "prompt": "Put the water cycle in order: which comes first?",
+        "options": [
+          "The sun warms the water",
+          "Rain falls",
+          "A cloud forms"
+        ],
+        "correct": 0,
+        "hint": "It starts with the warm sun."
+      }
+    ]
+  },
+  "eggs": [
+    "jet",
+    "shield"
+  ],
+  "mission": {
+    "title": "The Quiet Cloud Machine",
+    "goal": "Restart the cloud machine and find the Dream Key piece!",
+    "treasure": {
+      "name": "Dream Key piece",
+      "emoji": "🗝️"
+    },
+    "characters": [
+      {
+        "id": "ember",
+        "name": "Ember the Dragon",
+        "kind": "dragon",
+        "color": "#ff8a5b",
+        "voice": {
+          "pitch": 1.2,
+          "rate": 0.95
+        }
+      },
+      {
+        "id": "whistle",
+        "name": "Sir Whistle",
+        "kind": "owl",
+        "color": "#c9a37a",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 0.85
+        }
+      },
+      {
+        "id": "gargle",
+        "name": "Gargle the Gargoyle",
+        "kind": "stone",
+        "color": "#a99cc8",
+        "voice": {
+          "pitch": 0.6,
+          "rate": 0.82
+        }
+      },
+      {
+        "id": "puff",
+        "name": "Puff",
+        "kind": "bird",
+        "color": "#9fd7ff",
+        "voice": {
+          "pitch": 1.45,
+          "rate": 1.08
+        }
+      }
+    ],
+    "intro": [
+      {
+        "who": "ember",
+        "line": "Achoo! Oh, hello, Sparky. I sneezed so hard that the castle's cloud machine stopped!"
+      },
+      {
+        "who": "whistle",
+        "line": "The restart lever is at the top of the castle, and a piece of the Dream Key is hidden there too."
+      },
+      {
+        "who": "sparky",
+        "line": "Let's climb the Cloud Castle and get the rain going again!"
+      },
+      {
+        "who": "ember",
+        "line": "First, read my story on the Story Stone, so you know how rain is made."
+      }
+    ],
+    "beats": [
+      {
+        "who": "puff",
+        "effect": "fly",
+        "setup": "Tweet! I'm Puff, a little cloud bird. Listen to my message, and I'll show you the way up!",
+        "success": "Tweet tweet! That's right! Follow me!",
+        "fail": "Tweet? That's not what I said! Listen again.",
+        "clue": "Puff found the cloud stairs",
+        "clueIcon": "🪶"
+      },
+      {
+        "who": "ember",
+        "effect": "signpost",
+        "setup": "The castle signpost blew round in my sneeze. Answer a question about my story to fix it.",
+        "success": "The sign points to the tower now!",
+        "fail": "Oh no, it's still spinning. Let's read my story again.",
+        "clue": "The sign points up the tower",
+        "clueIcon": "🪧"
+      },
+      {
+        "who": "gargle",
+        "effect": "door",
+        "setup": "Grr... I'm Gargle, guardian of the castle gate. Tell me what my cloud words mean and I'll let you pass.",
+        "success": "Hmm, very clever. The gate is open.",
+        "fail": "Grr, not quite. The gate stays shut.",
+        "clue": "Gargle opened the castle gate",
+        "clueIcon": "🚪"
+      },
+      {
+        "who": "ember",
+        "effect": "bridge",
+        "setup": "The rainbow bridge lost some of its steps! Count them with me and we'll fix it.",
+        "success": "The rainbow bridge is fixed! Across we go!",
+        "fail": "Oops, the steps drifted away. Let's count again.",
+        "clue": "The rainbow bridge is fixed",
+        "clueIcon": "🌈"
+      },
+      {
+        "who": "whistle",
+        "effect": "vine",
+        "setup": "This beanstalk ladder needs to grow. Use your science brain to help it!",
+        "success": "Splendid! It's growing tall and green!",
+        "fail": "Hmm, it's still small. Think again.",
+        "clue": "The beanstalk grew up to the tower",
+        "clueIcon": "🌱"
+      },
+      {
+        "who": "whistle",
+        "effect": "chest",
+        "setup": "The tower chest has a pattern lock. Work out what comes next to open it.",
+        "success": "Click! A clue: the lever is under the big X!",
+        "fail": "Clunk. Still locked. Look at the pattern again.",
+        "clue": "The lever is under the big X",
+        "clueIcon": "🧰"
+      },
+      {
+        "who": "ember",
+        "effect": "vault",
+        "setup": "The machine room needs a password. Listen carefully and write it!",
+        "success": "The machine room is open! The lever is just ahead!",
+        "fail": "That's not the password. Let's try again.",
+        "clue": "The machine room opened",
+        "clueIcon": "❌"
+      }
+    ],
+    "finale": [
+      {
+        "who": "ember",
+        "line": "There's the X! Pull the lever... and dig, Sparky, dig!"
+      },
+      {
+        "who": "sparky",
+        "line": "The rain is falling on the gardens! And here's a piece of the Dream Key!"
+      },
+      {
+        "who": "whistle",
+        "line": "Splendid work! Take it back to Dreamforge, and the dreams will come alive."
+      }
+    ],
+    "numberThings": [
+      {
+        "one": "rainbow step",
+        "many": "rainbow steps"
+      },
+      {
+        "one": "raindrop",
+        "many": "raindrops"
+      },
+      {
+        "one": "cloud",
+        "many": "clouds"
+      }
+    ]
+  }
+}

@@ -43,7 +43,7 @@ function useShake(shake: number) {
 /** The signpost with Kip's diary page: it spins round, then points down the path. */
 function Signpost({ gate, open, shake }: EffectProps) {
   const arm = useRef<THREE.Group>(null);
-  const page = useMemo(() => labelTexture("📜", "Kip's diary"), []);
+  const page = useMemo(() => labelTexture("📜", "Story clue"), []);
   const k = useOpening(open, 1.6);
   const sh = useShake(shake);
   useFrame(({ clock }) => {

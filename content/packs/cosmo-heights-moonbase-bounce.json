@@ -1,0 +1,602 @@
+{
+  "id": "cosmo-heights-moonbase-bounce",
+  "realm": "cosmo-heights",
+  "level": "moonbase-bounce",
+  "title": "Moonbase Bounce",
+  "emoji": "🌙",
+  "palette": {
+    "top": "#c9ccd8",
+    "side": "#6e7286",
+    "accent": "#7cf0d8",
+    "prop": "#9aa0b8",
+    "prop2": "#4f5570",
+    "sky": [
+      "#0b1030",
+      "#3a2a7a"
+    ],
+    "fog": "#2a2060",
+    "props": "moon"
+  },
+  "passage": {
+    "title": "Zib's Moon",
+    "text": "Zib lives on a moonbase. The Moon is our closest neighbour in space. It is covered in grey dust and rocks, and it has big round holes called craters, made long ago when space rocks crashed into it.\n\nThere is no air on the Moon, so Zib wears a space helmet whenever she goes outside. With no air, there is no wind, so footprints in the dust can stay there for a very long time.\n\nEverything feels much lighter on the Moon. Zib can jump about six times higher than she could on Earth! That is because the Moon's pull, called gravity, is much weaker than Earth's.\n\nThe Moon does not make its own light. It shines because the Sun lights it up. One night, the moonbase's star map broke into pieces and floated away. “Without it, the rockets can't find their way!” said Zib."
+  },
+  "glossary": [
+    {
+      "word": "craters",
+      "meaning": "Big round holes in the ground made when space rocks crash."
+    },
+    {
+      "word": "gravity",
+      "meaning": "The pull that makes things fall down."
+    },
+    {
+      "word": "neighbour",
+      "meaning": "Someone or something that is close by."
+    },
+    {
+      "word": "helmet",
+      "meaning": "A hard hat that protects your head."
+    },
+    {
+      "word": "dust",
+      "meaning": "Very tiny bits of dry dirt."
+    }
+  ],
+  "things": [
+    {
+      "one": "moon rock",
+      "many": "moon rocks"
+    },
+    {
+      "one": "rocket",
+      "many": "rockets"
+    },
+    {
+      "one": "star",
+      "many": "stars"
+    },
+    {
+      "one": "astronaut",
+      "many": "astronauts"
+    },
+    {
+      "one": "crater",
+      "many": "craters"
+    }
+  ],
+  "spelling": [
+    "moon",
+    "star",
+    "dust",
+    "rock",
+    "space",
+    "jump",
+    "planet",
+    "rocket",
+    "helmet",
+    "crater"
+  ],
+  "sentences": [
+    {
+      "band": 1,
+      "text": "The moon is in the sky."
+    },
+    {
+      "band": 1,
+      "text": "Zib can jump up high."
+    },
+    {
+      "band": 2,
+      "text": "There is no air on the Moon."
+    },
+    {
+      "band": 2,
+      "text": "Zib wears a helmet in space."
+    },
+    {
+      "band": 3,
+      "text": "Space rocks crashed into the Moon and made craters."
+    },
+    {
+      "band": 3,
+      "text": "The Moon shines because the Sun lights it up."
+    }
+  ],
+  "questions": {
+    "listen": [
+      {
+        "id": "ml1",
+        "band": 1,
+        "prompt": "How many rockets were there?",
+        "options": [
+          "Three",
+          "Five",
+          "Nine"
+        ],
+        "correct": 1,
+        "hint": "Listen again and count.",
+        "say": "Five rockets stood on the launch pad."
+      },
+      {
+        "id": "ml2",
+        "band": 1,
+        "prompt": "What colour was Zib's helmet?",
+        "options": [
+          "Purple",
+          "Red",
+          "White"
+        ],
+        "correct": 0,
+        "hint": "Listen for the colour.",
+        "say": "Zib's space helmet was bright purple."
+      },
+      {
+        "id": "ml3",
+        "band": 1,
+        "prompt": "What did Zib find?",
+        "options": [
+          "A star",
+          "A shiny rock",
+          "A rocket"
+        ],
+        "correct": 1,
+        "hint": "Listen for what she found.",
+        "say": "Zib found a shiny rock in a crater."
+      },
+      {
+        "id": "ml4",
+        "band": 2,
+        "prompt": "What did the rocket zoom past?",
+        "options": [
+          "The Sun",
+          "The Moon",
+          "Mars"
+        ],
+        "correct": 1,
+        "hint": "Listen for where it zoomed.",
+        "say": "The rocket zoomed past the Moon and waved to the Earth."
+      },
+      {
+        "id": "ml5",
+        "band": 2,
+        "prompt": "Where did Zib land?",
+        "options": [
+          "In a crater",
+          "Next to the moonbase",
+          "On a rocket"
+        ],
+        "correct": 1,
+        "hint": "Listen for where she landed.",
+        "say": "Zib bounced over two big craters and landed next to the moonbase."
+      },
+      {
+        "id": "ml6",
+        "band": 3,
+        "prompt": "Why did Zib check her air tank?",
+        "options": [
+          "To fill it with water",
+          "Because there is no air on the Moon",
+          "To make it lighter"
+        ],
+        "correct": 1,
+        "hint": "Listen for 'because'.",
+        "say": "Zib checked her air tank before going outside, because there is no air on the Moon."
+      },
+      {
+        "id": "ml7",
+        "band": 3,
+        "prompt": "What did Zib put on last?",
+        "options": [
+          "Her boots",
+          "Her helmet",
+          "Her gloves"
+        ],
+        "correct": 2,
+        "hint": "Listen for 'last of all'.",
+        "say": "First Zib put on her boots, next her helmet, and last of all her gloves."
+      }
+    ],
+    "read": [
+      {
+        "id": "mr1",
+        "band": 1,
+        "prompt": "Where does Zib live?",
+        "options": [
+          "On a moonbase",
+          "Under the sea",
+          "In a jungle"
+        ],
+        "correct": 0,
+        "hint": "Look at the first sentence."
+      },
+      {
+        "id": "mr2",
+        "band": 1,
+        "prompt": "What colour is the Moon's dust?",
+        "options": [
+          "Grey",
+          "Red",
+          "Green"
+        ],
+        "correct": 0,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "mr3",
+        "band": 1,
+        "prompt": "What does Zib wear outside?",
+        "options": [
+          "A sun hat",
+          "A space helmet",
+          "A raincoat"
+        ],
+        "correct": 1,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "mr4",
+        "band": 2,
+        "prompt": "How much higher can Zib jump on the Moon?",
+        "options": [
+          "About two times higher",
+          "About six times higher",
+          "No higher at all"
+        ],
+        "correct": 1,
+        "hint": "Look at the third paragraph."
+      },
+      {
+        "id": "mr5",
+        "band": 2,
+        "prompt": "What made the craters?",
+        "options": [
+          "Space rocks crashing",
+          "Rockets digging",
+          "Rain"
+        ],
+        "correct": 0,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "mr6",
+        "band": 3,
+        "prompt": "Why do footprints stay on the Moon for a long time?",
+        "options": [
+          "There is no wind to blow the dust",
+          "The dust is sticky",
+          "Zib guards them"
+        ],
+        "correct": 0,
+        "hint": "Read the second paragraph."
+      },
+      {
+        "id": "mr7",
+        "band": 3,
+        "prompt": "Why does the Moon shine?",
+        "options": [
+          "It makes its own light",
+          "The Sun lights it up",
+          "It is on fire"
+        ],
+        "correct": 1,
+        "hint": "Look at the last paragraph."
+      }
+    ],
+    "word": [
+      {
+        "id": "mw1",
+        "band": 1,
+        "prompt": "What is a 'helmet'?",
+        "options": [
+          "A hard hat that protects your head",
+          "A kind of shoe",
+          "A space snack"
+        ],
+        "correct": 0,
+        "hint": "Zib wears one outside."
+      },
+      {
+        "id": "mw2",
+        "band": 1,
+        "prompt": "What is 'dust'?",
+        "options": [
+          "Very tiny bits of dry dirt",
+          "Big rocks",
+          "Water"
+        ],
+        "correct": 0,
+        "hint": "The Moon is covered in it."
+      },
+      {
+        "id": "mw3",
+        "band": 2,
+        "prompt": "What are 'craters'?",
+        "options": [
+          "Big round holes made by space rocks",
+          "Tall mountains",
+          "Little stars"
+        ],
+        "correct": 0,
+        "hint": "Look at the first paragraph."
+      },
+      {
+        "id": "mw4",
+        "band": 2,
+        "prompt": "What is 'gravity'?",
+        "options": [
+          "The pull that makes things fall down",
+          "A kind of rocket",
+          "Moon dust"
+        ],
+        "correct": 0,
+        "hint": "It's weaker on the Moon."
+      },
+      {
+        "id": "mw5",
+        "band": 2,
+        "prompt": "The Moon is our closest 'neighbour'. What does that mean?",
+        "options": [
+          "It is very far away",
+          "It is close by",
+          "It is very big"
+        ],
+        "correct": 1,
+        "hint": "Neighbours live near you."
+      },
+      {
+        "id": "mw6",
+        "band": 3,
+        "prompt": "The star map 'floated away'. How did it move?",
+        "options": [
+          "It sank to the bottom",
+          "It drifted gently through the air",
+          "It ran very fast"
+        ],
+        "correct": 1,
+        "hint": "Think of a balloon."
+      }
+    ],
+    "science": [
+      {
+        "id": "ms1",
+        "band": 1,
+        "prompt": "What gives us light in the day?",
+        "options": [
+          "The Sun",
+          "The Moon",
+          "A star map"
+        ],
+        "correct": 0,
+        "hint": "It's big, hot and bright."
+      },
+      {
+        "id": "ms2",
+        "band": 1,
+        "prompt": "What do astronauts need to breathe in space?",
+        "options": [
+          "Air from a tank",
+          "Water",
+          "Nothing at all"
+        ],
+        "correct": 0,
+        "hint": "There's no air in space."
+      },
+      {
+        "id": "ms3",
+        "band": 1,
+        "prompt": "What do we call the planet we live on?",
+        "options": [
+          "Mars",
+          "Earth",
+          "The Moon"
+        ],
+        "correct": 1,
+        "hint": "Our home planet."
+      },
+      {
+        "id": "ms4",
+        "band": 2,
+        "prompt": "Does the Moon make its own light?",
+        "options": [
+          "Yes, like a torch",
+          "No, the Sun lights it up",
+          "Only on Sundays"
+        ],
+        "correct": 1,
+        "hint": "Read Zib's story."
+      },
+      {
+        "id": "ms5",
+        "band": 2,
+        "prompt": "Why can you jump higher on the Moon?",
+        "options": [
+          "The Moon's gravity is weaker",
+          "The Moon is bouncy",
+          "There's more air"
+        ],
+        "correct": 0,
+        "hint": "Gravity pulls things down."
+      },
+      {
+        "id": "ms6",
+        "band": 3,
+        "prompt": "Why is there no wind on the Moon?",
+        "options": [
+          "There is no air to move",
+          "It is too cold",
+          "The rocks block it"
+        ],
+        "correct": 0,
+        "hint": "Wind is moving air."
+      },
+      {
+        "id": "ms7",
+        "band": 3,
+        "prompt": "Which is the biggest?",
+        "options": [
+          "The Moon",
+          "The Earth",
+          "The Sun"
+        ],
+        "correct": 2,
+        "hint": "It's a star!"
+      }
+    ]
+  },
+  "eggs": [
+    "jet",
+    "shield"
+  ],
+  "mission": {
+    "title": "The Scattered Star Map",
+    "goal": "Help Zib find the Star Map piece so the rockets can fly!",
+    "treasure": {
+      "name": "Star Map piece",
+      "emoji": "🌟"
+    },
+    "characters": [
+      {
+        "id": "zib",
+        "name": "Zib the Alien",
+        "kind": "alien",
+        "color": "#7cf0a8",
+        "voice": {
+          "pitch": 1.25,
+          "rate": 1.0
+        }
+      },
+      {
+        "id": "hoot",
+        "name": "Professor Hoot",
+        "kind": "owl",
+        "color": "#b9a0e0",
+        "voice": {
+          "pitch": 0.8,
+          "rate": 0.85
+        }
+      },
+      {
+        "id": "moonrock",
+        "name": "Moonrock Mo",
+        "kind": "stone",
+        "color": "#b9bccb",
+        "voice": {
+          "pitch": 0.6,
+          "rate": 0.8
+        }
+      }
+    ],
+    "intro": [
+      {
+        "who": "zib",
+        "line": "Beep bop! Hello, Sparky! The moonbase star map broke into pieces and floated off across the Moon."
+      },
+      {
+        "who": "hoot",
+        "line": "Without it, the rockets can't find their way home. One piece landed near the big crater!"
+      },
+      {
+        "who": "sparky",
+        "line": "Let's bounce over there and find it, Zib!"
+      },
+      {
+        "who": "zib",
+        "line": "First, read my story on the Story Stone, so you know all about the Moon."
+      }
+    ],
+    "beats": [
+      {
+        "who": "hoot",
+        "effect": "fly",
+        "setup": "Hoo! I watched the pieces float away through my telescope. Listen to my message and I'll show you where!",
+        "success": "Hoo hoo! Correct! This way, across the dust!",
+        "fail": "Hoo... not quite. Listen again, Sparky.",
+        "clue": "Professor Hoot saw a piece near the big crater",
+        "clueIcon": "🔭"
+      },
+      {
+        "who": "zib",
+        "effect": "signpost",
+        "setup": "This moonbase sign spun round when the map floated off. Answer a question about my story to fix it.",
+        "success": "Beep! The sign points the right way now!",
+        "fail": "Bop... still spinning. Let's read my story again.",
+        "clue": "The sign points to the big crater",
+        "clueIcon": "🪧"
+      },
+      {
+        "who": "moonrock",
+        "effect": "door",
+        "setup": "Rumble... I'm Moonrock Mo. I'm blocking the tunnel. Tell me what my space words mean and I'll float aside.",
+        "success": "Excellent! Floating out of your way...",
+        "fail": "Rumble. Not quite. I'm staying put.",
+        "clue": "Moonrock Mo floated aside",
+        "clueIcon": "🪨"
+      },
+      {
+        "who": "zib",
+        "effect": "bridge",
+        "setup": "The crater bridge lost its panels! Count them with me and we'll build it again.",
+        "success": "Beep bop! The bridge is fixed. Bounce across!",
+        "fail": "Oops, the panels floated away. Let's count again.",
+        "clue": "The crater bridge is fixed",
+        "clueIcon": "🌉"
+      },
+      {
+        "who": "hoot",
+        "effect": "vine",
+        "setup": "This space ladder has lost power. Use your science brain to switch it back on!",
+        "success": "Hoo! The ladder is glowing. Up you go!",
+        "fail": "Hmm, still no power. Think again.",
+        "clue": "The space ladder has power again",
+        "clueIcon": "⚡"
+      },
+      {
+        "who": "zib",
+        "effect": "chest",
+        "setup": "A space capsule with a pattern lock! Work out what comes next to open it.",
+        "success": "Click! There's a clue inside: the piece is where the footprints end!",
+        "fail": "Clunk. Still locked. Look at the pattern again.",
+        "clue": "The piece is where the footprints end",
+        "clueIcon": "🧰"
+      },
+      {
+        "who": "zib",
+        "effect": "vault",
+        "setup": "The airlock door needs a password. Listen carefully and write it!",
+        "success": "The airlock is open! The star map piece is just ahead!",
+        "fail": "That's not the password. Let's try again.",
+        "clue": "The airlock opened",
+        "clueIcon": "❌"
+      }
+    ],
+    "finale": [
+      {
+        "who": "zib",
+        "line": "The footprints end right here, at the big X! Dig, Sparky, dig!"
+      },
+      {
+        "who": "sparky",
+        "line": "A piece of the Star Map! It's twinkling!"
+      },
+      {
+        "who": "hoot",
+        "line": "Hoo hoo! Now the rockets can find their way. Take it back to Cosmo Heights!"
+      }
+    ],
+    "numberThings": [
+      {
+        "one": "bridge panel",
+        "many": "bridge panels"
+      },
+      {
+        "one": "moon rock",
+        "many": "moon rocks"
+      },
+      {
+        "one": "rocket",
+        "many": "rockets"
+      }
+    ]
+  }
+}

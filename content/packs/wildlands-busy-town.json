@@ -443,5 +443,166 @@
   "eggs": [
     "jet",
     "shield"
-  ]
+  ],
+  "mission": {
+    "title": "The Great Lunchbox Mix-Up",
+    "goal": "Find the town's lost name labels and the Compass piece!",
+    "treasure": {
+      "name": "Heartwood Compass piece",
+      "emoji": "🧭"
+    },
+    "characters": [
+      {
+        "id": "pip",
+        "name": "Pip the Postie",
+        "kind": "bird",
+        "color": "#4f7cff",
+        "voice": {
+          "pitch": 1.4,
+          "rate": 1.05
+        }
+      },
+      {
+        "id": "hoot",
+        "name": "Mrs Hoot",
+        "kind": "owl",
+        "color": "#c9a37a",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 0.88
+        }
+      },
+      {
+        "id": "statue",
+        "name": "Old Stony",
+        "kind": "stone",
+        "color": "#9aa0aa",
+        "voice": {
+          "pitch": 0.6,
+          "rate": 0.8
+        }
+      },
+      {
+        "id": "wally",
+        "name": "Wally the Baker",
+        "kind": "wombat",
+        "color": "#8a6244",
+        "voice": {
+          "pitch": 0.85,
+          "rate": 0.9
+        }
+      }
+    ],
+    "intro": [
+      {
+        "who": "hoot",
+        "line": "Hello, Sparky! I'm Mrs Hoot, the town librarian. Busy Town has had a big mix-up!"
+      },
+      {
+        "who": "hoot",
+        "line": "Everybody's lunchboxes look the same, and all the name labels blew away in the wind."
+      },
+      {
+        "who": "sparky",
+        "line": "Let's find the labels and sort it out, Mrs Hoot!"
+      },
+      {
+        "who": "hoot",
+        "line": "First, read Maya's story on the Story Stone. It's all about a lunchbox mix-up."
+      }
+    ],
+    "beats": [
+      {
+        "who": "pip",
+        "effect": "fly",
+        "setup": "Tweet! I'm Pip, I deliver the mail. Listen to my message, and I'll show you where the labels flew!",
+        "success": "Tweet! That's right! This way, past the bus stop!",
+        "fail": "Tweet? That's not what I said. Listen again!",
+        "clue": "Pip saw the labels fly past the bus stop",
+        "clueIcon": "✉️"
+      },
+      {
+        "who": "hoot",
+        "effect": "signpost",
+        "setup": "The street sign got knocked round in the wind. Answer a question about Maya's story to fix it.",
+        "success": "The sign points to the park now!",
+        "fail": "Oh dear, still spinning. Let's read the story again.",
+        "clue": "The street sign points to the park",
+        "clueIcon": "🪧"
+      },
+      {
+        "who": "statue",
+        "effect": "door",
+        "setup": "Ahem. I'm Old Stony, the park statue. Tell me what these story words mean and I'll open the park gate.",
+        "success": "Very good. The gate is open.",
+        "fail": "Ahem, not quite. The gate stays closed.",
+        "clue": "Old Stony opened the park gate",
+        "clueIcon": "🚪"
+      },
+      {
+        "who": "wally",
+        "effect": "bridge",
+        "setup": "G'day! The bridge over the creek is missing planks. Count them with me and we'll fix it!",
+        "success": "Bonzer! The bridge is fixed. Across you go!",
+        "fail": "Oops, the planks fell in the creek. Let's count again.",
+        "clue": "The creek bridge is fixed",
+        "clueIcon": "🌉"
+      },
+      {
+        "who": "hoot",
+        "effect": "vine",
+        "setup": "The ivy on the library wall wilted. Use your science brain to bring it back so you can climb!",
+        "success": "Wonderful! The ivy is green and strong!",
+        "fail": "Hmm, it's still wilted. Think again.",
+        "clue": "The library ivy is green again",
+        "clueIcon": "🌿"
+      },
+      {
+        "who": "wally",
+        "effect": "chest",
+        "setup": "My bakery box has a pattern lock. Work out what comes next to open it.",
+        "success": "Click! The labels are inside, and a clue: X marks the spot in the town square!",
+        "fail": "Clunk. Still locked. Look at the pattern again.",
+        "clue": "X marks the spot in the town square",
+        "clueIcon": "🧰"
+      },
+      {
+        "who": "hoot",
+        "effect": "vault",
+        "setup": "The town hall door needs a password. Listen carefully and write it!",
+        "success": "The town hall is open! The town square is just ahead!",
+        "fail": "That's not the password. Let's try again.",
+        "clue": "The town hall door opened",
+        "clueIcon": "❌"
+      }
+    ],
+    "finale": [
+      {
+        "who": "hoot",
+        "line": "Everyone has their name labels back! And look, an X in the town square. Dig, Sparky, dig!"
+      },
+      {
+        "who": "sparky",
+        "line": "Another piece of the Heartwood Compass!"
+      },
+      {
+        "who": "wally",
+        "line": "Bonzer! Take it back to Wildlands, mate. The Heartwood will love it."
+      }
+    ],
+    "numberThings": [
+      {
+        "one": "plank",
+        "many": "planks"
+      },
+      {
+        "one": "lunchbox",
+        "many": "lunchboxes"
+      },
+      {
+        "one": "label",
+        "many": "labels"
+      }
+    ]
+  }
 }

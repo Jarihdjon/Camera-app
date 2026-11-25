@@ -1,0 +1,612 @@
+{
+  "id": "wildlands-peak-pass",
+  "realm": "wildlands",
+  "level": "peak-pass",
+  "title": "Peak Pass",
+  "emoji": "🏔️",
+  "palette": {
+    "top": "#7fc07a",
+    "side": "#6f6a78",
+    "accent": "#ffd23f",
+    "prop": "#2e7d4f",
+    "prop2": "#5b4a3a",
+    "sky": [
+      "#7ab8f5",
+      "#f2f8ff"
+    ],
+    "fog": "#dceaff",
+    "props": "jungle"
+  },
+  "passage": {
+    "title": "Bindi's Snowy Home",
+    "text": "Bindi the wombat lives high in the mountains, where the air is cold and the ground is covered in snow every winter. The higher you climb up a mountain, the colder it gets.\n\nBindi has a thick coat of fur to keep her warm. She digs a long burrow under the ground, and her pouch faces backwards, so no dirt gets in while she digs.\n\nWhen spring comes, the sun warms the mountain and the snow begins to melt. The melting snow trickles into little streams, and the streams join together to make a big river that flows all the way down the valley.\n\nOne morning, a rock slide blocked the path to Bindi's favourite grassy meadow. “I'll need some help to get there,” she said, looking up at the tall peak."
+  },
+  "glossary": [
+    {
+      "word": "burrow",
+      "meaning": "A tunnel or hole an animal digs to live in."
+    },
+    {
+      "word": "melt",
+      "meaning": "To change from solid ice or snow into water."
+    },
+    {
+      "word": "valley",
+      "meaning": "Low land between hills or mountains."
+    },
+    {
+      "word": "meadow",
+      "meaning": "A field of grass and wildflowers."
+    },
+    {
+      "word": "peak",
+      "meaning": "The pointed top of a mountain."
+    }
+  ],
+  "things": [
+    {
+      "one": "snowball",
+      "many": "snowballs"
+    },
+    {
+      "one": "rock",
+      "many": "rocks"
+    },
+    {
+      "one": "pine tree",
+      "many": "pine trees"
+    },
+    {
+      "one": "wombat",
+      "many": "wombats"
+    },
+    {
+      "one": "stream",
+      "many": "streams"
+    }
+  ],
+  "spelling": [
+    "snow",
+    "cold",
+    "rock",
+    "melt",
+    "peak",
+    "river",
+    "winter",
+    "spring",
+    "mountain",
+    "burrow"
+  ],
+  "sentences": [
+    {
+      "band": 1,
+      "text": "The snow is cold."
+    },
+    {
+      "band": 1,
+      "text": "Bindi dug a hole."
+    },
+    {
+      "band": 2,
+      "text": "The snow melts in the spring sun."
+    },
+    {
+      "band": 2,
+      "text": "Bindi has a thick coat of fur."
+    },
+    {
+      "band": 3,
+      "text": "The little streams join together to make a river."
+    },
+    {
+      "band": 3,
+      "text": "A rock slide blocked the path to the meadow."
+    }
+  ],
+  "questions": {
+    "listen": [
+      {
+        "id": "pl1",
+        "band": 1,
+        "prompt": "How many snowflakes landed on Bindi's nose?",
+        "options": [
+          "Two",
+          "Three",
+          "Six"
+        ],
+        "correct": 1,
+        "hint": "Listen again and count.",
+        "say": "Three snowflakes landed on Bindi's nose."
+      },
+      {
+        "id": "pl2",
+        "band": 1,
+        "prompt": "What colour was the river?",
+        "options": [
+          "Icy blue",
+          "Brown",
+          "Green"
+        ],
+        "correct": 0,
+        "hint": "Listen for the colour.",
+        "say": "The river was icy blue and very fast."
+      },
+      {
+        "id": "pl3",
+        "band": 1,
+        "prompt": "What did Bindi eat?",
+        "options": [
+          "Berries",
+          "Grass",
+          "Bugs"
+        ],
+        "correct": 1,
+        "hint": "Listen for the food.",
+        "say": "Bindi ate some soft green grass for breakfast."
+      },
+      {
+        "id": "pl4",
+        "band": 2,
+        "prompt": "When did Bindi come out of her burrow?",
+        "options": [
+          "At lunchtime",
+          "Before the sun came up",
+          "After dark"
+        ],
+        "correct": 1,
+        "hint": "Listen for when it happened.",
+        "say": "Before the sun came up, Bindi crawled out of her burrow and sniffed the air."
+      },
+      {
+        "id": "pl5",
+        "band": 2,
+        "prompt": "Where did the eagle land?",
+        "options": [
+          "On a rock",
+          "On the snow",
+          "On a pine tree"
+        ],
+        "correct": 2,
+        "hint": "Listen for where it landed.",
+        "say": "The eagle circled above the peak twice, then landed on a pine tree."
+      },
+      {
+        "id": "pl6",
+        "band": 3,
+        "prompt": "Why did Bindi go to find Echo?",
+        "options": [
+          "She was hungry",
+          "The path was blocked",
+          "She was lost in the snow"
+        ],
+        "correct": 1,
+        "hint": "Listen for the word 'so'.",
+        "say": "Bindi wanted to go to the meadow, but the path was blocked, so she went to find her friend Echo."
+      },
+      {
+        "id": "pl7",
+        "band": 3,
+        "prompt": "What happened last?",
+        "options": [
+          "The snow melted",
+          "It trickled into streams",
+          "It reached the river"
+        ],
+        "correct": 2,
+        "hint": "Listen for 'last of all'.",
+        "say": "First the snow melted, then it trickled into streams, and last of all it reached the river."
+      }
+    ],
+    "read": [
+      {
+        "id": "pr1",
+        "band": 1,
+        "prompt": "Where does Bindi live?",
+        "options": [
+          "By the beach",
+          "High in the mountains",
+          "In a city"
+        ],
+        "correct": 1,
+        "hint": "Look at the first sentence."
+      },
+      {
+        "id": "pr2",
+        "band": 1,
+        "prompt": "What keeps Bindi warm?",
+        "options": [
+          "A thick coat of fur",
+          "A woolly hat",
+          "A fire"
+        ],
+        "correct": 0,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "pr3",
+        "band": 1,
+        "prompt": "What does Bindi dig?",
+        "options": [
+          "A pond",
+          "A burrow",
+          "A road"
+        ],
+        "correct": 1,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "pr4",
+        "band": 2,
+        "prompt": "What happens to the snow in spring?",
+        "options": [
+          "It turns pink",
+          "It melts",
+          "It gets deeper"
+        ],
+        "correct": 1,
+        "hint": "Look at the third paragraph."
+      },
+      {
+        "id": "pr5",
+        "band": 2,
+        "prompt": "What blocked the path to the meadow?",
+        "options": [
+          "A fallen tree",
+          "A rock slide",
+          "A big river"
+        ],
+        "correct": 1,
+        "hint": "Look at the last paragraph."
+      },
+      {
+        "id": "pr6",
+        "band": 3,
+        "prompt": "Why does Bindi's pouch face backwards?",
+        "options": [
+          "So she can see her baby",
+          "So no dirt gets in when she digs",
+          "So it stays warm in the snow"
+        ],
+        "correct": 1,
+        "hint": "Find the word 'pouch'."
+      },
+      {
+        "id": "pr7",
+        "band": 3,
+        "prompt": "Where does the river water come from in spring?",
+        "options": [
+          "Melting snow",
+          "The sea",
+          "A tap"
+        ],
+        "correct": 0,
+        "hint": "Read the third paragraph again."
+      }
+    ],
+    "word": [
+      {
+        "id": "pw1",
+        "band": 1,
+        "prompt": "What is a 'burrow'?",
+        "options": [
+          "A tunnel an animal digs to live in",
+          "A kind of tree",
+          "A big rock"
+        ],
+        "correct": 0,
+        "hint": "Bindi digs one."
+      },
+      {
+        "id": "pw2",
+        "band": 1,
+        "prompt": "What does 'melt' mean?",
+        "options": [
+          "To freeze hard",
+          "To change from ice or snow into water",
+          "To fall down"
+        ],
+        "correct": 1,
+        "hint": "What happens to snow in the sun?"
+      },
+      {
+        "id": "pw3",
+        "band": 2,
+        "prompt": "What is a 'valley'?",
+        "options": [
+          "The top of a mountain",
+          "Low land between hills or mountains",
+          "A kind of cloud"
+        ],
+        "correct": 1,
+        "hint": "The river flows down into it."
+      },
+      {
+        "id": "pw4",
+        "band": 2,
+        "prompt": "What is a 'meadow'?",
+        "options": [
+          "A field of grass and flowers",
+          "A frozen lake",
+          "A cave"
+        ],
+        "correct": 0,
+        "hint": "Bindi's favourite place has grass."
+      },
+      {
+        "id": "pw5",
+        "band": 2,
+        "prompt": "What is the 'peak' of a mountain?",
+        "options": [
+          "The bottom",
+          "The pointed top",
+          "The side"
+        ],
+        "correct": 1,
+        "hint": "Bindi looked UP at it."
+      },
+      {
+        "id": "pw6",
+        "band": 3,
+        "prompt": "The streams 'join together'. What does that mean?",
+        "options": [
+          "They come apart",
+          "They meet and become one",
+          "They dry up"
+        ],
+        "correct": 1,
+        "hint": "Many streams make one big river."
+      }
+    ],
+    "science": [
+      {
+        "id": "ps1",
+        "band": 1,
+        "prompt": "What happens to snow when it gets warm?",
+        "options": [
+          "It melts into water",
+          "It turns into sand",
+          "It gets colder"
+        ],
+        "correct": 0,
+        "hint": "Think about a snowman on a sunny day."
+      },
+      {
+        "id": "ps2",
+        "band": 1,
+        "prompt": "Is it colder at the top of a mountain or at the bottom?",
+        "options": [
+          "At the top",
+          "At the bottom",
+          "It's the same"
+        ],
+        "correct": 0,
+        "hint": "Where is the snow?"
+      },
+      {
+        "id": "ps3",
+        "band": 1,
+        "prompt": "Which season is the coldest?",
+        "options": [
+          "Summer",
+          "Winter",
+          "Spring"
+        ],
+        "correct": 1,
+        "hint": "Think about when it snows."
+      },
+      {
+        "id": "ps4",
+        "band": 2,
+        "prompt": "Which is a solid?",
+        "options": [
+          "Water",
+          "Ice",
+          "Steam"
+        ],
+        "correct": 1,
+        "hint": "A solid keeps its shape."
+      },
+      {
+        "id": "ps5",
+        "band": 2,
+        "prompt": "Why do animals like Bindi grow thick fur?",
+        "options": [
+          "To look nice",
+          "To keep warm in the cold",
+          "To swim faster"
+        ],
+        "correct": 1,
+        "hint": "Think about the cold mountains."
+      },
+      {
+        "id": "ps6",
+        "band": 3,
+        "prompt": "Water can be a solid, a liquid or a gas. Which one is snow?",
+        "options": [
+          "A solid",
+          "A liquid",
+          "A gas"
+        ],
+        "correct": 0,
+        "hint": "You can pick snow up and make a ball."
+      },
+      {
+        "id": "ps7",
+        "band": 3,
+        "prompt": "Where does the water in a mountain river come from in spring?",
+        "options": [
+          "Melting snow and rain",
+          "The ocean flowing uphill",
+          "Nowhere"
+        ],
+        "correct": 0,
+        "hint": "The sun warms the snow."
+      }
+    ]
+  },
+  "eggs": [
+    "jet",
+    "shield"
+  ],
+  "mission": {
+    "title": "The Blocked Pass",
+    "goal": "Clear the way to Bindi's meadow and find the Compass piece!",
+    "treasure": {
+      "name": "Heartwood Compass piece",
+      "emoji": "🧭"
+    },
+    "characters": [
+      {
+        "id": "bindi",
+        "name": "Bindi the Wombat",
+        "kind": "wombat",
+        "color": "#7a5a44",
+        "voice": {
+          "pitch": 0.9,
+          "rate": 0.9
+        }
+      },
+      {
+        "id": "echo",
+        "name": "Echo the Owl",
+        "kind": "owl",
+        "color": "#c9a37a",
+        "voice": {
+          "pitch": 0.8,
+          "rate": 0.85
+        }
+      },
+      {
+        "id": "granite",
+        "name": "Granite",
+        "kind": "stone",
+        "color": "#9aa0aa",
+        "voice": {
+          "pitch": 0.6,
+          "rate": 0.8
+        }
+      },
+      {
+        "id": "wren",
+        "name": "Wren",
+        "kind": "bird",
+        "color": "#b5793f",
+        "voice": {
+          "pitch": 1.45,
+          "rate": 1.05
+        }
+      }
+    ],
+    "intro": [
+      {
+        "who": "bindi",
+        "line": "Brrr! Hello, Sparky! A rock slide has blocked the path up to my grassy meadow."
+      },
+      {
+        "who": "bindi",
+        "line": "Wren says there's a piece of the Heartwood Compass hidden near the top, too!"
+      },
+      {
+        "who": "sparky",
+        "line": "Let's climb Peak Pass together and clear the way, Bindi!"
+      },
+      {
+        "who": "bindi",
+        "line": "First, read my story on the Story Stone, so you know all about the mountain."
+      }
+    ],
+    "beats": [
+      {
+        "who": "wren",
+        "effect": "fly",
+        "setup": "I flew all over the mountain! Listen to what I saw, and I'll show you the way up.",
+        "success": "Yes! Follow me, it's up this way!",
+        "fail": "Hmm, that's not what I said. Listen again, Sparky!",
+        "clue": "Wren spotted the trail up the left side",
+        "clueIcon": "🪶"
+      },
+      {
+        "who": "bindi",
+        "effect": "signpost",
+        "setup": "This old trail sign spun round in the wind. Answer a question about my story to fix it.",
+        "success": "The sign points up the mountain now. This way!",
+        "fail": "The sign is still spinning. Let's read my story again.",
+        "clue": "The sign points to the peak",
+        "clueIcon": "🪧"
+      },
+      {
+        "who": "granite",
+        "effect": "door",
+        "setup": "Rumble... I am Granite. I fell across the path. Tell me what my mountain words mean, and I'll roll aside.",
+        "success": "Well spoken! I'll roll out of your way.",
+        "fail": "Rumble... not quite. I'll stay put for now.",
+        "clue": "Granite rolled aside",
+        "clueIcon": "🪨"
+      },
+      {
+        "who": "bindi",
+        "effect": "bridge",
+        "setup": "The rock slide broke the bridge over the stream. Count the logs with me and we'll fix it!",
+        "success": "Good counting! The bridge is fixed. Across we go!",
+        "fail": "Oops, the logs rolled into the stream. Let's count again.",
+        "clue": "The log bridge is fixed",
+        "clueIcon": "🌉"
+      },
+      {
+        "who": "echo",
+        "effect": "vine",
+        "setup": "Hoo! I'm Echo. This frozen ladder needs warming up. Use your science brain to melt the ice!",
+        "success": "Hoo hoo! The ice melted and the ladder is free!",
+        "fail": "Hoo... the ice is still frozen. Think again.",
+        "clue": "The ice on the ladder melted",
+        "clueIcon": "🧊"
+      },
+      {
+        "who": "echo",
+        "effect": "chest",
+        "setup": "Someone left a chest with a pattern lock. Work out what comes next to open it.",
+        "success": "Click! There's a clue inside: dig where the snow meets the grass!",
+        "fail": "Clunk. The lock stayed shut. Look at the pattern again.",
+        "clue": "Dig where the snow meets the grass",
+        "clueIcon": "🧰"
+      },
+      {
+        "who": "bindi",
+        "effect": "vault",
+        "setup": "This snowy cave needs a password. Listen carefully and write it to open the door!",
+        "success": "The cave is open! The meadow is just ahead!",
+        "fail": "That's not the password. Let's try again.",
+        "clue": "The snow cave door opened",
+        "clueIcon": "❌"
+      }
+    ],
+    "finale": [
+      {
+        "who": "bindi",
+        "line": "My meadow! And look, X marks the spot. Dig, Sparky, dig!"
+      },
+      {
+        "who": "sparky",
+        "line": "Another piece of the Heartwood Compass! It's shining!"
+      },
+      {
+        "who": "echo",
+        "line": "Hoo! Take it back to Wildlands. The Heartwood will grow even stronger."
+      }
+    ],
+    "numberThings": [
+      {
+        "one": "log",
+        "many": "logs"
+      },
+      {
+        "one": "rock",
+        "many": "rocks"
+      },
+      {
+        "one": "snowball",
+        "many": "snowballs"
+      }
+    ]
+  }
+}

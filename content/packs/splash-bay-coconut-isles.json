@@ -1,0 +1,612 @@
+{
+  "id": "splash-bay-coconut-isles",
+  "realm": "splash-bay",
+  "level": "coconut-isles",
+  "title": "Coconut Isles",
+  "emoji": "🏝️",
+  "palette": {
+    "top": "#f3d9a0",
+    "side": "#c99a5b",
+    "accent": "#ff7aa8",
+    "prop": "#2fae6a",
+    "prop2": "#8a5a32",
+    "sky": [
+      "#5cc8ff",
+      "#e6fbff"
+    ],
+    "fog": "#c8f0ff",
+    "props": "beach"
+  },
+  "passage": {
+    "title": "Shelly's Big Night",
+    "text": "Shelly is a sea turtle. She spends almost her whole life swimming in the warm ocean, but one night each year she crawls up onto the sandy beach where she was born.\n\nShelly digs a deep hole in the sand with her back flippers and lays her eggs inside. Then she covers them up to keep them safe and warm, and slowly crawls back to the sea.\n\nAbout two months later, the baby turtles hatch. They wriggle up out of the sand at night and scurry towards the brightest light they can see. On a dark beach, that is the moon and stars shining on the water, so they find their way to the sea.\n\nBut this year, bright lights from a new beach hut were shining the wrong way. “My babies might get lost!” said Shelly. The animals of Coconut Isles needed a plan."
+  },
+  "glossary": [
+    {
+      "word": "flippers",
+      "meaning": "Flat legs that sea animals use for swimming."
+    },
+    {
+      "word": "hatch",
+      "meaning": "When a baby animal breaks out of its egg."
+    },
+    {
+      "word": "scurry",
+      "meaning": "To run with quick, short steps."
+    },
+    {
+      "word": "ocean",
+      "meaning": "A very big area of salty sea water."
+    },
+    {
+      "word": "brightest",
+      "meaning": "Giving out the most light."
+    }
+  ],
+  "things": [
+    {
+      "one": "shell",
+      "many": "shells"
+    },
+    {
+      "one": "coconut",
+      "many": "coconuts"
+    },
+    {
+      "one": "turtle egg",
+      "many": "turtle eggs"
+    },
+    {
+      "one": "crab",
+      "many": "crabs"
+    },
+    {
+      "one": "fish",
+      "many": "fish"
+    }
+  ],
+  "spelling": [
+    "sea",
+    "sand",
+    "shell",
+    "crab",
+    "fish",
+    "wave",
+    "beach",
+    "turtle",
+    "ocean",
+    "island"
+  ],
+  "sentences": [
+    {
+      "band": 1,
+      "text": "The crab is on the sand."
+    },
+    {
+      "band": 1,
+      "text": "A fish swims in the sea."
+    },
+    {
+      "band": 2,
+      "text": "Shelly digs a hole in the sand."
+    },
+    {
+      "band": 2,
+      "text": "The baby turtles hatch at night."
+    },
+    {
+      "band": 3,
+      "text": "The baby turtles scurry towards the bright moon."
+    },
+    {
+      "band": 3,
+      "text": "Bright lights can make the baby turtles get lost."
+    }
+  ],
+  "questions": {
+    "listen": [
+      {
+        "id": "cl1",
+        "band": 1,
+        "prompt": "How many crabs ran across the sand?",
+        "options": [
+          "Three",
+          "Four",
+          "Seven"
+        ],
+        "correct": 1,
+        "hint": "Listen again and count.",
+        "say": "Four little crabs ran across the sand."
+      },
+      {
+        "id": "cl2",
+        "band": 1,
+        "prompt": "What fell from the palm tree?",
+        "options": [
+          "A coconut",
+          "A bird",
+          "A leaf"
+        ],
+        "correct": 0,
+        "hint": "Listen for what fell.",
+        "say": "The coconut fell from the tall palm tree."
+      },
+      {
+        "id": "cl3",
+        "band": 1,
+        "prompt": "What colour was Shelly's shell?",
+        "options": [
+          "Blue",
+          "Green",
+          "Yellow"
+        ],
+        "correct": 1,
+        "hint": "Listen for the colour.",
+        "say": "Shelly had a shiny green shell."
+      },
+      {
+        "id": "cl4",
+        "band": 2,
+        "prompt": "What did the seagull do?",
+        "options": [
+          "Swam in the sea",
+          "Flew up into the sky",
+          "Ate a fish"
+        ],
+        "correct": 1,
+        "hint": "Listen for the seagull.",
+        "say": "The waves splashed onto the beach, and the seagull flew up into the sky."
+      },
+      {
+        "id": "cl5",
+        "band": 2,
+        "prompt": "Where was the fish hiding?",
+        "options": [
+          "In the sand",
+          "In the coral",
+          "Under a rock"
+        ],
+        "correct": 1,
+        "hint": "Listen for where it hid.",
+        "say": "Under the water, Shelly saw a bright orange fish hiding in the coral."
+      },
+      {
+        "id": "cl6",
+        "band": 3,
+        "prompt": "Why did the turtles wait until dark?",
+        "options": [
+          "They were sleepy",
+          "To be safe from hungry birds",
+          "The sand was too cold"
+        ],
+        "correct": 1,
+        "hint": "Listen for the word 'because'.",
+        "say": "The baby turtles waited until it was dark, because the night keeps them safe from hungry birds."
+      },
+      {
+        "id": "cl7",
+        "band": 3,
+        "prompt": "What did Shelly do after laying her eggs?",
+        "options": [
+          "Dug a hole",
+          "Covered them with sand",
+          "Swam away fast"
+        ],
+        "correct": 1,
+        "hint": "Listen for 'then'.",
+        "say": "First Shelly dug a hole, next she laid her eggs, and then she covered them with sand."
+      }
+    ],
+    "read": [
+      {
+        "id": "cr1",
+        "band": 1,
+        "prompt": "What kind of animal is Shelly?",
+        "options": [
+          "A fish",
+          "A sea turtle",
+          "A crab"
+        ],
+        "correct": 1,
+        "hint": "Look at the first sentence."
+      },
+      {
+        "id": "cr2",
+        "band": 1,
+        "prompt": "Where does Shelly lay her eggs?",
+        "options": [
+          "In the sand on the beach",
+          "In a tree",
+          "On a boat"
+        ],
+        "correct": 0,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "cr3",
+        "band": 1,
+        "prompt": "When do the baby turtles come out of the sand?",
+        "options": [
+          "In the morning",
+          "At night",
+          "At lunchtime"
+        ],
+        "correct": 1,
+        "hint": "Look at the third paragraph."
+      },
+      {
+        "id": "cr4",
+        "band": 2,
+        "prompt": "What does Shelly use to dig the hole?",
+        "options": [
+          "Her mouth",
+          "Her back flippers",
+          "A spade"
+        ],
+        "correct": 1,
+        "hint": "Look at the second paragraph."
+      },
+      {
+        "id": "cr5",
+        "band": 2,
+        "prompt": "How long until the eggs hatch?",
+        "options": [
+          "About two days",
+          "About two months",
+          "About two years"
+        ],
+        "correct": 1,
+        "hint": "Look at the start of the third paragraph."
+      },
+      {
+        "id": "cr6",
+        "band": 3,
+        "prompt": "Why might the babies get lost this year?",
+        "options": [
+          "The sea was too rough",
+          "Bright lights were shining the wrong way",
+          "The sand was too hot"
+        ],
+        "correct": 1,
+        "hint": "Look at the last paragraph."
+      },
+      {
+        "id": "cr7",
+        "band": 3,
+        "prompt": "How do baby turtles usually find the sea?",
+        "options": [
+          "They follow the moon and stars shining on the water",
+          "Their mum carries them",
+          "They follow the crabs"
+        ],
+        "correct": 0,
+        "hint": "Read the third paragraph again."
+      }
+    ],
+    "word": [
+      {
+        "id": "cw1",
+        "band": 1,
+        "prompt": "What are 'flippers'?",
+        "options": [
+          "Flat legs for swimming",
+          "Little wings",
+          "Sharp teeth"
+        ],
+        "correct": 0,
+        "hint": "Turtles use them in the sea."
+      },
+      {
+        "id": "cw2",
+        "band": 1,
+        "prompt": "What does 'hatch' mean?",
+        "options": [
+          "To go to sleep",
+          "To break out of an egg",
+          "To swim fast"
+        ],
+        "correct": 1,
+        "hint": "Baby turtles do it."
+      },
+      {
+        "id": "cw3",
+        "band": 2,
+        "prompt": "What does 'scurry' mean?",
+        "options": [
+          "To run with quick, short steps",
+          "To sleep all day",
+          "To sing loudly"
+        ],
+        "correct": 0,
+        "hint": "The babies hurry to the sea."
+      },
+      {
+        "id": "cw4",
+        "band": 2,
+        "prompt": "What is the 'ocean'?",
+        "options": [
+          "A small pond",
+          "A very big area of salty sea water",
+          "A sandy hill"
+        ],
+        "correct": 1,
+        "hint": "Shelly swims in it."
+      },
+      {
+        "id": "cw5",
+        "band": 2,
+        "prompt": "The 'brightest' light is the one that...",
+        "options": [
+          "gives out the most light",
+          "is the smallest",
+          "is the furthest away"
+        ],
+        "correct": 0,
+        "hint": "Bright means full of light."
+      },
+      {
+        "id": "cw6",
+        "band": 3,
+        "prompt": "Shelly 'covers them up'. What does she do?",
+        "options": [
+          "Puts sand over the eggs",
+          "Paints the eggs",
+          "Eats the eggs"
+        ],
+        "correct": 0,
+        "hint": "She keeps them safe and warm."
+      }
+    ],
+    "science": [
+      {
+        "id": "cs1",
+        "band": 1,
+        "prompt": "Which animal lays eggs?",
+        "options": [
+          "A turtle",
+          "A dog",
+          "A cat"
+        ],
+        "correct": 0,
+        "hint": "Shelly digs a nest for hers."
+      },
+      {
+        "id": "cs2",
+        "band": 1,
+        "prompt": "Is sea water salty or sweet?",
+        "options": [
+          "Salty",
+          "Sweet",
+          "Sour"
+        ],
+        "correct": 0,
+        "hint": "Think about the ocean."
+      },
+      {
+        "id": "cs3",
+        "band": 1,
+        "prompt": "Where do fish live?",
+        "options": [
+          "In trees",
+          "In water",
+          "In the sand"
+        ],
+        "correct": 1,
+        "hint": "Fish need water to breathe."
+      },
+      {
+        "id": "cs4",
+        "band": 2,
+        "prompt": "Sea turtles breathe air. Where do they go to take a breath?",
+        "options": [
+          "Up to the top of the water",
+          "Down to the sand",
+          "Inside a shell"
+        ],
+        "correct": 0,
+        "hint": "They can't breathe under water like fish."
+      },
+      {
+        "id": "cs5",
+        "band": 2,
+        "prompt": "What gives us light at night on a dark beach?",
+        "options": [
+          "The moon and stars",
+          "The sand",
+          "The waves"
+        ],
+        "correct": 0,
+        "hint": "Look up at the night sky."
+      },
+      {
+        "id": "cs6",
+        "band": 3,
+        "prompt": "Why do baby turtles need to reach the sea quickly?",
+        "options": [
+          "To find their food and stay safe",
+          "To get dry",
+          "To climb trees"
+        ],
+        "correct": 0,
+        "hint": "The sea is their home."
+      },
+      {
+        "id": "cs7",
+        "band": 3,
+        "prompt": "How can people help baby turtles find the sea?",
+        "options": [
+          "Turn off bright lights near the beach at night",
+          "Shine torches at them",
+          "Build more huts on the sand"
+        ],
+        "correct": 0,
+        "hint": "Bright lights confuse them."
+      }
+    ]
+  },
+  "eggs": [
+    "jet",
+    "shield"
+  ],
+  "mission": {
+    "title": "Lights Out for the Hatchlings",
+    "goal": "Help Shelly's babies find the sea and win a Tide Pearl piece!",
+    "treasure": {
+      "name": "Tide Pearl piece",
+      "emoji": "🐚"
+    },
+    "characters": [
+      {
+        "id": "shelly",
+        "name": "Shelly the Turtle",
+        "kind": "turtle",
+        "color": "#3f9a6a",
+        "voice": {
+          "pitch": 0.95,
+          "rate": 0.88
+        }
+      },
+      {
+        "id": "clack",
+        "name": "Captain Clack",
+        "kind": "crab",
+        "color": "#e8553f",
+        "voice": {
+          "pitch": 1.2,
+          "rate": 1.05
+        }
+      },
+      {
+        "id": "gully",
+        "name": "Gully the Gull",
+        "kind": "bird",
+        "color": "#e9edf2",
+        "voice": {
+          "pitch": 1.4,
+          "rate": 1.08
+        }
+      },
+      {
+        "id": "barnacle",
+        "name": "Old Barnacle",
+        "kind": "stone",
+        "color": "#8a8f9e",
+        "voice": {
+          "pitch": 0.65,
+          "rate": 0.8
+        }
+      }
+    ],
+    "intro": [
+      {
+        "who": "shelly",
+        "line": "Hello, Sparky! My babies will hatch tonight, but a bright light is shining the wrong way."
+      },
+      {
+        "who": "clack",
+        "line": "Clack clack! The switch for that light is at the far end of the island, past lots of tricky spots!"
+      },
+      {
+        "who": "sparky",
+        "line": "Don't worry, Shelly. We'll turn it off before the babies wake up!"
+      },
+      {
+        "who": "shelly",
+        "line": "Thank you! First, read my story on the Story Stone, so you know how baby turtles find the sea."
+      }
+    ],
+    "beats": [
+      {
+        "who": "gully",
+        "effect": "fly",
+        "setup": "Squawk! I can see the whole island from up here. Listen to my message and I'll lead the way!",
+        "success": "Squawk! That's right! This way, follow me!",
+        "fail": "Squawk? That's not what I said! Listen again.",
+        "clue": "Gully found the path past the palm trees",
+        "clueIcon": "🪶"
+      },
+      {
+        "who": "shelly",
+        "effect": "signpost",
+        "setup": "This driftwood sign got turned around by the waves. Answer a question about my story to fix it.",
+        "success": "The sign points the right way now!",
+        "fail": "Oh dear, it's still pointing out to sea. Let's read my story again.",
+        "clue": "The driftwood sign points to the light",
+        "clueIcon": "🪧"
+      },
+      {
+        "who": "barnacle",
+        "effect": "door",
+        "setup": "Hrumph. I'm Old Barnacle, and I'm sitting on the path. Tell me what my sea words mean and I'll budge.",
+        "success": "Well done, young robot. I'll shuffle aside.",
+        "fail": "Hrumph, not quite. I'm staying right here.",
+        "clue": "Old Barnacle moved aside",
+        "clueIcon": "🪨"
+      },
+      {
+        "who": "clack",
+        "effect": "bridge",
+        "setup": "Clack! The boardwalk lost its planks in the storm. Count with me and we'll build it back!",
+        "success": "Clack clack! The boardwalk is fixed. Scuttle across!",
+        "fail": "Oops! The planks floated away. Let's count again.",
+        "clue": "The boardwalk is fixed",
+        "clueIcon": "🌉"
+      },
+      {
+        "who": "shelly",
+        "effect": "vine",
+        "setup": "This seaweed rope has dried out in the sun. Use your science brain to make it strong again!",
+        "success": "It's wet and strong now! Up you go!",
+        "fail": "Oh no, it's still too dry. Think again, Sparky.",
+        "clue": "The seaweed rope is strong again",
+        "clueIcon": "🌿"
+      },
+      {
+        "who": "clack",
+        "effect": "chest",
+        "setup": "A pirate's chest with a pattern lock! Work out what comes next to open it.",
+        "success": "Click! Inside there's a clue: the switch is under the big palm!",
+        "fail": "Clunk. Still locked. Look at the pattern again.",
+        "clue": "The switch is under the big palm tree",
+        "clueIcon": "🧰"
+      },
+      {
+        "who": "shelly",
+        "effect": "vault",
+        "setup": "The light switch box needs a password. Listen carefully and write it!",
+        "success": "The box is open! Quick, the switch is just ahead!",
+        "fail": "That's not it. Let's listen and try again.",
+        "clue": "The switch box opened",
+        "clueIcon": "❌"
+      }
+    ],
+    "finale": [
+      {
+        "who": "shelly",
+        "line": "You turned off the light! Look, my babies are heading to the sea by the moonlight!"
+      },
+      {
+        "who": "clack",
+        "line": "And there's an X in the sand! Dig, Sparky, dig!"
+      },
+      {
+        "who": "sparky",
+        "line": "A piece of the Tide Pearl! It's glowing like the moon!"
+      }
+    ],
+    "numberThings": [
+      {
+        "one": "plank",
+        "many": "planks"
+      },
+      {
+        "one": "shell",
+        "many": "shells"
+      },
+      {
+        "one": "turtle egg",
+        "many": "turtle eggs"
+      }
+    ]
+  }
+}
