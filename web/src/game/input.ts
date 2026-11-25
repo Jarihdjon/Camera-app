@@ -8,6 +8,11 @@ export const input = {
   y: 0, // -1 back .. 1 forward
   jumpPressed: false, // true for one frame when jump is pressed
   jumpHeld: false,
+  /** Camera turning: one frame's worth from dragging the screen, plus a steady rate from the right stick or Q/E. */
+  lookDelta: 0,
+  lookRate: 0,
+  /** Set for one frame to swing the camera back behind Sparky. */
+  recenter: false,
   /** Forced input for automated tests. */
   override: null as null | { x: number; y: number },
 };
@@ -34,6 +39,13 @@ export function pressJump() {
 }
 export function releaseJump() {
   input.jumpHeld = false;
+  input.lookDelta = 0;
+  input.lookRate = 0;
+}
+
+/** Drag on the screen to look around (pixels of sideways drag). */
+export function addLook(dx: number) {
+  input.lookDelta += dx;
 }
 
 let padJumpWas = false;
@@ -65,6 +77,18 @@ export function pollInput() {
     padJumpWas = jump;
     break;
   }
+  let look = 0;
+  if (keys.has("KeyQ")) look = -1;
+  if (keys.has("KeyE")) look = 1;
+  for (const p of pads) {
+    if (!p) continue;
+    const rx = p.axes[2] ?? 0;
+    if (Math.abs(rx) > 0.2) look = rx;
+    if (p.buttons[4]?.pressed) look = -1;
+    if (p.buttons[5]?.pressed) look = 1;
+    break;
+  }
+  input.lookRate = look;
   if (input.override) ({ x, y } = input.override);
   input.x = Math.max(-1, Math.min(1, x));
   input.y = Math.max(-1, Math.min(1, y));

@@ -22,5 +22,8 @@
   "devDependencies": {
     "@types/node": "^22.19.0",
     "vitest": "^5.1.1"
+  },
+  "optionalDependencies": {
+    "kokoro-js": "^1.2.1"
   }
 }

@@ -6,6 +6,7 @@ import { input, pollInput } from "./input";
 import { newBody, step, boxAt, type Body } from "./physics";
 import { Sparky3D } from "./Sparky3D";
 import { sfx } from "./sfx";
+import { follow, newCamera, recenterStep, steer, turn } from "./camera";
 
 export interface PlayerHandle {
   body: Body;
@@ -13,8 +14,17 @@ export interface PlayerHandle {
 }
 
 /**
- * Sparky plus the physics and the follow camera. The camera sits behind and above,
- * looking forward along the course, so "up" on the joystick always means forward.
+ * Sparky plus the physics and a free follow camera.
+ *
+ * The camera orbits behind him at a set height and distance (`cameraOffset`: [unused,
+ * height, -distance]). Movement is relative to the camera: up on the stick is "away from
+ * the camera". When he runs in a new direction the camera gently swings round behind him,
+ * so if he turns and walks back the way he came, it turns too and shows what's ahead.
+ * Dragging the screen, the right stick, L1/R1 or Q/E turn it by hand; the camera button
+ * swings it back behind him.
+ *
+ * So the camera turning never pulls him off course, the stick's meaning is held steady
+ * while he keeps pushing the same way, and only updates when he lets go or changes direction.
  */
 export const Player = forwardRef<PlayerHandle, {
   boxes: Box[];
@@ -31,13 +41,20 @@ export const Player = forwardRef<PlayerHandle, {
   const [anim, setAnim] = useState({ moving: 0, airborne: false });
   const { camera } = useThree();
   const look = useRef(new THREE.Vector3(spawn.x, spawn.y + 1, spawn.z + 4));
+  /** Camera direction (0 looks along +z), the stick basis held while pushing, and when hand-turning stopped. */
+  const cam = useRef(newCamera());
+  const height = cameraOffset[1];
+  const dist = -cameraOffset[2];
   const lastAnim = useRef("");
 
   useImperativeHandle(ref, () => ({
     body: body.current,
     teleport: (x, y, z) => {
       Object.assign(body.current, newBody(x, y, z));
-      camera.position.set(x + cameraOffset[0], y + cameraOffset[1], z + cameraOffset[2]);
+      // Checkpoints face along the course again.
+      Object.assign(cam.current, newCamera());
+      camera.position.set(x, y + height, z - dist);
+      look.current.set(x, y + 1, z + 4);
     },
   }), [camera, cameraOffset]);
 
@@ -46,8 +63,19 @@ export const Player = forwardRef<PlayerHandle, {
     const t = clock.elapsedTime;
     const b = body.current;
     pollInput();
-    // The camera looks down +z, so screen-right is world -x: flip the stick's sideways axis.
-    const inp = frozen ? { x: 0, y: 0, jumpPressed: false, jumpHeld: false } : { x: -input.x, y: input.y, jumpPressed: input.jumpPressed, jumpHeld: input.jumpHeld };
+    const c = cam.current;
+    // Turning the camera by hand.
+    const manual = frozen ? 0 : input.lookDelta * 0.008 + input.lookRate * 2.4 * dt;
+    input.lookDelta = 0;
+    turn(c, manual, t);
+    if (input.recenter) {
+      input.recenter = false;
+      c.recentering = true;
+    }
+    recenterStep(c, b.facing, dt);
+    const w = steer(c, frozen ? 0 : input.x, frozen ? 0 : input.y, Boolean(manual));
+    const wx = w.x, wz = w.z;
+    const inp = frozen ? { x: 0, y: 0, jumpPressed: false, jumpHeld: false } : { x: wx, y: wz, jumpPressed: input.jumpPressed, jumpHeld: input.jumpHeld };
     if (inp.jumpPressed && (b.grounded || (jet && b.jumps < 2))) sfx.jump();
     input.jumpPressed = false;
     // Two half-steps keep fast falls from skipping through thin platforms.
@@ -77,10 +105,12 @@ export const Player = forwardRef<PlayerHandle, {
       const s = Math.max(0.4, 1 - (b.y - ground) * 0.15);
       shadow.current.scale.set(s, s, s);
     }
-    // Follow camera.
-    const want = new THREE.Vector3(b.x * 0.6 + cameraOffset[0], b.y + cameraOffset[1], b.z + cameraOffset[2]);
-    camera.position.lerp(want, Math.min(1, dt * 4));
-    look.current.lerp(new THREE.Vector3(b.x * 0.8, b.y + 1, b.z + 4), Math.min(1, dt * 6));
+    // The camera swings round behind the way he's running (unless he's turning it by hand).
+    if (!frozen) follow(c, b.vx, b.vz, dt, t);
+    const fx = Math.sin(c.yaw), fz = Math.cos(c.yaw);
+    const want = new THREE.Vector3(b.x - fx * dist, b.y + height, b.z - fz * dist);
+    camera.position.lerp(want, Math.min(1, dt * 5));
+    look.current.lerp(new THREE.Vector3(b.x + fx * 4, b.y + 1, b.z + fz * 4), Math.min(1, dt * 7));
     camera.lookAt(look.current);
 
     const moving = Math.min(1, Math.hypot(b.vx, b.vz) / 6);

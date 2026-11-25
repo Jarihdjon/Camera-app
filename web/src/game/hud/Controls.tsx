@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { pressJump, releaseJump, setStick } from "../input";
+import { addLook, input, pressJump, releaseJump, setStick } from "../input";
 import { unlockAudio } from "../sfx";
 
 /** On-screen joystick (left thumb) and jump button (right thumb). */
@@ -28,8 +28,30 @@ export function Controls() {
     setStick(0, 0);
   }
 
+  // Dragging anywhere else on the screen turns the camera.
+  const drag = useRef<{ id: number; x: number } | null>(null);
   return (
     <>
+      <div
+        aria-hidden
+        className="pointer-events-auto fixed inset-0 z-10 touch-none"
+        onPointerDown={(e) => { drag.current = { id: e.pointerId, x: e.clientX }; (e.target as HTMLElement).setPointerCapture(e.pointerId); }}
+        onPointerMove={(e) => {
+          if (drag.current?.id !== e.pointerId) return;
+          addLook(e.clientX - drag.current.x);
+          drag.current.x = e.clientX;
+        }}
+        onPointerUp={() => { drag.current = null; }}
+        onPointerCancel={() => { drag.current = null; }}
+      />
+      <button
+        type="button"
+        aria-label="Camera behind Sparky"
+        className="pointer-events-auto fixed bottom-44 right-14 z-30 grid size-16 touch-none place-items-center rounded-full border-4 border-white/30 bg-black/40 text-2xl backdrop-blur-sm active:scale-95"
+        onPointerDown={(e) => { e.preventDefault(); input.recenter = true; }}
+      >
+        🎥
+      </button>
       <div
         ref={base}
         aria-label="Move"

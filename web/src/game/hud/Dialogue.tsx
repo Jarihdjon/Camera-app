@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Volume2 } from "lucide-react";
-import type { MissionCharacter, MissionLine } from "@yav/shared/game";
+import { characterVoice, type MissionCharacter, type MissionLine } from "@yav/shared/game";
 import { say, stop } from "@/lib/speech";
 import { Button } from "@/components/ui/button";
 import { PORTRAIT } from "../Npc";
@@ -24,7 +24,7 @@ export function Dialogue({ lines, characters, robotName, firstName, onDone }: {
   const text = line ? line.line.replaceAll("Sparky", robotName).replaceAll("{name}", firstName) : "";
   const speak = () => {
     if (!line) return;
-    if (who) say(text, "narrator", who.voice, who.id);
+    if (who) say(text, "narrator", who.voice, who.id, characterVoice(who));
     else say(text, "robot", undefined, "sparky");
   };
   useEffect(() => {

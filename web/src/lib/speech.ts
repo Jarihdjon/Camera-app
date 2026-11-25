@@ -1,4 +1,5 @@
 import { wordAt } from "@/components/robot/lipsync";
+import { NARRATOR_VOICE, SPARKY_VOICE, type VoicePick } from "@yav/shared/game";
 
 /**
  * Speech using the device's built-in voices.
@@ -57,37 +58,9 @@ function emit(e: SpeechEvent) {
   for (const l of listeners) l(e);
 }
 
-export interface Chunk {
-  text: string;
-  /** Pause after this chunk, in milliseconds. */
-  pause: number;
-}
-
-/**
- * Split text into sentence-sized pieces with natural pauses: about a third of a second
- * after a sentence, longer after a paragraph or a "...", and a beat after a question.
- */
-export function splitForSpeech(text: string): Chunk[] {
-  const chunks: Chunk[] = [];
-  const paras = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
-  paras.forEach((para, pi) => {
-    // " ... " marks a deliberate pause (e.g. between a listening sentence and its question).
-    const parts = para.split(/\s*\.\.\.\s*/).filter(Boolean);
-    parts.forEach((part, ki) => {
-      const sentences = part.match(/[^.!?]+(?:[.!?]+["”’']?|$)/g)?.map((s) => s.trim()).filter(Boolean) ?? [part];
-      sentences.forEach((s, si) => {
-        const lastInPart = si === sentences.length - 1;
-        const lastInPara = lastInPart && ki === parts.length - 1;
-        let pause = /\?["”’']?$/.test(s) ? 450 : /!["”’']?$/.test(s) ? 380 : 320;
-        if (lastInPart && !lastInPara) pause = 700;
-        if (lastInPara && pi < paras.length - 1) pause = 800;
-        if (lastInPara && pi === paras.length - 1) pause = 0;
-        chunks.push({ text: s, pause });
-      });
-    });
-  });
-  return chunks;
-}
+// Sentence splitting is shared with the server, so lines it makes ahead of time match exactly.
+import { splitForSpeech, type Chunk } from "@yav/shared/childHelpers";
+export { splitForSpeech, type Chunk };
 
 let token = 0;
 let timer: number | undefined;
@@ -99,6 +72,10 @@ export function stop() {
   token++;
   window.clearTimeout(timer);
   if (hasSpeech) speechSynthesis.cancel();
+  if (source) {
+    try { source.stop(); } catch { /* already stopped */ }
+    source = null;
+  }
   if (active) {
     active = false;
     emit({ type: "end", who: currentWho });
@@ -109,7 +86,49 @@ export function isSpeaking() {
   return active;
 }
 
-export function say(text: string, style: SpeechStyle = "robot", tune?: VoiceTune, who?: string) {
+// ---------- the natural voice made on the PC (see server/src/tts.ts) ----------
+
+let serverVoice = false;
+async function checkServerVoice() {
+  try {
+    const r = await fetch("/api/tts/status");
+    const j = (await r.json()) as { state: string };
+    serverVoice = j.state === "ready";
+    // Still loading on the PC: look again shortly.
+    if (j.state === "loading") window.setTimeout(checkServerVoice, 5000);
+  } catch {
+    serverVoice = false;
+  }
+}
+let audioCtx: AudioContext | null = null;
+let source: AudioBufferSourceNode | null = null;
+if (typeof window !== "undefined") {
+  void checkServerVoice();
+  // iPad Safari only lets sound start after a tap: wake the audio on the first one.
+  const wake = () => {
+    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!audioCtx && AC) audioCtx = new AC();
+    void audioCtx?.resume();
+  };
+  window.addEventListener("pointerdown", wake, { capture: true });
+}
+export const usingNaturalVoice = () => serverVoice;
+
+function fetchLine(text: string, pick: VoicePick): Promise<AudioBuffer> {
+  const url = `/api/tts?v=${encodeURIComponent(pick.voice)}&s=${pick.speed}&t=${encodeURIComponent(text)}`;
+  const timeout = new Promise<never>((_, rej) => window.setTimeout(() => rej(new Error("slow")), 12000));
+  const load = fetch(url).then((r) => {
+    if (!r.ok) throw new Error(String(r.status));
+    return r.arrayBuffer();
+  }).then((b) => audioCtx!.decodeAudioData(b));
+  return Promise.race([load, timeout]);
+}
+
+/**
+ * Say something. `pick` chooses the natural voice (defaults: the narrator for stories,
+ * Sparky's voice for chat); `tune` adjusts the iPad's own voice when that is used instead.
+ */
+export function say(text: string, style: SpeechStyle = "robot", tune?: VoiceTune, who?: string, pick?: VoicePick) {
   stop();
   const my = ++token;
   const chunks = splitForSpeech(text);
@@ -118,14 +137,51 @@ export function say(text: string, style: SpeechStyle = "robot", tune?: VoiceTune
   currentWho = who;
   emit({ type: "start", who });
 
-  if (!hasSpeech) {
-    // No voice available: still animate, for about as long as the line would take.
-    timer = window.setTimeout(() => {
-      if (my === token) { active = false; emit({ type: "end", who }); }
-    }, Math.min(8000, text.length * 60));
+  if (serverVoice && audioCtx) {
+    const voice = pick ?? (style === "narrator" ? NARRATOR_VOICE : SPARKY_VOICE);
+    const lines: Promise<AudioBuffer>[] = [];
+    const get = (i: number) => (lines[i] ??= fetchLine(chunks[i]!.text, voice));
+    const playChunk = (i: number) => {
+      if (my !== token) return;
+      if (i >= chunks.length) {
+        active = false;
+        emit({ type: "end", who });
+        return;
+      }
+      // Ask for the next sentence while this one plays.
+      if (i + 1 < chunks.length) void get(i + 1).catch(() => {});
+      get(i).then((buf) => {
+        if (my !== token) return;
+        const src = audioCtx!.createBufferSource();
+        src.buffer = buf;
+        src.connect(audioCtx!.destination);
+        src.onended = () => {
+          if (my !== token) return;
+          timer = window.setTimeout(() => playChunk(i + 1), chunks[i]!.pause);
+        };
+        source = src;
+        src.start();
+      }).catch(() => {
+        // The PC voice stumbled: carry on with the iPad's own voice from here.
+        if (my !== token) return;
+        deviceSpeak(chunks, i, my, style, tune, who);
+      });
+    };
+    playChunk(0);
     return;
   }
+  deviceSpeak(chunks, 0, my, style, tune, who);
+}
 
+function deviceSpeak(chunks: Chunk[], from: number, my: number, style: SpeechStyle, tune: VoiceTune | undefined, who: string | undefined) {
+  if (!hasSpeech) {
+    // No voice available: still animate, for about as long as the line would take.
+    const length = chunks.slice(from).reduce((n, c) => n + c.text.length, 0);
+    timer = window.setTimeout(() => {
+      if (my === token) { active = false; emit({ type: "end", who }); }
+    }, Math.min(8000, length * 60));
+    return;
+  }
   const speakChunk = (i: number) => {
     if (my !== token) return;
     if (i >= chunks.length) {
@@ -158,5 +214,5 @@ export function say(text: string, style: SpeechStyle = "robot", tune?: VoiceTune
     };
     speechSynthesis.speak(u);
   };
-  speakChunk(0);
+  speakChunk(from);
 }

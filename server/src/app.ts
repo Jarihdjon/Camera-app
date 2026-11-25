@@ -16,6 +16,8 @@ import { gameRoutes } from "./game/routes.js";
 import { loadGameContent, type GameContent } from "./game/engine.js";
 import { claudeAskModel, type AskModel } from "./ai/ask.js";
 import { config } from "./config.js";
+import { ttsRoutes } from "./routes/tts.js";
+import type { Tts } from "./tts.js";
 
 export interface AppDeps {
   db: DB;
@@ -27,9 +29,11 @@ export interface AppDeps {
   onLastChapterStarted?: () => void;
   isGenerating?: () => boolean;
   gameContent?: GameContent;
+  /** The natural reading voice (null: the iPad uses its own voice). */
+  tts?: Tts | null;
 }
 
-export async function buildApp({ db, bank, serveWeb = true, askModel, bankChapters, onLastChapterStarted, isGenerating, gameContent }: AppDeps) {
+export async function buildApp({ db, bank, serveWeb = true, askModel, bankChapters, onLastChapterStarted, isGenerating, gameContent, tts = null }: AppDeps) {
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? (process.env.VITEST ? "silent" : "info") } });
   await app.register(fastifyCookie);
   await app.register(fastifyMultipart, { limits: { fileSize: 15 * 1024 * 1024, files: 1 } });
@@ -41,6 +45,7 @@ export async function buildApp({ db, bank, serveWeb = true, askModel, bankChapte
   const chapters = bankChapters ?? loadBankChapters(bank);
   await app.register(chapterRoutes, { prefix: "/api", db, bank, bankChapters: chapters, onLastChapterStarted, isGenerating });
   await app.register(gameRoutes, { prefix: "/api/game", db, content: gameContent ?? loadGameContent() });
+  await app.register(ttsRoutes, { prefix: "/api", tts });
   await app.register(parentRoutes, { prefix: "/api/parent", db, bank, bankChapters: chapters, isGenerating });
 
   if (serveWeb && existsSync(config.webDist)) {
